@@ -1,0 +1,6 @@
+interpreterBlock name OpticalGeneration
+
+interpreterBlock (start optical generation named) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Optical Generation,Value,string,Function
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Function Type,string,File

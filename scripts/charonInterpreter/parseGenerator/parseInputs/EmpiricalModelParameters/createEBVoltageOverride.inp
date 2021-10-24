@@ -1,0 +1,12 @@
+
+
+interpreter name EBVoltageOverride
+
+interpreter inputLine (emitter-base voltage override) = {voltage}
+
+interpreter shortHelp {This sets the voltage across the emitter base junction to a specific value for interpolating from the mu tables.}
+
+interpreter longHelp {This sets the voltage across the emitter base junction to a specific value for interpolating from the mu tables. <> This is mostly used in testing.}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,eb voltage override,double,{voltage}
+

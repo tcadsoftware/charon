@@ -1,0 +1,12 @@
+
+interpreter name TimeIntegratorMinTimeStepSize
+
+interpreter inputLine (time integrator minimum step size) = {dtime}
+
+interpreter shortHelp {Specify the minimum time step size the intergrator is allowed to take.}
+
+interpreter longHelp {Specify the minimum time step size the intergrator is allowed to take. <> dtime is the time step in seconds.}
+
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Min Step Size,double,{dtime}
+

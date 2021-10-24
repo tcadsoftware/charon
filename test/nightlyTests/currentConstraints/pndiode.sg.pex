@@ -1,0 +1,9 @@
+Input FEM file                   = pndiode.sg.exo
+LB file                          = pndiode.sg.nem
+File Extension for Spread Files  = .exo
+Number of Processors             = 4
+------------------------------------------------------------
+                Parallel I/O section
+------------------------------------------------------------
+Parallel Disk Info= number=1, offset=1, zeros, nosubdirectory
+Parallel file location = root=./, subdir=.

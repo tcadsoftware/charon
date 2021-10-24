@@ -1,0 +1,9 @@
+interpreter name nref
+
+interpreter inputLine (nref) = {nrefval}
+
+interpreter shortHelp {model parameter N_ref}
+
+interpreter longHelp {Arora model parameter N_ref}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,nref,double,{nrefval}

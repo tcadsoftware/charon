@@ -1,0 +1,16 @@
+
+interpreter name ThyraFunctionScaling
+
+interpreter inputLine (thyra function scaling) is [ (Row Sum) [ (None) [ (User Defined) ]]]]
+
+interpreter shortHelp {Specify Thyra function scaling type}
+
+interpreter longHelp {Specify Thyra function scaling type }
+
+xmlOptional (Row Sum) Charon->Solution Control->NOX->Thyra Group Options,Function Scaling,string,Row Sum
+
+xmlOptional (None) Charon->Solution Control->NOX->Thyra Group Options,Function Scaling,string,None
+
+xmlOptional (User Defined) Charon->Solution Control->NOX->Thyra Group Options,Function Scaling,string,User Defined
+
+

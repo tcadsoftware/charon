@@ -1,0 +1,9 @@
+interpreter name Ec
+
+interpreter inputLine (ec) = {ecval}
+
+interpreter shortHelp {Farahmand model parameter ec}
+
+interpreter longHelp {Farahmand model parameter ec}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,ec,double,{ec}

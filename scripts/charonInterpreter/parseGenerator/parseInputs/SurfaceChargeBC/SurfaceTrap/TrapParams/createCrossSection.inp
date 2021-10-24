@@ -1,0 +1,12 @@
+
+interpreter name CrossSection
+
+interpreter inputLine (cross section for) [(holes =) {hXsec} [(electrons =) {eXsec}] ] 
+
+interpreter shortHelp {Specify the cross section for electrons and holes in unit of cm^2}
+
+interpreter longHelp {Specify the cross section for electrons and holes in unit of cm^2}
+
+xmlOptional (electrons =) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Electron Cross Section,double,{eXsec}
+xmlOptional (holes =) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Hole Cross Section,double,{hXsec}
+

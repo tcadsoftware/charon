@@ -1,0 +1,10 @@
+interpreter name Gamma
+
+interpreter inputLine (temperature dependence exponent) = {gamma}
+
+interpreter shortHelp {Exponent used for temperature dependence}
+
+interpreter longHelp {Exponent used for temperature dependence of lattice scattering for electrons}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,gamma,double,{gamma}
+

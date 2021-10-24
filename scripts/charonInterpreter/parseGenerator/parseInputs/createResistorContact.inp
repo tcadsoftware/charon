@@ -1,0 +1,22 @@
+
+
+interpreter name ResistorContact
+
+interpreter inputLine (BC is resistor for) {sidesetID} on {geometryBlock} with resistor {resistance} fixed at {voltage1} and initial voltage {voltage2}  [(with area) {cntarea} [ (and length) {cntlength} [ (with base doping type) {baseType} ]]]
+
+interpreter shortHelp {Specify a resistor boundary condition}
+
+interpreter longHelp {Specify a resistor boundary condition, <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> resistor is the value in ohms <> applied voltage is the value in volts <> initial voltage is the value in volts}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Resistor Contact
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Resistor Value,double,{resistance}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Applied Voltage,double,{voltage1}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Voltage,double,{voltage2}
+
+xmlOptional (with area) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Device Contact Area,double,{cntarea}
+xmlOptional (and length) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Simulation Contact Length,double,{cntlength}
+xmlOptional (with base doping type) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,BJT1D Base Doping Type,string,{baseType}

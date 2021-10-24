@@ -1,0 +1,8 @@
+interpreter name AnalyticSol
+
+interpreter inputLine (analytic solution function) is {funcname}
+
+interpreter shortHelp {Name of the function computing the analytic solution}
+interpreter longHelp {Name of the function computing the analytic solution}
+
+xmlRequired Charon->Closure Models->Global MMS Parameters->Analytic Solution,Value,string,{funcname}

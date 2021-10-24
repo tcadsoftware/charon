@@ -1,0 +1,11 @@
+
+interpreter name RelativePermittivity
+
+interpreter inputLine (relative permittivity) = {relPerm}
+
+interpreter shortHelp {Sets the relative permittivity for the material in this material block}
+
+interpreter longHelp {Sets the relative permittivity for the material in this material block <> relPerm is the value of the relative permittivity}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Relative Permittivity,Value,double,{relPerm}
+

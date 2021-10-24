@@ -1,0 +1,11 @@
+
+
+interpreter name MuDataFile
+
+interpreter inputLine (mu table data file is) {filename}
+
+interpreter shortHelp {set the name of the mu data file.}
+
+interpreter longHelp {set the name of the mu data file. <> The empirical model relies on mu values froma tabulated file.  et the file name here.}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,mu data file,string,{filename}

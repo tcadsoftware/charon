@@ -1,0 +1,10 @@
+
+interpreterBlock name ElectronBulkPhilipsThomasMobility
+
+interpreterBlock (start electron bulk Mobility Klaassen)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Value,string,MOSFET
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,Value,string,Klaassen
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,G Parameter Set,string,Klaassen

@@ -1,0 +1,15 @@
+
+
+interpreter name AugerRecombination
+
+interpreter inputLine (Auger recombination) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on Auger recombination}
+
+interpreter longHelp {Turn on Auger recombination <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Auger,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Auger,string,Off
+
+

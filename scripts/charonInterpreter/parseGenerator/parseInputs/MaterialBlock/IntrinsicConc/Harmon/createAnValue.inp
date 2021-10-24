@@ -1,0 +1,9 @@
+interpreter name AnValue
+
+interpreter inputLine (An) = {AnValue}
+
+interpreter shortHelp {Specify a value for the An parameter}
+
+interpreter longHelp {Specify a value for the An parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,An,double,{AnValue}

@@ -1,0 +1,14 @@
+interpreter name ConstantBC
+
+interpreter inputLine (BC is constant for) {varname} on {sidesetID} in {geometryBlock} at {value}
+
+interpreter shortHelp {Specify a constant value boundary condition}
+
+interpreter longHelp {Specify a constant value boundary condition}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,{varname}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Constant
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Value,double,{value}

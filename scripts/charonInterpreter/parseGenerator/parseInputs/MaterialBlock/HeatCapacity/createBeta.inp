@@ -1,0 +1,9 @@
+interpreter name Beta
+
+interpreter inputLine (beta) = {betaval} 
+
+interpreter shortHelp {Set the parameter beta}
+
+interpreter longHelp {Set the parameter beta for heat capacity model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Capacity,beta,double,{betaval}

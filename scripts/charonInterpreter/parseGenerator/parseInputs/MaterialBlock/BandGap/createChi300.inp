@@ -1,0 +1,11 @@
+
+
+interpreter name Chi300
+
+interpreter inputLine (Chi300) = {chi} 
+
+interpreter shortHelp {Set the 300 k chi value}
+
+interpreter longHelp {Set the 300 k chi value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,Chi300,double,{chi}

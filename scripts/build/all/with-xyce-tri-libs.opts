@@ -1,0 +1,10 @@
+## Settings to build Trilinos packages/settings needed
+## for Xyce
+
+# Libraries
+tcad-charon_ENABLE_TrilinosCouplings:BOOL=ON
+tcad-charon_ENABLE_Amesos:BOOL=ON
+tcad-charon_ENABLE_Isorropia:BOOL=ON
+
+# Misc
+Trilinos_ENABLE_COMPLEX_DOUBLE:BOOL=ON

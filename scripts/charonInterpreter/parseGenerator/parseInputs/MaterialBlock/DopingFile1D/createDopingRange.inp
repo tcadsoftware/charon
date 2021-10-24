@@ -1,0 +1,19 @@
+
+
+interpreter name DopingRange
+
+interpreter inputLine (spatial range) is {locMin} to {locMax} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the coordinate range of the axis that is not included in a 1D doping file.}
+
+interpreter longHelp {Set the coordinate range of the axis that is not included in a 1D doping file.}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Xmin,double,{locMin}
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Xmax,double,{locMax}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Ymin,double,{locMin}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Ymax,double,{locMax}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Zmin,double,{locMin}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Zmax,double,{locMax}
+

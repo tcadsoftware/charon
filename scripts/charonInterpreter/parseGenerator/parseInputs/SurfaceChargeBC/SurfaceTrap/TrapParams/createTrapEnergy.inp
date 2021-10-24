@@ -1,0 +1,11 @@
+
+interpreter name TrapEnergy
+
+interpreter inputLine (energy =) {trapEnergy}
+
+interpreter shortHelp {Specify trap energy in eV with respect to the intrinsic Fermi level Ei}
+
+interpreter longHelp {Specify trap energy in eV with respect to the intrinsic Fermi level Ei. The trap energy is positive above Ei, and negative below Ei.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Trap Energy,double,{trapEnergy}
+

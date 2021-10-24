@@ -1,0 +1,20 @@
+
+
+interpreter name NeumannThermalBC
+
+interpreter inputLine (BC is flux thermal contact for) {sidesetID} on {geometryBlock} [(fixed at) {temperature} [(with surface conductance) {cond} [(with surface resistance) {resist} [(with input power) {power}]]]]
+
+interpreter shortHelp {Specify the heat flux on a thermal contact}
+
+interpreter longHelp {Specify the heat flux on a thermal contact. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> temperature is the value in kelvin and is optional if input power is given <> surface conductance is in [W/(K.cm^2)] <> surface resistance is in [K.cm^2/W] <> input power is in [W/cm^2] }
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Type,string,Neumann
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Strategy,string,Neumann Thermal Contact
+
+xmlOptional (fixed at) Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS->Data,Temperature,double,{temperature}
+xmlOptional (with surface conductance) Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS->Data,Surface Conductance,double,{cond}
+xmlOptional (with surface resistance) Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS->Data,Surface Resistance,double,{resist}
+xmlOptional (with input power) Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS->Data,Power,double,{power}

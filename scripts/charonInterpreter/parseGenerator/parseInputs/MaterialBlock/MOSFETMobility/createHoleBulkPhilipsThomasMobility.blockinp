@@ -1,0 +1,11 @@
+
+interpreterBlock name HoleBulkPhilipsThomasMobility
+
+interpreterBlock (start hole bulk Mobility Klaassen)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Hole Mobility,Value,string,MOSFET
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,Value,string,Klaassen
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,G Parameter Set,string,Klaassen
+

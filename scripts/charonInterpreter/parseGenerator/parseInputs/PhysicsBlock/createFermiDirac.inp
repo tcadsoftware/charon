@@ -1,0 +1,15 @@
+
+
+interpreter name FermiDirac
+
+interpreter inputLine (use Fermi Dirac) [ (with Schroeder) [ (with Diffusion) ]]
+
+interpreter shortHelp {Turn on Fermi Dirac statistics}
+
+interpreter longHelp {Turn on Fermi Dirac Statistics <> with Schroeder formula}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Fermi Dirac,string,True
+
+xmlOptional (with Schroeder) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,FD Formula,string,Schroeder
+
+xmlOptional (with Diffusion) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,FD Formula,string,Diffusion

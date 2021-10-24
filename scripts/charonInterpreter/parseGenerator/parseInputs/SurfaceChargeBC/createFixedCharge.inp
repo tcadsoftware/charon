@@ -1,0 +1,35 @@
+
+
+interpreter name FixedCharge
+
+interpreter inputLine (fixed charge) [(=) {fixedCharge} [ (is swept from) {charge1} to {charge2}]]
+
+interpreter shortHelp {Specify the fixed charge at an interface in unit of cm^-2}
+
+interpreter longHelp {Specify the fixed charge at an interface in unit of cm^-2 <> Charge can be set as a single value <> or it can be swept from one value to another}
+
+xmlOptional (=) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Fixed Charge,double,{fixedCharge}
+
+# Set the data parameter to a string
+xmlOptional (is swept from) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Varying Charge,string,Parameter
+
+# Modify the solver type from NOX to LOCA
+xmlOptional (is swept from) Charon->Solution Control,Piro Solver,string,LOCA
+
+#LOCA Parameters
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Initial Value,double,{charge1}
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Continuation Parameter,string,Varying Charge
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Max Steps,int,1000
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Max Value,double,{charge2}
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Min Value,double,{charge1}
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Compute Eigenvalues,bool,0
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,1.0
+
+# Set the parameters block
+xmlOptional (is swept from) Charon->Active Parameters,Number of Parameter Vectors,int,1
+xmlOptional (is swept from) Charon->Active Parameters->Parameter Vector 0,Number,int,1
+xmlOptional (is swept from) Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Varying Charge
+xmlOptional (is swept from) Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,{charge1}
+xmlOptional (is swept from) use Modifier 0
+

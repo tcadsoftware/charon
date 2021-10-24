@@ -1,0 +1,16 @@
+interpreter name HoleRichardsonConst
+
+interpreter inputLine (Hole Richardson Constant) = {Ap}
+
+interpreter shortHelp {Sets hole Richardson constant for Schottky contact}
+
+interpreter longHelp {Sets hole Richardson constant for Schottky contact}
+
+
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS,Type,string,Neumann
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS,Equation Set Name,string,ELECTRON_DENSITY HOLE_DENSITY
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS,Strategy,string,Neumann Schottky Contact
+
+xmlRequired Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data,Hole Richardson Constant,double,{Ap}

@@ -1,0 +1,10 @@
+interpreter name PulseMaximum
+
+interpreter inputLine (Maximum pulse rate =) {pulseRate}
+
+interpreter shortHelp {set the maximum hole/electron pair production rate of the pulse}
+
+interpreter longHelp {set the maximum hole/electron pair production rate of the pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Max Value,double,{pulseRate}
+

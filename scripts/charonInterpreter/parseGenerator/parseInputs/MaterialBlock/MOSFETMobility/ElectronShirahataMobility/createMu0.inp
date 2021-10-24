@@ -1,0 +1,12 @@
+
+
+interpreter name Mu0
+
+interpreter inputLine (Mu0) = {Mu0}
+
+interpreter shortHelp {Set the Mu0 value for Shirahata electron model}
+
+interpreter longHelp {Set the Mu0 value for Shirahata electron model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Perpendicular Field Model,Mu0,double,{Mu0}
+

@@ -1,0 +1,56 @@
+
+Import State File pndiode.exo
+
+start output parameters
+      Output State File potential_pndiode_linear.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+
+      start uniform doping named Function1
+      	    concentration = 1e16
+	    spatial range is 0.0 to 0.3 in x
+	    type is acceptor
+      end uniform doping named Function1
+
+      start linear doping named Function2
+      	    type is acceptor
+	    spatial range is 0.3 to 0.7 in x
+	    doping ramps from 1e16 to 1e10
+      end linear doping named Function2
+
+      start linear doping named Function3
+      	    type is donor
+	    spatial range is 0.3 to 0.7 in x
+	    doping ramps from 1e10 to 1e16
+      end linear doping named Function2
+
+      start uniform doping named Function4
+      	    concentration = 1e16
+	    spatial range is 0.7 to 1.0 in x
+	    type is donor
+      end uniform doping named Function1
+
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

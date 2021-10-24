@@ -1,0 +1,8 @@
+interpreter name ElectronDFRefDens
+
+interpreter inputLine (electron driving force reference density) = {eDFRefDens}
+
+interpreter shortHelp {Reference electron density for the driving force calculation}
+interpreter longHelp {Reference electron density for the driving force calculation}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,eDrForceRefDens,double,{eDFRefDens}

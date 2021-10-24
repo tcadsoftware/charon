@@ -1,0 +1,19 @@
+
+
+interpreter name ElectronConcentrationDependentFunction
+
+interpreter inputLine (electron lifetime is concentration) dependent [(with Nsrh) = {Nsrh}]
+
+interpreter shortHelp {Specify that the electron lifetime is concentration dependent.}
+
+interpreter longHelp {Specify that the electron lifetime is concentration dependent. <> {Nsrh} is the parameter for the function.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Lifetime,Value,string,Function
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Lifetime->Function 1,Function Type,string,ConcDep
+
+xmlOptional (with Nsrh) Charon->Closure Models->{MaterialBlockName}->Electron Lifetime->Function 1,Nsrh,double,{Nsrh}
+
+
+
+
+

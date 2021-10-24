@@ -1,0 +1,44 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+ELEMENT VARIABLES relative 1.0e-3
+NODAL VARIABLES 
+	ELECTRIC_POTENTIAL                relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH0.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH2.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH3.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH4.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH5.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH0.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH2.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH3.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH4.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH5.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY                relative 5e-4 floor 1.0e-8
+	ELECTRON_DENSITY_CosH0.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH2.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH3.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH4.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH5.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH0.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH2.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH3.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH4.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH5.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY                    relative 5e-4 floor 1e-8
+	HOLE_DENSITY_CosH0.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH1.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH2.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH3.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH4.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH5.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_SinH0.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_SinH1.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_SinH2.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_SinH3.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_SinH4.000000_  relative 5e-4 floor 1e-8
+	HOLE_DENSITY_SinH5.000000_  relative 5e-4 floor 1e-8 
+

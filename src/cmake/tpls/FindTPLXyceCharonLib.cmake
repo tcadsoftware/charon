@@ -1,0 +1,4 @@
+TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( XyceCharonLib
+  REQUIRED_HEADERS Xyce_config.h
+  REQUIRED_LIBS_NAMES xyce SandiaModels NonFree NeuronModels ADMS
+  )

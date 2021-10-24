@@ -1,0 +1,9 @@
+interpreter name LFMobFile
+
+interpreter inputLine (low field mobility file) is {lfmobvar}
+
+interpreter shortHelp {Name of the tabular file containing low-field values of the mobility}
+
+interpreter longHelp {Name of the tabular file containing low-field values of the mobility <> The first column of the file contains a doping values and the second mobility}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Low Field Mobility File,string,{lfmobvar}

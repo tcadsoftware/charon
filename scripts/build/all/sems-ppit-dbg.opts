@@ -1,0 +1,39 @@
+####################################################
+# Module commands for this to work:
+#   module purge
+#   module load cmake/2.8.12
+#   module load gcc/4.9.2/base
+#   module load gcc/4.9.2/openmpi/1.8.7
+#   module load boost/1.58.0/gcc/4.9.2/base
+#   module load netcdf/4.4.1/gcc/4.9.2/base
+#   module load hdf5/1.8.12/gcc/4.9.2/openmpi/1.8.7
+#####################################################
+
+CMAKE_CXX_COMPILER:FILEPATH=${SEMS_MPI_ROOT}"/bin/mpic++"
+CMAKE_C_COMPILER:FILEPATH=${SEMS_MPI_ROOT}"/bin/mpicc"
+CMAKE_Fortran_COMPILER:FILEPATH=${SEMS_MPI_ROOT}"/bin/mpif77"
+
+CMAKE_CXX_FLAGS:STRING="-g -std=c++11 -Wall"
+CMAKE_C_FLAGS:STRING="-g -Wall"
+CMAKE_Fortran_FLAGS:STRING="-g"
+
+TPL_ENABLE_Boost:BOOL=ON
+TPL_ENABLE_BoostLib:BOOL=ON
+Boost_INCLUDE_DIRS:PATH=${SEMS_BOOST_INCLUDE_PATH}
+BoostLib_LIBRARY_DIRS:PATH=${SEMS_BOOST_LIBRARY_PATH}
+BoostLib_INCLUDE_DIRS:PATH=${SEMS_BOOST_INCLUDE_PATH}
+
+TPL_ENABLE_Netcdf:BOOL=ON
+Netcdf_INCLUDE_DIRS:PATH=${SEMS_NETCDF_INCLUDE_PATH}
+Netcdf_LIBRARY_DIRS:PATH=${SEMS_NETCDF_LIBRARY_PATH}
+
+TPL_ENABLE_HDF5:BOOL=ON
+HDF5_INCLUDE_DIRS:PATH=${SEMS_HDF5_INCLUDE_PATH}
+HDF5_LIBRARY_DIRS:PATH=${SEMS_HDF5_LIBRARY_PATH}
+
+BLAS_LIBRARY_DIRS=/usr/lib64
+TPL_BLAS_LIBRARIES=/usr/lib64/libblas.so
+
+LAPACK_LIBRARY_DIRS=/usr/lib64
+TPL_LAPACK_LIBRARIES=/usr/lib64/liblapack.so
+

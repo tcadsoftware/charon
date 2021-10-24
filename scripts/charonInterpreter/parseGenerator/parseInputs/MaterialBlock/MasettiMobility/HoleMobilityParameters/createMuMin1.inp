@@ -1,0 +1,9 @@
+interpreter name MuMin1
+
+interpreter inputLine (mumin1) = {mumin1val}
+
+interpreter shortHelp {Masetti model parameter MuMin1}
+
+interpreter longHelp {Masetti model parameter MuMin1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,mumin1,double,{mumin1val}

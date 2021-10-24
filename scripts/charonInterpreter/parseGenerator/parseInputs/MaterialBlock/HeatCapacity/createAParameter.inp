@@ -1,0 +1,9 @@
+interpreter name AParameter
+
+interpreter inputLine (a) = {aval} 
+
+interpreter shortHelp {Set the parameter a for heat capacity TempDep model}
+
+interpreter longHelp {Set the parameter a for heat capacity TempDep model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Capacity,a,double,{aval}

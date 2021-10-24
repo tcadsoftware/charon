@@ -1,0 +1,9 @@
+interpreter name Cs
+
+interpreter inputLine (cs) = {csval}
+
+interpreter shortHelp {Masetti model parameter C_s}
+
+interpreter longHelp {Masetti model parameter C_s}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,cs,double,{csval}

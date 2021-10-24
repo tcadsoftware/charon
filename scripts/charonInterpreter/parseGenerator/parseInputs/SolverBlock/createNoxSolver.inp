@@ -1,0 +1,22 @@
+
+
+interpreter name NoxSolver
+
+interpreter inputLine (use NOX solver)
+
+interpreter shortHelp {Specify the use of the steady-state nox solver}
+
+interpreter longHelp {Specify the use of the steady-state nox solver}
+
+
+
+xmlRequired Charon->Solution Control,Piro Solver,string,NOX
+xmlRequired Charon->Solution Control,Compute Sensitivities,bool,0
+xmlRequired Charon->Solution Control,Jacobian Operator,string,Have Jacobian
+
+xmlRequired Charon->Solution Control->NOX->Direction,Method,string,Newton
+
+xmlRequired Charon->Solution Control->NOX->Newton,Forcing Term Method,string,Constant
+xmlRequired Charon->Solution Control->NOX->Newton,Rescue Bad Newton Solve,bool,1
+
+

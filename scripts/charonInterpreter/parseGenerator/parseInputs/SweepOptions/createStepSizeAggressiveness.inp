@@ -1,0 +1,13 @@
+
+
+interpreter name StepSizeAggressiveness
+
+interpreter inputLine (Step Size Aggressiveness) = {aggressiveness}
+
+interpreter shortHelp {Specify aggressiveness in modifying step size during parameter sweep}
+
+interpreter longHelp {Specify aggressiveness in modifying step size during parameter sweep <> {aggressiveness} is the aggressiveness <> Default = 1.0}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Aggressiveness,double,{aggressiveness}
+
+

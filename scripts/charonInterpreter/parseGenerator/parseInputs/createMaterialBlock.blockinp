@@ -1,0 +1,7 @@
+
+interpreterBlock name MaterialBlock
+
+interpreterBlock (start Material Block) {MaterialBlockName}
+
+xmlDefault Charon->Closure Models,Concentration Scaling,double,1e16
+

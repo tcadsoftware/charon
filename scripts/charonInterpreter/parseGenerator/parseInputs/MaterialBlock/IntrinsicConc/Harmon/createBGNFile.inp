@@ -1,0 +1,9 @@
+interpreter name BGNFile
+
+interpreter inputLine (bgn file) = {fileName}
+
+interpreter shortHelp {Specify a file that contains bgn values}
+
+interpreter longHelp {Specify a file that contains bgn values}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,BGN File,string,{fileName}

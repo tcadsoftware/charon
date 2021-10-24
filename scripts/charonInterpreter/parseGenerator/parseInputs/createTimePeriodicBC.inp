@@ -1,0 +1,30 @@
+
+
+interpreter name TimePeriodicBC
+
+interpreter inputLine (BC is time periodic for) {sidesetID} on {geometryBlock} [[(with) {amplitude1} sin {frequency1} [(plus) {amplitude2} sin {frequency2} [(shifted by) {phaseShift}]]] (offset by) {DCoffset}]
+
+interpreter shortHelp {Specify a temporally periodic potential applied on a contact.}
+
+interpreter longHelp {Specify a temporally periodic potential applied on a contact, which can be specified as a superposition of two sinusoids and a DC voltage. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> amplitude1 and amplitude2 are the amplitudes of the applied sinusoids, in Volts. <> frequency1 and frequency2 are the frequencies of the applied sinusoids, in Hz. <> phaseShift is the phase shift of the second applied sinusoid relative to the first sinusoid, as a percentage of 2\pi. <> DCoffset is the DC voltage applied.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Sinusoid
+
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Amplitude 1,double,{amplitude1}
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Frequency 1,double,{frequency1}
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Phase Shift 1,double,0.0
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Amplitude 2,double,0.0}
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Frequency 2,double,0.0
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Phase Shift 2,double,0.0
+
+xmlOptional (plus) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Amplitude 2,double,{amplitude2}
+xmlOptional (plus) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Frequency 2,double,{frequency2}
+xmlOptional (with) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Frequency 2,double,0.0
+
+xmlOptional (shifted by) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Phase Shift 2,double,{phaseShift}
+
+xmlOptional (offset by) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,DC Offset,double,{phaseShift}

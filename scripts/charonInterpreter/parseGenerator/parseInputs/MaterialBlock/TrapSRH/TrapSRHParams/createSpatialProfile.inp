@@ -1,0 +1,9 @@
+interpreter name SpatialProfile
+
+interpreter inputLine (spatial profile is uniform)
+
+interpreter shortHelp {The spatial distribution of traps}
+interpreter longHelp {The spatial distribution of traps which currently supports uniform only}
+
+xmlRequired (donor) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Spatial Profile,string,Uniform
+

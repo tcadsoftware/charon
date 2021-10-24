@@ -1,0 +1,20 @@
+
+
+interpreter name ImportStateFile
+
+interpreter inputLine (Import State File) {filename} [(at Index) {index} [(second option) {option2}]]
+
+interpreter shortHelp {Specify state file name and state index}
+
+interpreter longHelp {Specify the name of the file (exodus) that contains the states for input/initial guess. <> Optionally, sepcify the index of the time plane or parameter plane if the file contains multiple states. <> filename is the name of the file.  It is case sensitive. <> index is the integer index of the state to be used as input.}
+
+xmlRequired Charon->Mesh->Exodus File,File Name,String,{filename}
+
+xmlOptional (at Index) Charon->Mesh->Exodus File,Restart Index,Int,{index}
+
+xmlOptional (second Option) Charon->Mesh->Exodus File,Option Two,String,{option2}
+
+xmldefault  Charon->Mesh,Source,String,Exodus File
+xmldefault  Charon->Mesh->Exodus File,Restart Index,Int,0
+
+

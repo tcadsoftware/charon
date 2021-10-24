@@ -1,0 +1,8 @@
+interpreter name VsatTempCoeff
+
+interpreter inputLine (vsat temperature coefficient) = {vsatcoeffval}
+
+interpreter shortHelp {Specify the vsat temperature coefficient}
+interpreter longHelp {Specify the vsat temperature coefficient}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,Vsat Temperature Coefficient,double,{vsatcoeffval}

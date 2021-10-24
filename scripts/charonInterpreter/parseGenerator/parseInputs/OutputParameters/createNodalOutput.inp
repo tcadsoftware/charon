@@ -1,0 +1,11 @@
+
+interpreter name NodalOutput
+
+interpreter inputLine (Output nodal variables) in {regionName} for {variableNames} 
+
+interpreter shortHelp {Output named nodal variables}
+
+interpreter longHelp {Output named nodal variables <> {regionName} must be supplied <> variableNames must be in quotes}
+
+xmlRequired Charon->Output->Nodal Quantities,{regionName},string,{variableNames}
+

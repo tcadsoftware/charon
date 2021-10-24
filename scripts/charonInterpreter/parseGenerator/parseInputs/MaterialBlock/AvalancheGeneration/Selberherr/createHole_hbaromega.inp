@@ -1,0 +1,8 @@
+interpreter name Hole_hbaromega
+
+interpreter inputLine (hole h bar omega) = {hbaromega_h}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter hbarOmega_h for Selberherr model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,hbarOmega_h,double,{hbaromega_h}

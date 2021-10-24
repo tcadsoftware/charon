@@ -1,0 +1,8 @@
+interpreter name Hole_E0
+
+interpreter inputLine (hole E0) = {E0_h}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter E0_h for mSelberherr odel}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,E0_h,double,{E0_h}

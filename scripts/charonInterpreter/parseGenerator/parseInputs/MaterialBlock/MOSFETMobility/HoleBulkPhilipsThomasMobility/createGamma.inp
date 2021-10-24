@@ -1,0 +1,10 @@
+interpreter name Gamma
+
+interpreter inputLine (gamma) = {gamma}
+
+interpreter shortHelp {Sets the gamma value for this mobility model}
+
+interpreter longHelp {Sets the gamma value for this mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,gamma,double,{gamma}
+

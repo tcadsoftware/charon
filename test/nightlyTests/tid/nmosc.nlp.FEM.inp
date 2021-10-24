@@ -1,0 +1,75 @@
+
+import state file nmosc_msh.gen at index -1
+
+start output parameters
+      output state file nmosc.nlp.FEM.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+      output cell average variables in sio2 for scalar "Ins Generated Pairs Density,Ins Hole Trapped Charge"
+end output parameters
+
+assembly workset = 50
+lattice temperature = 300.0
+concentration scaling = 1.0e15
+
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics block semiconductor
+
+start physics block insulator
+      geometry block is sio2
+      standard discretization type is laplace gfem
+      material model is sio2Parameter
+      tid is on
+end Physics Block semiconductor
+
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e15
+      	    spatial range is 0.0 to 2.0 in x
+    	    spatial range is 0.0 to 0.5 in y	    
+      end uniform doping named Function1
+end material block siliconParameter
+
+
+start material block sio2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+
+      start tid 
+        start kimpton model
+      	    dose = 3e3
+	    effective dose enhancement factor = 1.0
+	    electron-hole pair formation energy = 16.5
+	    electric field power dependency = 0.7
+	    start interface traps
+	    	  sideset id is inter_trap
+		  total density = 1e10
+		  initial filling factor = 0.0
+		  capture cross section = 1e-15
+	    end interface traps
+        end Kimpton model 
+      end tid
+end material block sio2Parameter
+
+
+initial conditions for ELECTRIC_POTENTIAL in sio2 is uninitialized
+initial conditions for ELECTRIC_POTENTIAL in silicon is equilibrium potential
+
+
+BC is ohmic for subs on silicon fixed at 0.0
+BC is contact on insulator for gate on sio2 with work function 4.1 fixed at 0.0
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-10
+      max nonlinear iterations = 30
+      aztec max iterations = 200
+end solver block

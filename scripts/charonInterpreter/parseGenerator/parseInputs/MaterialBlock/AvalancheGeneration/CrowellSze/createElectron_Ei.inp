@@ -1,0 +1,8 @@
+interpreter name Electron_Ei
+
+interpreter inputLine (electron ionization energy) = {Ei_e}
+
+interpreter shortHelp {Parameter for Crowell-Sze model}
+interpreter longHelp {Parameter Ei_e for Crowell-Sze model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Ei_e,double,{Ei_e}

@@ -1,0 +1,13 @@
+
+
+interpreter name EffectiveMass
+
+interpreter inputLine (effective mass for) [(holes =) {hMass} [(electrons =) {eMass}] ] 
+
+interpreter shortHelp {Specify the effective mass for electrons and holes in unit of m0}
+
+interpreter longHelp {Specify the effective mass for electrons and holes in unit of m0}
+
+xmlOptional (electrons =) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap,Electron Effective Mass,double,{eMass}
+xmlOptional (holes =) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap,Hole Effective Mass,double,{hMass}
+

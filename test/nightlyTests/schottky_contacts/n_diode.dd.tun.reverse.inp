@@ -1,0 +1,78 @@
+Import State File n_diode.dd.tun.exo 
+
+
+start output parameters
+      Output State File n_diode.dd.tun.reverse.exo
+      Output cell average variables in silicon for scalar "Doping,Conduction Band,Valence Band"
+end output parameters
+
+
+Assembly Workset = 50
+lattice temperature = 300.0
+concentration scaling = 1.0e16
+
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is off
+      auger recombination is off
+end Physics Block Semiconductor
+
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      # n doping
+      start uniform doping named Function1
+      	    type is donor
+            concentration = 1.0e16	    
+      end uniform doping named Function1
+end Material Block siliconParameter
+
+
+start Schottky BC for anode on silicon
+      work function = 4.75
+      voltage is swept from 0.0 to -10.0
+      electron Richardson Constant = 250.0
+      hole Richardson Constant = 130.0
+      type is electron
+      start barrier tunneling parameters
+      	 mass = 0.8
+      end barrier tunneling parameters
+end Schottky BC for anode on silicon 
+
+BC is ohmic for cathode on silicon fixed at 0
+
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+
+start sweep options
+  continuation method is natural
+  initial step size = -0.01
+  maximum number of steps = 1000
+  step size aggressiveness = 1.2
+  maximum step size = 0.5
+  minimum step size = 0.01
+  min value = -10.0
+  max value = 0.0
+end sweep options
+
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+      line search method is full step
+      aztec max iterations = 300
+      aztec tolerance = 1e-5
+      aztec Krylov subspace size = 200
+      ifpack level of fill = 3
+      thyra function scaling is Row Sum
+end solver block

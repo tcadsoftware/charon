@@ -1,0 +1,10 @@
+interpreter name BehaviorModel
+
+interpreter inputLine (behavior model) is analytic
+
+interpreter shortHelp {Set behavior model for heat generation}
+
+interpreter longHelp {Set behavior model for heat generation}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Generation,Value,string,Analytic
+

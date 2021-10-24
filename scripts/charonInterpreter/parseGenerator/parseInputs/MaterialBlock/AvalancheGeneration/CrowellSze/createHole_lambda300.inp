@@ -1,0 +1,8 @@
+interpreter name Hole_lambda300
+
+interpreter inputLine (hole lambda300) = {lambda300_h}
+
+interpreter shortHelp {Parameter for Crowell-Sze model}
+interpreter longHelp {Parameter lambda300_h for Crowell-Sze  model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,lambda300_h,double,{lambda300_h}

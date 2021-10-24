@@ -1,0 +1,10 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+GLOBAL VARIABLES
+	cathode_silicon_Current relative 1.0e-6
+	anode_silicon_current relative 1.0e-6
+ELEMENT VARIABLES relative 1.0e-12
+NODAL VARIABLES relative 1.0e-12
+	ELECTRIC_POTENTIAL relative 2.0e-8
+	HOLE_DENSITY relative 5.0e-3 floor 2.0e-9
+	ELECTRON_DENSITY relative 3.0e-7 floor 1.0e-16

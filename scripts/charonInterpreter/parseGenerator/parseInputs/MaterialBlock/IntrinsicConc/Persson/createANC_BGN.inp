@@ -1,0 +1,9 @@
+interpreter name ANC_BGN
+
+interpreter inputLine (ANC_BGN) = {ANC_BGN_val}
+
+interpreter shortHelp {Specify a value for the ANC_BGN parameter}
+
+interpreter longHelp {Specify a value for the ANC_BGN parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,ANC_BGN,double,{ANC_BGN_val}

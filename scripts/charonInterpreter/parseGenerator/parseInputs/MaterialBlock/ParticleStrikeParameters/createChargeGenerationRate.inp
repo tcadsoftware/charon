@@ -1,0 +1,11 @@
+
+
+interpreter name chargeGenerationRate
+
+interpreter inputLine (charge generation rate) = {rate}
+
+interpreter shortHelp {set the charge generation rate in 1/cm^3}
+
+interpreter longHelp {set the charge generation rate in 1/cm^3}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Generation Rate,double,{rate}

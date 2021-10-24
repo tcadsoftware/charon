@@ -1,0 +1,11 @@
+
+
+interpreter name DegeneracyFactor
+
+interpreter inputLine (degeneracy factor) = {valueDegeneracyFactor}
+
+interpreter shortHelp {Specify degeneracy factor for donor dopant type.}
+
+interpreter longHelp {Specify degeneracy factor for donor dopant type.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Incomplete Ionized Donor->Model,Degeneracy Factor,double,{valueDegeneracyFactor}

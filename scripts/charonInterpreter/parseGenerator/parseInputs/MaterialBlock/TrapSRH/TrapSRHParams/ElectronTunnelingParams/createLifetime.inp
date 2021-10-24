@@ -1,0 +1,8 @@
+interpreter name Lifetime
+
+interpreter inputLine (lifetime) = {value}
+
+interpreter shortHelp {Electron lifetime in unit of seconds}
+interpreter longHelp {Electron lifetime in unit of seconds}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Electron Lifetime,double,{value}

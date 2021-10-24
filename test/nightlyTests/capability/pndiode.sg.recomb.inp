@@ -1,0 +1,53 @@
+Import State File result_pndiode_equ.exo at index 1
+
+start output parameters
+      Output State File result_pndiode_sg_recomb.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      Radiative Recombination is on
+      Auger Recombination is on
+      SRH Recombination is on
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      Radiative recombination coefficient = 1e-10
+
+      start Auger Recombination Parameters
+      	    Auger Coefficient for electron = 2.0e-20
+	    Auger Coefficient for hole = 9.0e-20
+	    Generation is on
+      end Auger Recombination Parameters
+
+      start Carrier Lifetime block
+      	    hole lifetime is constant = 1.0e-11
+	    electron tau0 = 1e-5
+	    electron lifetime is concentration dependent with Nsrh = 1e16
+	    electron lifetime is temperature dependent
+      end Carrier lifetime block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+      end step junction doping
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0.5
+BC is ohmic for cathode on silicon fixed at 0.0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+end solver block

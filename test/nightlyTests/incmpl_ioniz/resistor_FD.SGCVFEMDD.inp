@@ -1,0 +1,58 @@
+Import State File resistor.exo
+
+start output parameters
+      Output State File resistor_FD.SGCVFEMDD.exo
+      Output cell average Variables in silicon for scalar "Doping,Electron Mobility,Hole Mobility"
+      unscale variables is on
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      use Fermi Dirac
+      acceptor incomplete ionization is on
+      donor incomplete ionization is on
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+  material name is Silicon
+  relative permittivity = 11.9
+
+  start Incomplete Ionization Acceptor
+    critical doping = 1e17
+    degeneracy factor = 4.0
+    ionization energy = 0.1
+    approximation is I
+  end Incomplete Ionization Acceptor
+  start Incomplete Ionization Donor
+    critical doping = 1e17
+    degeneracy factor = 2.0
+    ionization energy = 0.1
+    approximation is I
+  end Incomplete Ionization Donor
+
+  start uniform doping named Function1
+    spatial range is -1E10 to 1E10 in x
+    spatial range is -1E10 to 1E10 in y
+    Type is donor
+    Concentration = 1e16
+  end uniform doping named Function1
+
+  fixed mobility for electrons is 1400
+  fixed mobility for holes is 450 
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 5
+BC is ohmic for cathode on silicon fixed at 0
+
+Initial conditions for ELECTRIC_POTENTIAL in silicon constant = 13.59
+Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
+Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+end solver block

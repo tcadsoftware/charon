@@ -1,0 +1,17 @@
+
+
+interpreter name InitialConditionsHarmonicBalance
+
+interpreter inputLine (Harmonic Balance Initial Conditions for) {DOF} in {geometryBlock} is [ (Exodus File)[ (default) [(constant) = {constValue} [(uninitialized) ]]]]
+
+interpreter shortHelp {Specify the source of the initial condition for the degrees of freedom}
+
+interpreter longHelp {Specify the source of the initial condition for the degrees of freedom <> Degrees of freedoms are <> ELECTRIC_POTENTIAL <> ELECTRON_DENSITY <> HOLE_DENSITY <> initial conditions are: Exodus File <> Constant <> Uninitialized}
+
+xmlOptional (Exodus File) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,string,Exodus File
+
+xmlOptional (constant) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,double,{constValue}
+xmlOptional (constant) use Modifier 0
+
+xmlOptional (uninitialized) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Value,string,Frequency Domain Defaults
+xmlOptional (uninitialized) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Maximum harmonic,int,5

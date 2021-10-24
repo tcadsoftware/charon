@@ -1,0 +1,11 @@
+
+interpreter name TrapDensity
+
+interpreter inputLine (density =) {trapDensity}
+
+interpreter shortHelp {Specify surface trap density in cm^-2}
+
+interpreter longHelp {Specify surface trap density in cm^-2}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Trap Density,double,{trapDensity}
+

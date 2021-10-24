@@ -1,0 +1,9 @@
+interpreter name IfpackReorderingType
+
+interpreter inputLine (ifpack reordering type) is {type}
+
+interpreter shortHelp {Specify Ifpack reordering type}
+
+interpreter longHelp {Specify Ifpack reordering type}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack->Ifpack Settings,schwarz: reordering type,string,{type}

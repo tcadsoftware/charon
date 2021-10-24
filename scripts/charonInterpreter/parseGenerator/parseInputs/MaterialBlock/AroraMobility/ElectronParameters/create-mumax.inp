@@ -1,0 +1,9 @@
+interpreter name mumax
+
+interpreter inputLine (mumax) = {mumaxval}
+
+interpreter shortHelp {model parameter Mu max}
+
+interpreter longHelp {Arora model parameter Mu max}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,mumax,double,{mumaxval}

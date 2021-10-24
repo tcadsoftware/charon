@@ -1,0 +1,9 @@
+interpreter name CPC_BGN
+
+interpreter inputLine (CPC_BGN) = {CPC_BGN_val}
+
+interpreter shortHelp {Specify a value for the CPC_BGN parameter}
+
+interpreter longHelp {Specify a value for the CPC_BGN parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,CPC_BGN,double,{CPC_BGN_val}

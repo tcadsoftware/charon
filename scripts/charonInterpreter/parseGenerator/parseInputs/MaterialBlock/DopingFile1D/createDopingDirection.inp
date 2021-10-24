@@ -1,0 +1,16 @@
+
+
+interpreter name DopingDirection
+
+interpreter inputLine (direction is) [(x) [(y) [(z)] ] ]
+
+interpreter shortHelp {specify the axis direction along which doping is read from a 1D doping file. }
+
+interpreter longHelp {specify the axis direction along which doping is read from a 1D doping file.} 
+
+xmlOptional (x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Direction,string,X
+
+xmlOptional (y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Direction,string,Y
+
+xmlOptional (z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Direction,string,Z
+

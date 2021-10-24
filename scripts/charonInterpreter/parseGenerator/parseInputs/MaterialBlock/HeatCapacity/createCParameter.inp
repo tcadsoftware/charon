@@ -1,0 +1,9 @@
+interpreter name CParameter
+
+interpreter inputLine (c) = {cval} 
+
+interpreter shortHelp {Set the parameter c for heat capacity TempDep model}
+
+interpreter longHelp {Set the parameter c for heat capacity TempDep model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Capacity,c,double,{cval}

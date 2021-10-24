@@ -1,0 +1,4 @@
+NODAL VARIABLES relative 1.0e-10
+	ELECTRIC_POTENTIAL relative 2.0e-5 floor 5.0e-14
+	ELECTRON_DENSITY relative 1.7e-06
+	HOLE_DENSITY relative 2.0e-05

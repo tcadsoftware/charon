@@ -1,0 +1,15 @@
+interpreter name BehaviorModel
+
+interpreter inputLine (behavior model) is [ (tempdep) [ (powerlawtempdep) [ (lineartempdep) [ (lineariondep) ]]]]
+
+interpreter shortHelp {Set behavior model for thermal conductivity}
+
+interpreter longHelp {Set behavior model for thermal conductivity}
+
+xmlOptional (tempdep) Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Value,string,TempDep
+
+xmlOptional (powerlawtempdep) Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Value,string,PowerLawTempDep
+
+xmlOptional (lineartempdep) Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Value,string,LinearTempDep
+
+xmlOptional (lineariondep) Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Value,string,LinearIonDep

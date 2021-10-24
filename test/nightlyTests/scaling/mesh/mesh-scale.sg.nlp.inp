@@ -1,0 +1,46 @@
+Import State File mesh-scale.gen
+input mesh scale factor = 1.0e-4
+
+start output parameters
+      Output State File mesh-scale.nlp.exo
+      unscale variables is on
+end output parameters
+
+assembly workset = 50
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+lattice temperature = 300
+concentration scaling = 1e16
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+
+      fixed mobility for electrons is 1000
+      fixed mobility for holes is 500
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in Default is constant = 0.0
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block

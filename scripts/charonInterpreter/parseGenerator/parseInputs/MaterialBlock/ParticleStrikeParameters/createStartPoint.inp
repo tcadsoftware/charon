@@ -1,0 +1,13 @@
+
+
+interpreter name StartPoint
+
+interpreter inputLine (start point) = {xloc}, {yloc}, {zloc}
+
+interpreter shortHelp {set the start location of the particle strike}
+
+interpreter longHelp {set the start location of the particle strike <> x, y and z are in microns}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Start Point X,double,{xloc}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Start Point Y,double,{yloc}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Start Point Z,double,{zloc}

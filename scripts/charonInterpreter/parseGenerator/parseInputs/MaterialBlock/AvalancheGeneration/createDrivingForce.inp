@@ -1,0 +1,16 @@
+interpreter name DrivingForce
+
+interpreter inputLine (Driving Force is) [ (gradient quasi fermi level) [ (effective field J) [ (effective field Jtot) [ (gradient potential J) [ (gradient potential Jtot) ]]]]]
+
+interpreter shortHelp {Set the driving force}
+interpreter longHelp  {Set the driving force}
+
+xmlOptional (gradient quasi fermi level) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Driving Force,string,GradQuasiFermi
+
+xmlOptional (effective field J) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Driving Force,string,EffectiveFieldParallelJ
+
+xmlOptional (effective field Jtot) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Driving Force,string,EffectiveFieldParallelJtot
+
+xmlOptional (gradient potential J) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Driving Force,string,GradPotentialParallelJ
+
+xmlOptional (gradient potential Jtot) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Driving Force,string,GradPotentialParallelJtot

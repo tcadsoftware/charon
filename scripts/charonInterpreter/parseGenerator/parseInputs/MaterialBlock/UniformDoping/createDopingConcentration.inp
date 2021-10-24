@@ -1,0 +1,12 @@
+
+
+interpreter name DopingConcentration
+
+interpreter inputLine (Concentration) = {concentration}
+
+interpreter shortHelp {set the magnitude of the dopant concentration}
+
+interpreter longHelp {set the magnitude of the dopant concentration <> concentration is the numerical value in 1/cm^3}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Value,double,{concentration}
+

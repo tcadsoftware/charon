@@ -1,0 +1,39 @@
+Import State File resistor.nlp.exo
+
+start output parameters
+      Output State File resistor.dd.exo
+      Output cell average Variables in silicon for scalar "Doping,Conduction Band,Valence Band"
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      SRH recombination is on
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+  material name is Silicon
+  relative permittivity = 11.9
+
+  start uniform doping named Function1
+    spatial range is -1E10 to 1E10 in x
+    spatial range is -1E10 to 1E10 in y
+    Type is donor
+    Concentration = 1e16
+  end uniform doping named Function1
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 1
+BC is ohmic for cathode on silicon fixed at 0
+
+Initial conditions for ELECTRIC_POTENTIAL in silicon constant is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
+Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+end solver block

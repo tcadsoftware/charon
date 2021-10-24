@@ -1,0 +1,9 @@
+interpreter name ScaleInitialConditions
+
+interpreter inputLine (scale initial conditions) [ (is on) [ (is off) ]]
+
+interpreter shortHelp {Specify whether the initial conditions, as read from an exodus file, should be scaled}
+interpreter longHelp {Specify whether the initital conditions, as read from an exodus file, should be scaled <> By default all charon output is scaled but that can be turned off. In order to use such <> a file for initial conditions the DOFs must be scaled}
+
+xmlOptional (is on) Charon->Initial Conditions,Scale Input Exodus Variables,bool,true
+xmlOptional (is off) Charon->Initial Conditions,Scale Input Exodus Variables,bool,false

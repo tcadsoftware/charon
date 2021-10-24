@@ -1,0 +1,12 @@
+
+
+interpreter name TemperatureDependence
+
+interpreter inputLine (temperature dependence is on) 
+
+interpreter shortHelp {Set the band gap naorrowing model to be temperature dependent}
+
+interpreter longHelp {Set the band gap naorrowing model to be temperature dependent }
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,Value,string,TempDep
+

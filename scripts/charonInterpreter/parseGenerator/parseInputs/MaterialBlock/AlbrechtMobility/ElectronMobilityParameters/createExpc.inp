@@ -1,0 +1,10 @@
+
+interpreter name Expc
+
+interpreter inputLine (expc) = {expcval}
+
+interpreter shortHelp {model parameter expc}
+
+interpreter longHelp {Albrecht model parameter expc}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,expc,double,{expcval}

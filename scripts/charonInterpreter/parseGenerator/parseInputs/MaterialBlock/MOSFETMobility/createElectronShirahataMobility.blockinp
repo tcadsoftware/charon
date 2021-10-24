@@ -1,0 +1,7 @@
+
+interpreterBlock name ElectronShirahataMobility
+
+interpreterBlock (start electron channel Mobility Shirahata)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Perpendicular Field Model,Value,string,Shirahata
+

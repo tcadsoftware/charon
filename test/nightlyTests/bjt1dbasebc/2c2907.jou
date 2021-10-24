@@ -1,0 +1,22 @@
+# 1D BJT
+
+create brick x 9 y 0.1 z 1
+move vertex 4 location 0 0 0
+webcut volume 1 with plane xplane offset 2.2
+merge all
+
+curve 26 28 18 17 interval size 0.0045
+mesh surface 8 15
+
+sideset 1 curve 3
+sideset 1 name "emitter"
+sideset 2 curve 15
+sideset 2 name "base"
+sideset 3 curve 1
+sideset 3 name "collector"
+
+block 1 surface 8 15
+block 1 name "silicon"
+block 1 element type QUAD4
+
+export mesh "2c2907.exo" overwrite

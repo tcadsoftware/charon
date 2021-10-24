@@ -1,0 +1,11 @@
+interpreter name Direction
+
+interpreter inputLine (direction) is {direc} [(in x) [(in y) [(in z)]]]
+
+interpreter shortHelp {How does the Gaussian fall off.}
+
+interpreter longHelp {Does the doping fall off as a Gaussian in the Positive, Negative, or Both.}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},X Direction,string,{direc}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Y Direction,string,{direc}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Z Direction,string,{direc}

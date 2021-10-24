@@ -1,0 +1,9 @@
+interpreter name Gamma
+
+interpreter inputLine (gamma) = {gammaval}
+
+interpreter shortHelp {Farahmand model parameter gamma}
+
+interpreter longHelp {Farahmand model parameter gamma}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,gamma,double,{gammaval}

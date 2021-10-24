@@ -1,0 +1,9 @@
+interpreter name LinearFactor
+
+interpreter inputLine (linear factor) = {val} 
+
+interpreter shortHelp {Set linear factor for linear type of analytic heat generation}
+
+interpreter longHelp {Set linear factor for linear type of analytic heat generation}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Generation,Linear Factor,double,{val}

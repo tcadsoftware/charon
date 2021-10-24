@@ -1,0 +1,8 @@
+interpreter name CrossSection
+
+interpreter inputLine (cross section) = {value}
+
+interpreter shortHelp {Electron cross section in unit of cm^2}
+interpreter longHelp {Electron cross section in unit of cm^2}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Electron Cross Section,double,{value}

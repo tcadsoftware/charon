@@ -1,0 +1,5 @@
+interpreterBlock name EffectiveDOS
+
+interpreterBlock (start Effective DOS) 
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Effective DOS,Value,string,Simple

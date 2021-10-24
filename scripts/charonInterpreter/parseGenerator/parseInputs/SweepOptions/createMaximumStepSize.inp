@@ -1,0 +1,13 @@
+
+
+interpreter name MaximumStepSize
+
+interpreter inputLine (Maximum Step Size) = {stepSize}
+
+interpreter shortHelp {Specify maximum step size for parameter sweep}
+
+interpreter longHelp {Specify maximum step size for parameter sweep <> {stepSize} = the step size}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Max Step Size,double,{stepSize} priority 5
+
+

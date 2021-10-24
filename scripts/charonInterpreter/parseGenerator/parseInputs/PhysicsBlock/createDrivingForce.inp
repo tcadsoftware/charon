@@ -1,0 +1,12 @@
+interpreter name DrivingForce
+
+interpreter inputLine (Driving Force) is [ (gradient quasi fermi level) [ (effective field) [ (gradient potential) ]]]
+
+interpreter shortHelp {Set the driving force}
+interpreter longHelp  {Set the driving force}
+
+xmlOptional (gradient quasi fermi level) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Driving Force,string,GradQuasiFermi
+
+xmlOptional (effective field) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Driving Force,string,EffectiveField
+
+xmlOptional (gradient potential) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Driving Force,string,GradPotential

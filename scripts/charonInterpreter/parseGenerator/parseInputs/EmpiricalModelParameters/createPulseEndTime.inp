@@ -1,0 +1,11 @@
+
+
+interpreter name PulseEndTime
+
+interpreter inputLine (Pulse end time) = {endTime}
+
+interpreter shortHelp {set the end time of the pulse in s}
+
+interpreter longHelp {set the end time of the pulse in s}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,pulse end,double,{endTime}

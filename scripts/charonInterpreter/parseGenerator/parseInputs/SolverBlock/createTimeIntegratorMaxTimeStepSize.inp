@@ -1,0 +1,13 @@
+
+interpreter name TimeIntegratorMaxTimeStepSize
+
+interpreter inputLine (time integrator maximum step size) = {dtime}
+
+interpreter shortHelp {Specify the maximum time step size the intergrator is allowed to take.}
+
+interpreter longHelp {Specify the maximum time step size the intergrator is allowed to take. <> dtime is the time step in seconds.}
+
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Integration Control,Max dt,double,{dtime}
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Max Step Size,double,{dtime}
+

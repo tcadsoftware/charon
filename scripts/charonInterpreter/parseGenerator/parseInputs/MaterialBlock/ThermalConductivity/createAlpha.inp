@@ -1,0 +1,9 @@
+interpreter name Alpha
+
+interpreter inputLine (alpha) = {alphaval} 
+
+interpreter shortHelp {Set the alpha value}
+
+interpreter longHelp {Set the alpha value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,alpha,double,{alphaval}

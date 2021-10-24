@@ -1,0 +1,9 @@
+interpreter name ConstantValue
+
+interpreter inputLine (constant value) = {cval} 
+
+interpreter shortHelp {Set constant value}
+
+interpreter longHelp {Set constant value for heat generation}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Generation,Constant Value,double,{cval}

@@ -1,0 +1,8 @@
+interpreter name E_opt_ph
+
+interpreter inputLine (optical phonon energy) = {E_opt_ph}
+
+interpreter shortHelp {Parameter for Crowell-Sze model}
+interpreter longHelp {Parameter E_opt_ph for Crowell-Sze model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,E_opt_ph,double,{E_opt_ph}

@@ -1,0 +1,24 @@
+brick x 1 y 0.5 z 0.1
+volume 1 name "mybrick"
+list names volume
+move vertex 4 location 0 0 0 nomerge
+webcut volume 1 with plane xplane offset 0.25 noimprint merge
+webcut volume 1 with plane xplane offset 0.5 noimprint merge
+webcut volume 1 with plane xplane offset 0.75 noimprint merge
+sideset 1 curve 3
+sideset 1 name "anode"
+sideset 2 curve 1
+sideset 2 name "cathode"
+sideset 3 curve 43 curve 58
+sideset 3 name "sheet"
+merge all
+block 1 surface 28 15 24 35
+block 1 name "Silicon"
+block 1 element type quad4
+curve 50 26 43 58 interval 25
+curve 50 26 43 58 scheme equal
+curve 3 interval 50
+curve 3 scheme equal
+mesh surface all
+merge all
+export mesh "surfacecharge.exo" dimension 2 block all overwrite

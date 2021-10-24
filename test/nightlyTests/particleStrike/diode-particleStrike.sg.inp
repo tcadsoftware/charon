@@ -1,0 +1,73 @@
+
+Import State File potential_pndiode.exo at index 1
+
+start output parameters
+      Output State File diode-particleStrike.sg.exo
+      Output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration, Ionization Particle Strike Rate"
+      output tabulated transient currents to currents.dat
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is off
+      radiative recombination is off
+      auger recombination is off
+      particle strike is on
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+	    direction is x
+      end step junction doping
+
+      fixed mobility for electrons is 1000
+      fixed mobility for holes is 500
+
+      start Carrier Lifetime block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start particle strike parameters
+      	    start point = 0.5 , 0.5 , 0
+	    end point = 0.5 , 0 , 0
+	    strike radius = 0.1
+	    charge generation rate = 1.e26
+	    strike start time = 1.0e-4
+	    strike end time = 1.e-3
+	    strike temporal waveform = Gaussian
+      end particle strike parameters
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 1.0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
+Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
+
+start solver block
+      use transient solver pack 1
+      time integrator final time = 1e-2
+      time integrator minimum step size = 1e-7
+      time integrator maximum step size = 1e-3
+      time integrator initial step size = 1e-5
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 10
+end solver block
+

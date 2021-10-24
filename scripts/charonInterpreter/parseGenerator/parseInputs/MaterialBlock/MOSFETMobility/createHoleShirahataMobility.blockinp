@@ -1,0 +1,6 @@
+
+interpreterBlock name HoleShirahataMobility
+
+interpreterBlock (start hole channel mobility shirahata)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,Value,string,Shirahata

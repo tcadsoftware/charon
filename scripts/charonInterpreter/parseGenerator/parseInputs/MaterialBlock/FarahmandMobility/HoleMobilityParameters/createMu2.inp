@@ -1,0 +1,9 @@
+interpreter name Mu2
+
+interpreter inputLine (mu2) = {mu2val}
+
+interpreter shortHelp {Farahmand model parameter mu_2}
+
+interpreter longHelp {Farahmand model parameter mu_2}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,mu2,double,{mu2val}

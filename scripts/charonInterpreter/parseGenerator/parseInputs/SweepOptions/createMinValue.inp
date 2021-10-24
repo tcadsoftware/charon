@@ -1,0 +1,9 @@
+interpreter name MinValue
+
+interpreter inputLine (min value) = {minval}
+
+interpreter shortHelp {Specify minimum value for continuation window}
+
+interpreter longHelp {Specify minimum value for continuation window}
+
+xmlRequired Charon->Solution Control->LOCA->Stepper,Min Value,double,{minval} priority 5

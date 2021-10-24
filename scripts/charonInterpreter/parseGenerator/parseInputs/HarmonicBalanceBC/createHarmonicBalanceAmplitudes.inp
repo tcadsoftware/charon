@@ -1,0 +1,12 @@
+
+
+interpreter name HarmonicBalanceAmplitudes
+
+interpreter inputLine (amplitudes) {amplitudeValues}
+
+interpreter shortHelp {Specify the frequency domain boundary condition's amplitudes.}
+
+interpreter longHelp {Specify the frequency domain boundary condition's amplitudes. <> amplitudeValues is a list of amplitude (in units appropriate to the BC type) values, formatted in double quotes with a space between each amplitude. For example, the input line can read <> amplitudes \"1.1e1  1.2e-2  1.0e-4\"}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Voltage,Amplitudes,Array(double),{AMPLITUDES{amplitudeValues}AMPLITUDES}
+xmlRequired use Modifier 0

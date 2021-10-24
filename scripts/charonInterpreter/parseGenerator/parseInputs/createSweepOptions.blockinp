@@ -1,0 +1,8 @@
+
+interpreterBlock name SweepOptions
+
+interpreterBlock (start Sweep Options)
+
+xmlDefault Charon->Solution Control->LOCA->Stepper,Continuation Method,string,Natural
+
+

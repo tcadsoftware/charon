@@ -1,0 +1,10 @@
+interpreter name NREF_D
+
+interpreter inputLine (nref_d) = {nref_d}
+
+interpreter shortHelp {Sets the nref_d value for this mobility model}
+
+interpreter longHelp {Sets the nref_d value for this mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,nref_d,double,{nref_d}
+

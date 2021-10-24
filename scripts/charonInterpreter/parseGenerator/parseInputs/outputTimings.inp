@@ -1,0 +1,10 @@
+interpreter name OutputTimings
+
+interpreter inputLine (output timing information) [ (is on) [ (is off) ]]
+
+interpreter shortHelp {Enable/disable output of detailed timing information.}
+
+interpreter longHelp {Enable/disable output of detailed execution timings for parts of the code that support it.}
+
+xmlOptional (is on)  Charon->Options,Output Timings,bool,true
+xmlOptional (is off)  Charon->Options,Output Timings,bool,false

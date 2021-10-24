@@ -1,0 +1,9 @@
+interpreter name BandOff
+
+interpreter inputLine (band offset) = {value}
+
+interpreter shortHelp {Set the band offset}
+interpreter longHelp {Set the band offset}
+
+xmlRequired Charon->Boundary Conditions->hole1ANONYMOUS->Data,Band Offset,double,{value}
+xmlRequired Charon->Boundary Conditions->hole2ANONYMOUS->Data,Band Offset,double,{value}

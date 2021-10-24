@@ -1,0 +1,65 @@
+undo on
+graphics mode wireframe
+
+
+
+################################################
+# Geometry definition
+################################################
+
+# The depth isn't used so use a value that looks reasonable visually
+#{zsize = 0.5}
+
+#{L = 1.0}
+#{W = 1.0}
+
+
+################################################
+# Geometry creation
+################################################
+
+
+# n bulk region
+create brick x {L} y {W} z {zsize}
+volume 1 rename "n_bulk"
+
+# Move everything to positive coordinate values
+move vertex 4 location x 0 y 0 z 0 include_merged
+
+
+################################################
+## Boundary conditions
+################################################
+
+sideset 1 curve 3
+sideset 1 name "cathode"
+
+sideset 2 curve 1
+sideset 2 name "anode"
+
+
+################################################
+## Mesh definition and creation
+################################################
+
+#{nDX_fine = 0.005}
+#{nDX_coarse = 0.05}
+#{nDY = 0.1}
+
+curve 1 3 interval size {nDY}
+curve 2 scheme bias fine size {nDX_fine} coarse size {nDX_coarse} start vertex 3
+curve 4 scheme bias fine size {nDX_fine} coarse size {nDX_coarse} start vertex 4
+surface 1 scheme map
+mesh surface 1
+
+
+################################################
+# Element block
+################################################
+
+block 1 surface 1 
+block 1 elem type quad4
+block 1 name "silicon"
+
+
+export mesh 'p_diode_msh.exo' dimension 2 overwrite

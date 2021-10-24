@@ -1,0 +1,9 @@
+interpreter name Bandgap
+
+interpreter inputLine (constant bandgap) = {bgval}
+
+interpreter shortHelp {Sets bandgap for the material in this material block}
+
+interpreter longHelp {Sets the bandgap for the material in this material block <> bgval is the value of the bandgap}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,Value,double,{bgval}

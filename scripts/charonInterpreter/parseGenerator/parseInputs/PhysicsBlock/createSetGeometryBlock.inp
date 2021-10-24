@@ -1,0 +1,13 @@
+
+
+interpreter name SetGeometryBlock
+
+interpreter inputLine (geometry block) is {geometryBlock}
+
+interpreter shortHelp {Set the geometry block for this phycics description}
+
+interpreter longHelp {Set the geometry block for this phycics description <> {geometryBlock} is the corresponding block name as set when the mesh was created}
+
+xmlRequired Charon->Block ID to Physics ID Mapping,{geometryBlock},string,{physicsBlockName}
+
+ 

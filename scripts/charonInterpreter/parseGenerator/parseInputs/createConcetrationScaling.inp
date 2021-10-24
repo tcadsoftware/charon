@@ -1,0 +1,15 @@
+
+
+interpreter name ConcentrationScaling
+
+interpreter inputLine (concentration scaling) = {scaling}
+
+interpreter shortHelp {Set the concentration scaling }
+
+interpreter longHelp { Set the concentration scaling <> scaling is the scaling value}
+
+xmlRequired Charon->Closure Models,Concentration Scaling,double,{scaling}
+
+xmlDefault Charon->Closure Models,Concentration Scaling,double,1.0e16
+
+

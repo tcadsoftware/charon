@@ -1,0 +1,10 @@
+
+interpreter name OutputStateFile
+
+interpreter inputLine (Output State File) {filename} 
+
+interpreter shortHelp {Specify state file name for output}
+
+interpreter longHelp {Specify the name of the file to which the states are written <> filename is the name of the file.  It is case sensitive.}
+
+xmlRequired Charon->Output,File Name,string,{filename}

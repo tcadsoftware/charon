@@ -1,0 +1,38 @@
+graphics mode wireframe
+
+# The two-dimensional mesh will be defined on a surface of
+# this brick
+brick x 1.0 y 0.5 z 1
+
+# This will make all coordinates positive. Not necessary
+# but can be convenient
+move vertex 4 location 0 0 0
+
+# Cut the volume in the location of the emitter and base
+# contacts
+webcut volume 1 plane xplane offset 0.3
+merge all
+webcut volume 1 plane xplane offset 0.7
+merge all
+
+# Define the sidesets that will form the contacts
+sideset 1 curve 26
+sideset 1 name "emitter"
+sideset 2 curve 35
+sideset 2 name "base"
+sideset 3 curve 28 41 36
+sideset 3 name "collector"
+
+# Element blocks for a single material
+block 1 surface 15 24 20
+block 1 name "silicon"
+block 1 element type QUAD4
+
+# Set the density/size of the volumes/elements
+surface 15 24 20 interval size 0.005
+
+# Mesh the geometry
+mesh surface 15 24 20
+
+# Output the Exodus II mesh
+export mesh "bjt2d.gen" dimension 2 overwrite

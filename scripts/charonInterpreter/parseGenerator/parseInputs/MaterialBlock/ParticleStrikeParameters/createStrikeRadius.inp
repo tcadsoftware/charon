@@ -1,0 +1,11 @@
+
+
+interpreter name StrikeRadius
+
+interpreter inputLine (Strike Radius) = {radius}
+
+interpreter shortHelp {set the strike radius in microns}
+
+interpreter longHelp {set the strike radius in microns}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Strike Radius,double,{radius}

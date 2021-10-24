@@ -1,0 +1,9 @@
+interpreter name ApValue
+
+interpreter inputLine (Ap) = {ApValue}
+
+interpreter shortHelp {Specify a value for the Ap parameter}
+
+interpreter longHelp {Specify a value for the Ap parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Ap,double,{ApValue}

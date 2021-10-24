@@ -1,0 +1,8 @@
+interpreter name Location
+
+interpreter inputLine (heterojunction location) = {value}
+
+interpreter shortHelp {Spatial location of the heterojunction}
+interpreter longHelp {Spatial location of the heterojunction in unit of um}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Electron HJ Location,double,{value}

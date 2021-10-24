@@ -1,0 +1,38 @@
+
+interpreter name GaussDecay
+
+interpreter inputLine (gauss decay) with start position at {positionVal} and decay width at {widthVal} [ (in +x) [ (in -x) [(in +y) [(in -y) [(in +z) [(in -z)]]]]]] 
+
+interpreter shortHelp {Specify Gauss decay for a File1D doping.}
+
+interpreter longHelp {Specify Gauss decay for a File1D doping and a total of six decays along each +/- axis are allowed.}
+
+xmlOptional (in +x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Direction 1,string,X Positive
+xmlOptional (in +x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Position 1,double,{positionVal}
+xmlOptional (in +x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Width 1,double,{widthVal}
+
+xmlOptional (in -x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Direction 2,string,X Negative
+xmlOptional (in -x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Position 2,double,{positionVal}
+xmlOptional (in -x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Width 2,double,{widthVal}
+
+xmlOptional (in +y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Direction 3,string,Y Positive
+xmlOptional (in +y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Position 3,double,{positionVal}
+xmlOptional (in +y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Width 3,double,{widthVal}
+
+xmlOptional (in -y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Direction 4,string,Y Negative
+xmlOptional (in -y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Position 4,double,{positionVal}
+xmlOptional (in -y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Width 4,double,{widthVal}
+
+xmlOptional (in +z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Direction 5,string,Z Positive
+xmlOptional (in +z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Position 5,double,{positionVal}
+xmlOptional (in +z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Width 5,double,{widthVal}
+
+xmlOptional (in -z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Direction 6,string,Z Negative
+xmlOptional (in -z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Position 6,double,{positionVal}
+xmlOptional (in -z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName}->Gauss Decay,Decay Width 6,double,{widthVal}
+
+
+
+
+
+

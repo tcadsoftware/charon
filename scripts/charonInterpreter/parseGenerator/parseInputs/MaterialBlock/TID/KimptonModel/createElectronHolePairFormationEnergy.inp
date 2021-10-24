@@ -1,0 +1,10 @@
+
+interpreter name ElectronHolePairFormationEnergy
+
+interpreter inputLine (electron-hole pair formation energy) = {form_energy}
+
+interpreter shortHelp {Sets the electron-hole pair formation energy for the TID model}
+
+interpreter longHelp {Sets the electron-hole pair formation energy for the TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model,Electron-Hole Pair Formation Energy,double,{form_energy}

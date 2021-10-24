@@ -1,0 +1,12 @@
+interpreter name LineSearchMethod
+
+interpreter inputLine (line search method) is [ (full step) [ (backtrack) ]]
+
+interpreter shortHelp {Specify the line search method, Full Step or Backtrack}
+
+interpreter longHelp {Specify the line search method, Full Step or Backtrack}
+
+xmlOptional (full step) Charon->Solution Control->NOX->Line Search,Method,string,Full Step
+xmlOptional (full step) Charon->Solution Control->NOX->Line Search->Full Step,Full Step,double,1
+xmlOptional (backtrack) Charon->Solution Control->NOX->Line Search,Method,string,Backtrack
+

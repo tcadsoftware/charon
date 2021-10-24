@@ -1,0 +1,9 @@
+interpreterBlock name SchottkyBC
+
+interpreterBlock (start Schottky BC for) {sidesetID} on {geometryBlock}
+
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ELECTRIC_POTENTIAL
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Dirichlet Schottky Contact

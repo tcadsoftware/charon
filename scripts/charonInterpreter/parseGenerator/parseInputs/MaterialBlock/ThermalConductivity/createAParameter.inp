@@ -1,0 +1,9 @@
+interpreter name AParameter
+
+interpreter inputLine (a) = {aval} 
+
+interpreter shortHelp {Set the parameter a for thermal conductivity TempDep model}
+
+interpreter longHelp {Set the parameter a for thermal conductivity TempDep model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,a,double,{aval}

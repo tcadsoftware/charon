@@ -1,0 +1,19 @@
+
+interpreter name HarmonicBalanceAnalysis
+
+interpreter inputLine (apply harmonic balance) [ (for large signal analysis) [ (for small signal analysis)]]
+
+interpreter shortHelp {Set the problem in the frequency domain using the harmonic balance method. A discretization type needs to be specified.}
+
+interpreter longHelp {Set the problem in the frequency domain using the harmonic balance method. A discretization type needs to be specified. <> Either 'for large signal analysis' or 'for small signal analysis' can be specified; default is large-signal analysis.}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,HBType,string,Frequency Domain
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Prefix,string,
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Hybrid Exponent,double,0.5
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Number of Time Collocation Points,int,0
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Enable Small Signal Analysis,bool,false
+xmlRequired use Modifier 0
+
+xmlOptional (for large signal analysis) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Enable Small Signal Analysis,bool,False
+
+xmlOptional (for small signal analysis) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Enable Small Signal Analysis,bool,True

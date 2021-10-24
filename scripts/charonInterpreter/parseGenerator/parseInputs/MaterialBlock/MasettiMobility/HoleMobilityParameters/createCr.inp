@@ -1,0 +1,9 @@
+interpreter name Cr
+
+interpreter inputLine (cr) = {crval}
+
+interpreter shortHelp {Masetti model parameter Cr}
+
+interpreter longHelp {Masetti model parameter Cr}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,cr,double,{crval}

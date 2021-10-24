@@ -1,0 +1,18 @@
+interpreter name TunnelingModel
+
+interpreter inputLine (model) is [ (none) [ (hightemp approx) [ (lowtemp approx) [ (asymptotic field) [ (constant field) [ (new) ]]]]]]
+
+interpreter shortHelp {The tunneling model to use for holes}
+interpreter longHelp {The tunneling model to use for holes}
+
+xmlOptional (none) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Model,string,None
+
+xmlOptional (hightemp approx) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Model,string,Schenk HighTemp
+
+xmlOptional (lowtemp approx) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Model,string,Schenk LowTemp
+
+xmlOptional (asymptotic field) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Model,string,Schenk AsymConstFDOS
+
+xmlOptional (constant field) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Model,string,Schenk ConstFDOS
+
+xmlOptional (new) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Model,string,Schenk NewDOS

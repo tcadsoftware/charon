@@ -1,0 +1,15 @@
+interpreter name BlockNames
+
+interpreter inputLine (junction is between blocks) {block1var} and {block2var}
+
+xmlRequired Charon->Boundary Conditions->hole1ANONYMOUS,Element Block ID,string,{block1var}
+xmlRequired Charon->Boundary Conditions->hole1ANONYMOUS,Element Block ID2,string,{block2var}
+
+xmlRequired Charon->Boundary Conditions->hole2ANONYMOUS,Element Block ID,string,{block2var}
+xmlRequired Charon->Boundary Conditions->hole2ANONYMOUS,Element Block ID2,string,{block1var}
+
+xmlRequired Charon->Boundary Conditions->elec1ANONYMOUS,Element Block ID,string,{block1var}
+xmlRequired Charon->Boundary Conditions->elec1ANONYMOUS,Element Block ID2,string,{block2var}
+
+xmlRequired Charon->Boundary Conditions->elec2ANONYMOUS,Element Block ID,string,{block2var}
+xmlRequired Charon->Boundary Conditions->elec2ANONYMOUS,Element Block ID2,string,{block1var}

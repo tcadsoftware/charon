@@ -1,0 +1,6 @@
+interpreterBlock name HeatGeneration
+
+interpreterBlock (start heat generation)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Heat Generation,Value,string,Analytic
+

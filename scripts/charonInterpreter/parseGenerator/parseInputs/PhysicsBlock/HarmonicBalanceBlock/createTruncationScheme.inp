@@ -1,0 +1,12 @@
+
+interpreter name TruncationScheme
+
+interpreter inputLine (truncation scheme) is [(box) [(diamond)]]
+
+interpreter shortHelp {Set the truncation scheme of the harmonic balance method.}
+
+interpreter longHelp {Set the truncation scheme of the harmonic balance method. {truncationScheme} can be 'Box' or 'Diamond'.}
+
+xmlOptional (box) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Truncation Scheme,string,Box
+
+xmlOptional (diamond) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Truncation Scheme,string,Diamond

@@ -1,0 +1,8 @@
+interpreter name holeDFRefDens
+
+interpreter inputLine (hole driving force reference density) = {hDFRefDens}
+
+interpreter shortHelp {Reference hole density for the driving force calculation}
+interpreter longHelp {Reference hole density for the driving force calculation}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,hDrForceRefDens,double,{hDFRefDens}

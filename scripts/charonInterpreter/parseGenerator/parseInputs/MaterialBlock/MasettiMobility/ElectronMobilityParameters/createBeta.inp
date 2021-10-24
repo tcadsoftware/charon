@@ -1,0 +1,9 @@
+interpreter name Beta
+
+interpreter inputLine (beta) = {betaval}
+
+interpreter shortHelp {Masetti model parameter beta}
+
+interpreter longHelp {Masetti model parameter beta}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,beta,double,{betaval}

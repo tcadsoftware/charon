@@ -1,0 +1,14 @@
+
+
+interpreter name AssemblyWorkset
+
+interpreter inputLine (Assembly Workset) = {size}
+
+interpreter shortHelp {Set the Charon workset size }
+
+interpreter longHelp { Set the Charon workset size <> size is the the size}
+
+xmlRequired Charon->Assembly,Workset Size,int,{size}
+
+xmlDefault  Charon->Assembly,Workset Size,int,1000
+

@@ -1,0 +1,12 @@
+
+interpreter name AztecTolerance
+
+interpreter inputLine (aztec tolerance) = {tolerance}
+
+interpreter shortHelp {Specify Aztec tolerance}
+
+interpreter longHelp {Specify Aztec tolerance}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve,Tolerance,double,{tolerance}
+
+

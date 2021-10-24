@@ -1,0 +1,53 @@
+
+Import State File gan_pndiode_dd.gen at index 1
+
+start output parameters
+      Output State File gan_pndiode_albr_dd.exo
+      Output cell average variables in gan for scalar "Electron Mobility,Hole Mobility,Doping,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level"
+end output parameters
+
+Assembly Workset = 1
+
+start Physics Block Semiconductor
+      geometry block is gan
+      standard discretization type is drift diffusion gfem
+      SUPG Stabilization is off
+      material model is ganParameter
+      srh recombination is off
+      radiative recombination is off
+      auger recombination is off
+end Physics Block Semiconductor
+
+start Material Block ganParameter
+      reference material is GaN
+      material name is GaN
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+
+      start Albrecht Mobility
+           start electron parameters
+           end electron mobility
+      end Albrecht
+
+end Material Block ganParameter
+
+
+BC is ohmic for anode on gan fixed at 0.5
+BC is ohmic for cathode on gan fixed at 0.0
+
+initial conditions for ELECTRIC_POTENTIAL in gan is Exodus File
+Initial Conditions for ELECTRON_DENSITY in gan is Exodus File
+Initial Conditions for HOLE_DENSITY in gan is Exodus File
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+      thyra function scaling is Row Sum
+end solver block

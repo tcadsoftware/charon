@@ -1,0 +1,12 @@
+
+
+interpreter name Beta
+
+interpreter inputLine (Beta) = {beta} 
+
+interpreter shortHelp {Set the band gap beta value}
+
+interpreter longHelp {Set the band gap beta value.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,beta,double,{beta}
+

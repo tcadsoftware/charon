@@ -1,0 +1,13 @@
+interpreter name Type
+
+interpreter inputLine (type) [ (is electron) [ (is hole)] ]
+
+interpreter shortHelp {Sets type for Schottky contact}
+
+interpreter longHelp {Sets type for Schottky contact <> electron or hole}
+
+xmlOptional (is electron) Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data,Type,string,Electron
+
+xmlOptional (is hole) Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data,Type,string,Hole
+
+

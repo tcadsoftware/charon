@@ -1,0 +1,12 @@
+
+
+interpreter name DopantOrder
+
+interpreter inputLine (Dopant order) is {ordering}
+
+interpreter shortHelp {set the ordering of the dopants through increasing coordinate value, PN or NP}
+
+interpreter longHelp {set the ordering of the dopants through increasing coordinate value, PN or NP}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping,Configuration,string,{ordering}
+

@@ -1,0 +1,10 @@
+
+interpreter name ElectricFieldPowerDependency
+
+interpreter inputLine (electric field power dependency) = {field_exp}
+
+interpreter shortHelp {Sets the electric field power dependency for the TID model}
+
+interpreter longHelp {Sets the electric field power dependency for the TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model,Electric Field Power Dependency,double,{field_exp}

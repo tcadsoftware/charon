@@ -1,0 +1,13 @@
+
+
+interpreter name SurfaceVelocity
+
+interpreter inputLine (surface velocity for) [(holes =) {hSurfVel} [(electrons =) {eSurfVel}] ] 
+
+interpreter shortHelp {Specify surface recombination velocity for electrons and holes in unit of cm/s}
+
+interpreter longHelp {Specify surface recombination velocity for electrons and holes in unit of cm/s}
+
+xmlOptional (electrons =) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Recombination,Electron Surface Velocity,double,{eSurfVel}
+xmlOptional (holes =) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Recombination,Hole Surface Velocity,double,{hSurfVel}
+

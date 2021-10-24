@@ -1,0 +1,18 @@
+
+interpreter name SuccessfulStepIncreaseFac
+
+interpreter inputLine (successful step increase factor) = {factor}
+
+interpreter shortHelp {Specify successful step increase factor in modifying step size during parameter sweep}
+
+interpreter longHelp {Specify successful step increase factor in modifying step size during parameter sweep}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Successful Step Increase Factor,double,{factor}
+
+
+
+
+
+
+
+

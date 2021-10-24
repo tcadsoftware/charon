@@ -1,0 +1,48 @@
+
+Import State File "pmoscap.exo"
+
+Assembly workset = 50
+
+start output parameters
+      Output State File potential_pmoscap.exo
+end output parameters
+
+concentration scaling=1e14
+
+start Physics Block Semiconductor
+      geometry block is psilicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Physics Block Insulator
+      geometry block is sio2
+      standard discretization type is laplace gfem
+      material model is SiO2Parameter
+end Physics Block Insulator1
+
+start Material Block siliconParameter
+      material name is Silicon
+      start uniform doping named Function1
+        concentration = 1e14
+        type is acceptor
+      end uniform doping
+end Material Block siliconParameter
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in Default is uninitialized
+
+BC is ohmic for substrate on psilicon fixed at 0
+BC is contact on insulator for gate on sio2 with work function 4.05 fixed at 2.0
+
+start solver block
+      use solver pack 1
+      line search method is backtrack
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+end solver block
+

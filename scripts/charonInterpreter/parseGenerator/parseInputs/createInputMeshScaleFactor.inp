@@ -1,0 +1,8 @@
+interpreter name InputMeshScaleFactor
+
+interpreter inputLine (input mesh scale factor) = {sfval}
+
+interpreter shortHelp {Apply a scale factor to all coordinate values read from the input file}
+interpreter longHelp {Apply a scale factor to all coordinate values read from the input file}
+
+xmlRequired Charon->Mesh->Exodus File,Scale Factor,double,{sfval}

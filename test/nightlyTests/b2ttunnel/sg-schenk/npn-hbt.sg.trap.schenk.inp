@@ -1,0 +1,234 @@
+Import State File npn-hbt.sg.telt.0.8V.exo at index 1
+
+start output parameters
+      Output State File npn-hbt.sg.trap.schenk.exo
+      output cell average variables in emitter-ingap for scalar "SRH Recombination,Radiative Recombination,Auger Recombination,Trap SRH Recombination,Total Recombination"
+      output cell average variables in base-gaas for scalar "SRH Recombination,Radiative Recombination,Auger Recombination,Total Recombination"
+      output cell average variables in collector-gaas for scalar "SRH Recombination,Radiative Recombination,Auger Recombination,Total Recombination"
+end output parameters
+
+assembly workset = 50
+lattice temperature = 300
+concentration scaling = 4e19
+
+start Physics Block InGaP
+      discontinuity for hbt with suffix 1
+      geometry block is emitter-ingap
+      material model is InGaP-Parameter
+      standard discretization type is drift diffusion cvfem
+      srh recombination is on
+      radiative recombination is on
+      auger recombination is on
+      band gap narrowing is on
+      trap srh is on
+      trap charge is off
+      driving force is effective field
+      use fermi dirac with diffusion
+end Physics Block InGaP
+
+start Physics Block GaAs
+      discontinuity for hbt with suffix 2
+      geometry block is base-gaas
+      material model is GaAs-Parameter
+      geometry block is collector-gaas
+      standard discretization type is drift diffusion cvfem
+      srh recombination is on
+      radiative recombination is on
+      auger recombination is on
+      band gap narrowing is on
+      use fermi dirac with diffusion
+end Physics Block GaAs
+
+start Material Block InGaP-Parameter
+      material name is InGaP
+      relative permittivity = 11.8
+      reference material is GaAs
+      constant bandgap = 1.86
+      start intrinsic concentration
+      	    model is harmon
+      end intrinsic concentration
+
+      start carrier lifetime
+        electron lifetime is constant = 1e-9
+        hole lifetime is constant = 1e-9
+       end
+       
+      start uniform doping named Function1
+        concentration = 3e17
+        type is donor
+      end uniform doping
+
+      radiative recombination coefficient = 1e-10
+      
+      start auger recombination parameters
+        auger coefficient for electron = 1e-30
+        auger coefficient for hole = 1e-30
+        generation is off
+      end auger
+
+      start GaAs mobility
+        start electron parameters
+          low field mobility file is GaAs_LowField_EMob.txt
+          high field component is on
+          driving force for high field mobility is electric field
+          saturation velocity = 7.7e6
+          saturation field = 4e3
+        end electron parameters
+
+        start hole parameters
+          low field mobility file is GaAs_LowField_HMob.txt
+          high field component is on
+          driving force for high field mobility is electric field
+          saturation velocity = 7.7e6
+          saturation field = 4e3
+        end electron parameters
+      end GaAs mobility
+
+      start trap srh
+        start trap 0
+          energy level = 0.93
+          trap density = 1e17
+          trap type is donor
+          phonon energy = 0.02
+          huang-rhys factor = 12.2
+        
+          start hole tunneling parameters
+            model is constant field
+            direction is x
+            heterojunction location = 0.15
+            heterojunction band offset = 0.442
+            lifetime = 1e-9
+          end
+
+          start electron tunneling parameters
+            model is none
+            lifetime = 1e-9
+          end
+        end trap 0
+      end trap srh
+
+      start uniform mole fraction Function1
+        mole value = 0.5
+      end
+
+      start effective dos
+        nc300 = 6.55e17
+        nv300 = 1.16e19
+      end
+
+end Material Block InGaP-Parameter
+
+start Material Block GaAs-Parameter
+      material name is GaAs
+      relative permittivity = 13.1
+      constant bandgap = 1.42
+       start intrinsic concentration
+      	    model is harmon
+      end intrinsic concentration
+
+      start carrier lifetime
+        electron lifetime is constant = 1e-9
+        hole lifetime is constant = 1e-9
+       end
+
+      start uniform doping named Function1
+        concentration = 4e19
+        type is acceptor
+        spatial range is 0.15 to 0.22 in x
+      end uniform doping
+
+      start uniform doping named Function2
+        concentration = 1e16
+        type is donor
+        spatial range is 0.22 to 1.22 in x
+      end uniform doping
+
+      start uniform doping named Function3
+        concentration = 3e18
+        type is donor
+        spatial range is 1.22 to 1.60 in x
+      end uniform doping
+
+      radiative recombination coefficient = 1e-10
+      
+      start auger recombination parameters
+        auger coefficient for electron = 1e-30
+        auger coefficient for hole = 1e-30
+        generation is off
+      end auger
+
+      start GaAs mobility
+        start electron parameters
+          low field mobility file is GaAs_LowField_EMob.txt
+          high field component is on
+          driving force for high field mobility is electric field
+          saturation velocity = 7.7e6
+          saturation field = 4e3
+        end electron parameters
+
+        start hole parameters
+          low field mobility file is GaAs_LowField_HMob.txt
+          high field component is on
+          driving force for high field mobility is electric field
+          saturation velocity = 7.7e6
+          saturation field = 4e3
+        end electron parameters
+      end GaAs mobility
+
+      start effective dos
+        nc300 = 3.97e17
+        nv300 = 0.94e19
+      end
+
+end Material Block GaAs-Parameter
+
+start heterojunction on ebjunction
+  junction is between blocks emitter-ingap and base-gaas
+
+  start hole
+    effective mass = 0.58
+    band offset = 0.442
+    fermi dirac density = 1e11
+    discretization method is cvfem
+  end hole
+  
+  start electron
+    effective mass = 0.088
+    band offset = 0.063
+    fermi dirac density = 1e11
+    discretization method is cvfem
+    local tunneling is on
+    tunneling effective mass = 0.088
+  end electron
+  
+end heterojunction
+
+BC is ohmic for emitter on emitter-ingap fixed at 0
+BC is 1dbjt for Acceptor base on base-gaas swept from 0.8 to 1.3
+BC is ohmic for collector on collector-gaas swept from 0.8 to 1.3
+
+initial conditions for ELECTRIC_POTENTIAL in emitter-ingap is Exodus File
+initial conditions for ELECTRON_DENSITY1 in emitter-ingap is Exodus File
+initial conditions for HOLE_DENSITY1 in emitter-ingap is Exodus File
+
+initial conditions for ELECTRIC_POTENTIAL in base-gaas is Exodus File
+initial conditions for ELECTRON_DENSITY2 in base-gaas is Exodus File
+initial conditions for HOLE_DENSITY2 in base-gaas is Exodus File
+
+initial conditions for ELECTRIC_POTENTIAL in collector-gaas is Exodus File
+initial conditions for ELECTRON_DENSITY2 in collector-gaas is Exodus File
+initial conditions for HOLE_DENSITY2 in collector-gaas is Exodus File
+
+start sweep options
+  initial step size = 0.02
+  minimum step size = 1e-4
+  maximum step size = 0.025
+  maximum number of steps = 5
+  step size aggressiveness = 0.0
+end sweep options
+
+start solver block
+      use solver pack 5
+      nonlinear solver tolerance = 1.0e-6
+      max nonlinear iterations = 30
+end solver block

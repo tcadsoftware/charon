@@ -1,0 +1,9 @@
+interpreter name Nc_F
+
+interpreter inputLine (Nc_F) = {valncf} 
+
+interpreter shortHelp {Set the Nc_F parameter value}
+
+interpreter longHelp {Set the Nc_F parameter value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Effective DOS,Nc_F,double,{valncf}

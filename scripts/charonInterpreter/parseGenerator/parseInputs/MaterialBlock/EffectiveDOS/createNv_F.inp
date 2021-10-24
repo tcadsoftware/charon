@@ -1,0 +1,9 @@
+interpreter name Nv_F
+
+interpreter inputLine (Nv_F) = {valnvf} 
+
+interpreter shortHelp {Set the Nv_F parameter value}
+
+interpreter longHelp {Set the Nv_F parameter value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Effective DOS,Nv_F,double,{valnvf}

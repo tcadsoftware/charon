@@ -1,0 +1,75 @@
+Import State File gaas.0.8V.exo at index 1
+
+start output parameters
+      Output State File gaas.harmon.mob.exo
+      Output cell average variables in gaas for scalar "Doping,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level"
+      Output cell average variables in gaas for vector "GRAD_ELECTRIC_POTENTIAL"
+end output parameters
+
+Assembly Workset = 50
+lattice temperature = 300.0
+concentration scaling = 5e17
+
+start Physics Block Semiconductor
+      geometry block is gaas
+      standard discretization type is drift diffusion cvfem
+      material model is gaasParameter
+      srh recombination is off
+      radiative recombination is off
+      auger recombination is off
+      band gap narrowing is on
+end Physics Block Semiconductor
+
+
+start Material Block gaasParameter
+      reference material is GaAs
+      material name is GaAs
+
+      start step junction doping
+      	    acceptor concentration = 1e19
+	    donor concentration = 5e17
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+
+      start intrinsic concentration
+      	    model is harmon
+      end intrinsic concentration 
+
+      start GaAs mobility
+      	    start electron parameters
+	    	  low field mobility file is GaAs_LowField_EMob.txt
+                  high field component is on
+                  driving force for high field mobility is electric field
+                  saturation velocity = 0.85e7
+                  saturation field = 4e3
+	    end electron parameters
+            start hole parameters
+	    	  low field mobility file is GaAs_LowField_HMob.txt
+                  high field component is on
+                  driving force for high field mobility is electric field
+                  saturation velocity = 0.85e7
+                  saturation field = 4e3
+	    end hole parameters
+      end GaAs mobility
+end Material Block gaasParameter
+
+BC is ohmic for anode on gaas fixed at 1.0
+BC is ohmic for cathode on gaas fixed at 0.0
+
+initial conditions for ELECTRIC_POTENTIAL in gaas is Exodus File
+Initial Conditions for ELECTRON_DENSITY in gaas is Exodus File
+Initial Conditions for HOLE_DENSITY in gaas is Exodus File
+
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+      aztec max iterations = 300
+      aztec tolerance = 1e-5
+      aztec Krylov subspace size = 200
+      ifpack level of fill = 1
+      thyra function scaling is Row Sum
+end solver block

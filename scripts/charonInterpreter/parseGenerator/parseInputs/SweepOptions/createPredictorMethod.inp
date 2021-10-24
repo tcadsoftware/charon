@@ -1,0 +1,11 @@
+interpreter name PredictorMethod
+
+interpreter inputLine (predictor method) is [ (constant) [ (secant) [(tangent) ]]]
+
+interpreter shortHelp {Specify the continuation predictor method to use, Constant, Secant or Tangent}
+
+interpreter longHelp {Specify the continuation predictor method to use, Constant, Secant or Tangent}
+
+xmlOptional (constant) Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlOptional (secant) Charon->Solution Control->LOCA->Predictor,Method,string,Secant
+xmlOptional (tangent) Charon->Solution Control->LOCA->Predictor,Method,string,Tangent

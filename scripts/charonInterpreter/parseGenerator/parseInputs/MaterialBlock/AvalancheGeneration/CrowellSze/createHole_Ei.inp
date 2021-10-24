@@ -1,0 +1,8 @@
+interpreter name Hole_Ei
+
+interpreter inputLine (hole ionization energy) = {Ei_h}
+
+interpreter shortHelp {Parameter for Crowell-Sze model}
+interpreter longHelp {Parameter Ei_h for Crowell-Sze model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Ei_h,double,{Ei_h}

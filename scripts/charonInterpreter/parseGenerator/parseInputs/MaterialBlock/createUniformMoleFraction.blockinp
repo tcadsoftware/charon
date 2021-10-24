@@ -1,0 +1,7 @@
+interpreterBlock name UniformMoleFraction
+
+interpreterBlock (start uniform mole fraction) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction,Value,string,Function
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Function Type,string,Uniform

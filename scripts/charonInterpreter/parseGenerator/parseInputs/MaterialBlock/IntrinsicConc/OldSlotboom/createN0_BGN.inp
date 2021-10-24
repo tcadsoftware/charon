@@ -1,0 +1,9 @@
+interpreter name N0_BGN
+
+interpreter inputLine (N0_BGN) = {N0_BGN_val}
+
+interpreter shortHelp {Specify a value for the N0_BGN parameter}
+
+interpreter longHelp {Specify a value for the N0_BGN parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,N0_BGN,double,{N0_BGN_val}

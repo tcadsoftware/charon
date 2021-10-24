@@ -1,0 +1,4 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+ELEMENT VARIABLES tolerance 1.0e-3
+NODAL VARIABLES floor 1e-5 tolerance 1.0e-3

@@ -1,0 +1,48 @@
+
+Import State File pndiode.dd.exo at index 1
+
+start output parameters
+      Output State File result.pndiode.dd.ARCC.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+      Radiative Recombination is off
+      Auger Recombination is off
+      SRH Recombination is off
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      Radiative recombination coefficient = 1e-10
+
+      start Auger Recombination Parameters
+      	    Auger Coefficient for electron = 2.0e-20
+	    Auger Coefficient for hole = 9.0e-20
+	    Generation is on
+      end Auger Recombination Parameters
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+end Material Block Silicon Parameter
+
+BC is resistor for anode on silicon with resistor 1e3 fixed at 0.450464522 and initial voltage 0.5
+BC is current for cathode on silicon fixed at 4e-6 with initial voltage 0.1
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+      use solver pack 3
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+end solver block

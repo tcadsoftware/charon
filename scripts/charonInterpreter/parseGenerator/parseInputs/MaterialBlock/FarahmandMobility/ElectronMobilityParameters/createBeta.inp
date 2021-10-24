@@ -1,0 +1,9 @@
+interpreter name Beta
+
+interpreter inputLine (beta) = {betaval}
+
+interpreter shortHelp {Farahmand model parameter beta}
+
+interpreter longHelp {Farahmand model parameter beta}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,beta,double,{betaval}

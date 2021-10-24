@@ -1,0 +1,4 @@
+ADD_SUBDIRECTORY(dd-schenk)
+ADD_SUBDIRECTORY(sg-schenk)
+ADD_SUBDIRECTORY(dd-newdos)
+ADD_SUBDIRECTORY(sg-newdos)

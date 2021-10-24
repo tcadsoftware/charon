@@ -1,0 +1,12 @@
+
+
+interpreter name RadiativeRecombinationCoefficient
+
+interpreter inputLine (Radiative recombination coefficient) = {coefficient} 
+
+interpreter shortHelp {Specify coefficient for radiative recombination source term}
+
+interpreter longHelp {Specify coefficient for radiative recombination source term <> {coefficient} is the coefficient}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Radiative Recombination,Coefficient,double,{coefficient}
+

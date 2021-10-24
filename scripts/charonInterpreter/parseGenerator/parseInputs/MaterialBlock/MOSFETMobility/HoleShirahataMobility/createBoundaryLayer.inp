@@ -1,0 +1,12 @@
+
+
+interpreter name BoundaryLayer
+
+interpreter inputLine (boundary layer thickness) = {thickness}
+
+interpreter shortHelp {Set the layer thickness over which this model applies}
+
+interpreter longHelp {Set the layer thickness over which this model applies <> Thickness is in microns}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,Mobility Boundary Layer,double,{thickness}
+

@@ -1,0 +1,12 @@
+
+
+interpreter name Theta
+
+interpreter inputLine (theta) = {theta}
+
+interpreter shortHelp {Set the theta value for Shirahata electron model}
+
+interpreter longHelp {Set the theta value for Shirahata electron model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Perpendicular Field Model,theta,double,{theta}
+

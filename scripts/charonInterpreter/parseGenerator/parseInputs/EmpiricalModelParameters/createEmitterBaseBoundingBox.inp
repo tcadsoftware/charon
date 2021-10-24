@@ -1,0 +1,19 @@
+
+
+interpreter name EmitterBaseBoundingBox
+
+interpreter inputLine (emitter base junction bounding box) is {locMin} to {locMax} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the coordinate range of the bounding box in x, y or z}
+
+interpreter longHelp {Set the coordinate range of the bounding box in x, y or z <> units are microns <> This is the bounding box in which the recombination from annealing occurs.}
+
+xmlOptional (in x) Charon->Closure Models->Empirical Defect Recombination,eb x low,double,{locMin}
+xmlOptional (in x) Charon->Closure Models->Empirical Defect Recombination,eb x high,double,{locMax}
+
+xmlOptional (in y) Charon->Closure Models->Empirical Defect Recombination,eb y low,double,{locMin}
+xmlOptional (in y) Charon->Closure Models->Empirical Defect Recombination,eb y high,double,{locMax}
+
+xmlOptional (in z) Charon->Closure Models->Empirical Defect Recombination,eb z low,double,{locMin}
+xmlOptional (in z) Charon->Closure Models->Empirical Defect Recombination,eb z high,double,{locMax}
+

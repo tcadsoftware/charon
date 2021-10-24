@@ -1,0 +1,12 @@
+interpreter name Direction
+
+interpreter inputLine (direction) [ (is x) [ (is y) [ (is z) ]]]
+
+interpreter shortHelp {Direction of tunneling}
+interpreter longHelp {Direction of tunneling}
+
+xmlOptional (is x) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Direction,string,X
+
+xmlOptional (is y) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Direction,string,Y
+
+xmlOptional (is z) Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole Tunneling Direction,string,Z

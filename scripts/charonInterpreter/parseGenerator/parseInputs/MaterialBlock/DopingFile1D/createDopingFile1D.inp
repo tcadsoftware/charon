@@ -1,0 +1,9 @@
+interpreter name DopingFile1D
+
+interpreter inputLine (file is) {filename}
+
+interpreter shortHelp {set the 1d doping file name}
+
+interpreter longHelp {set the 1d doping file name}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},File Name,string,{filename}

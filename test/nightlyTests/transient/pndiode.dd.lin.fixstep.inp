@@ -1,0 +1,48 @@
+
+Import State File potential_pndiode.exo
+
+start output parameters
+      Output State File result_dd_lin_fixstep.exo
+      output tabulated transient currents to current_time_dd_lin.csv
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+
+      fixed mobility for electrons is 1000
+      fixed mobility for holes is 500
+
+end Material Block siliconParameter
+
+BC is linear ramp for anode on silicon with time from 0.0 to 1.0 and voltage from 0.0 to 0.5
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
+Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
+
+start solver block
+      use transient solver pack 2 to 2.0
+      time integrator fixed step size = .2
+end solver block
+

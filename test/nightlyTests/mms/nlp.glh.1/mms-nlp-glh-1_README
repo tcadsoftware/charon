@@ -1,0 +1,24 @@
+This is a manufactured solution for the nonlinear Poisson. The
+analytic solution is given by:
+
+V(x) = 0.3 erfc[20000(x-0.00025)]-0.3
+
+The geometry in the exodus file should be 5 microns in x [0-5um]. The
+size in the y direction is not significant as this is a pseudo 1D
+solution.
+
+Boundary conditions should be set to 0.3 at x=0 and -0.3 at x=5um. 
+
+The doping acts as the "source" for this problem and it is given by an
+analytic function. However, since the code doesn't support a general
+function for doping specification the approach taken here was to
+sample the analytic function and output the data to a file which is
+then read into Charon2. For simplicity a Gnumeric spreadsheet,
+nlp-mms-doping.glh.1.gnumeric, is included where the analytic doping
+can be generated at discrete points and then output to an ASCII data
+file for input into the code.
+
+Note that the derivation and more detailed information for this MMS
+can be found in the associated Mathematica notebook file:
+
+    nlp-mms-derivation.glh.1.nb

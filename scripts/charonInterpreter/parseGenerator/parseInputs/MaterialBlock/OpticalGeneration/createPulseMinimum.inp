@@ -1,0 +1,10 @@
+interpreter name PulseMinimum
+
+interpreter inputLine (Minimum pulse rate =) {pulseRate}
+
+interpreter shortHelp {set the minimum hole/electron pair production rate of the pulse}
+
+interpreter longHelp {set the minimum hole/electron pair production rate of the pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Min Value,double,{pulseRate}
+

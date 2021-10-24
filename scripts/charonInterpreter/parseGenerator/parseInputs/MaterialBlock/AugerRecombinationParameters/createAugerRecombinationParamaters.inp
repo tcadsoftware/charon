@@ -1,0 +1,14 @@
+
+
+interpreter name CarrierAugerCoefficient
+
+interpreter inputLine (Auger Coefficient) [ (for electron) = {augerCoefficient} [ (for hole) = {augerCoefficient}]]
+
+interpreter shortHelp {Set the Auger recombination coefficient value}
+
+interpreter longHelp {Set the Auger recombination coefficient value <> {augerCoefficient} is the coefficient.}
+
+xmlOptional (for electron) Charon->Closure Models->{MaterialBlockName}->Auger Recombination,Electron Auger Coefficient,double,{augerCoefficient}
+
+xmlOptional (for hole) Charon->Closure Models->{MaterialBlockName}->Auger Recombination,Hole Auger Coefficient,double,{augerCoefficient}
+

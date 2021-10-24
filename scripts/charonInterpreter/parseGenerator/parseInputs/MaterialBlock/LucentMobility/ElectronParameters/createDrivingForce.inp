@@ -1,0 +1,13 @@
+
+
+interpreter name DrivingForce
+
+interpreter inputLine (Driving force is) [ (electric field) [ (grad quasiFermi)]]
+
+interpreter shortHelp {Set the driving force in the mobility model}
+
+interpreter longHelp {Set the driving force in the mobility model <> options are electric field or grad quasifermi}
+
+xmlOptional (electric field) Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Driving Force,string,ElectricField
+xmlOptional (grad quasifermi) Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Driving Force,string,GradQuasiFermi
+

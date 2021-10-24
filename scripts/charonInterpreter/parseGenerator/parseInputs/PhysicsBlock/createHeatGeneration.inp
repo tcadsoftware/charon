@@ -1,0 +1,11 @@
+interpreter name HeatGeneration
+
+interpreter inputLine (heat generation) is analytic
+
+interpreter shortHelp {Turn on analytic heat generation for lattice gfem}
+
+interpreter longHelp {Turn on analytic heat generation for lattice gfem}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Heat Generation,string,Analytic
+
+

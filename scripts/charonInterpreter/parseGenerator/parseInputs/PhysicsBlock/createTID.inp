@@ -1,0 +1,12 @@
+
+interpreter name TID
+
+interpreter inputLine (tid) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on TID models}
+
+interpreter longHelp {Turn on TID models <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,TID,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,TID,string,Off

@@ -1,0 +1,177 @@
+%YAML 1.1
+---
+ANONYMOUS:
+  Mesh: 
+    Source: Exodus File
+    Exodus File: 
+      File Name: resistor.exo
+  Block ID to Physics ID Mapping: 
+    silicon: Semiconductor
+  Assembly: 
+    Workset Size: 50
+  Physics Blocks: 
+    Semiconductor: 
+      child0: 
+        Type: NLPoisson
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 2
+        Model ID: Silicon Parameter
+        Prefix: ''
+        Options: { }
+  Closure Models: 
+    Lattice Temperature: 3.00000000000000000e+02
+    Concentration Scaling: 1.00000000000000000e+16
+    Silicon Parameter: 
+      Material Name: Silicon
+      Relative Permittivity: 
+        Value: 1.19000000000000004e+01
+      Doping: 
+        Value: Function
+        Function 1: 
+          Function Type: Uniform
+          Doping Type: Donor
+          Doping Value: 1.00000000000000000e+16
+  User Data: 
+    function data one: { }
+  Boundary Conditions: 
+    child0: 
+      Type: Dirichlet
+      Sideset ID: anode
+      Element Block ID: silicon
+      Equation Set Name: ELECTRIC_POTENTIAL
+      Strategy: Ohmic Contact
+      Data: 
+        Voltage: 0.00000000000000000e+00
+    child1: 
+      Type: Dirichlet
+      Sideset ID: cathode
+      Element Block ID: silicon
+      Equation Set Name: ELECTRIC_POTENTIAL
+      Strategy: Ohmic Contact
+      Data: 
+        Voltage: 0.00000000000000000e+00
+  Initial Conditions: 
+    Default: 
+      ELECTRIC_POTENTIAL: 
+        Value: 1.35899999999999999e+01
+  Output: 
+    File Name: resistor.nlp.exo
+    Cell Average Quantities: 
+      silicon: Doping
+  Options: 
+    Write Volume Assembly Graphs: true
+    Volume Assembly Graph Prefix: charon_
+  Solution Control: 
+    Piro Solver: NOX
+    Compute Sensitivities: false
+    Jacobian Operator: Have Jacobian
+    LOCA: 
+      Bifurcation: { }
+      Constraints: { }
+      Predictor: 
+        Method: Constant
+      Stepper: 
+        Continuation Method: Natural
+        Initial Value: 1.00000000000000000e+00
+        Continuation Parameter: Parameter 0
+        Max Steps: 6
+        Max Value: 1.22500000000000000e+01
+        Min Value: 5.00000000000000000e-01
+        Compute Eigenvalues: true
+        Eigensolver: 
+          Method: Anasazi
+          Operator: Shift-Invert
+          Num Blocks: 3
+          Num Eigenvalues: 1
+          Block Size: 1
+          Maximum Restarts: 0
+          Shift: 1.00000000000000000e+00
+      Step Size: 
+        Initial Step Size: 5.00000000000000000e-01
+        Aggressiveness: 2.00000000000000000e+00
+    NOX: 
+      Direction: 
+        Method: Newton
+        Newton: 
+          Forcing Term Method: Constant
+          Rescue Bad Newton Solve: true
+          Stratimikos Linear Solver: 
+            NOX Stratimikos Options: { }
+            Stratimikos: 
+              Linear Solver Type: AztecOO
+              Linear Solver Types: 
+                AztecOO: 
+                  Forward Solve: 
+                    AztecOO Settings: 
+                      Aztec Solver: GMRES
+                      Convergence Test: r0
+                      Size of Krylov Subspace: 200
+                      Output Frequency: 10
+                    Max Iterations: 300
+                    Tolerance: 1.00000000000000008e-05
+                Belos: 
+                  Solver Type: Block GMRES
+                  Solver Types: 
+                    Block GMRES: 
+                      Convergence Tolerance: 1.00000000000000008e-05
+                      Output Frequency: 10
+                      Output Style: 1
+                      Verbosity: 33
+                      Maximum Iterations: 100
+                      Block Size: 1
+                      Num Blocks: 20
+                      Flexible Gmres: false
+              Preconditioner Type: Ifpack
+              Preconditioner Types: 
+                Ifpack: 
+                  Overlap: 1
+                  Prec Type: ILU
+                  Ifpack Settings: 
+                    'fact: level-of-fill': 3
+                    'schwarz: reordering type': rcm
+      Line Search: 
+        Full Step: 
+          Full Step: 1.00000000000000000e+00
+        Method: Full Step
+      Nonlinear Solver: Line Search Based
+      Printing: 
+        Output Precision: 3
+        Output Processor: 0
+        Output Information: 
+          Error: true
+          Warning: true
+          Outer Iteration: true
+          Parameters: true
+          Details: true
+          Linear Solver Details: true
+          Stepper Iteration: true
+          Stepper Details: true
+          Stepper Parameters: true
+      Solver Options: 
+        Status Test Check Type: Minimal
+      Thyra Group Options: 
+        Function Scaling: Row Sum
+      Status Tests: 
+        Test Type: Combo
+        Combo Type: OR
+        Number of Tests: 2
+        Test 0: 
+          Test Type: NormF
+          Tolerance: 1.00000000000000002e-08
+        Test 1: 
+          Test Type: MaxIters
+          Maximum Iterations: 30
+    Rythmos: 
+      Num Time Steps: 10
+      Final Time: 1.00000000000000006e-01
+      Stepper Type: Backward Euler
+      Rythmos Stepper: 
+        VerboseObject: 
+          Verbosity Level: medium
+      Stratimikos: { }
+      Rythmos Integration Control: { }
+      Rythmos Integrator: 
+        VerboseObject: 
+          Verbosity Level: medium
+...

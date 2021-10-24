@@ -1,0 +1,10 @@
+interpreter name HighFieldMobility
+
+interpreter inputLine (high field component) [(is on) [(is off)]]
+
+interpreter shortHelp {Enable or disable the field component of the mobility model for holes}
+
+interpreter longHelp {Enable or disable the field component of the mobility model for holes}
+
+xmlOptional (is on) Charon->Closure Models->{MaterialBlockName}->Hole Mobility,High Field,string,On
+xmlOptional (is off) Charon->Closure Models->{MaterialBlockName}->Hole Mobility,High Field,string,Off

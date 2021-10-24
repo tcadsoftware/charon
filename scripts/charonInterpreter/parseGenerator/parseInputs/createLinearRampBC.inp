@@ -1,0 +1,19 @@
+
+
+interpreter name LinearRampBC
+
+interpreter inputLine (BC is linear ramp for) {sidesetID} on {geometryBlock} with time from {time0} to {time1} and voltage from {voltage0} to {voltage1}
+
+interpreter shortHelp {Specify a linearly ramped potential on a contact.}
+
+interpreter longHelp {Specify a linearly ramped potential on a contact. <> Linear interpolation of the potential will be applied from the (time,voltage) point (time0,voltage0) to (time1,voltage1). <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> potential is the value in volts}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Linear Ramp
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Time,double,{time0}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Final Time,double,{time1}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Voltage,double,{voltage0}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Final Voltage,double,{voltage1}

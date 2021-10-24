@@ -1,0 +1,22 @@
+INCLUDE(TribitsAddExecutableAndTest)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
+SET(UNIT_TEST_DRIVER
+  ${PHALANX_UNIT_TEST_MAIN})
+
+SET(testName UnitTestTemplate)
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  ${testName}
+
+  SOURCES t${testName}.cpp ${UNIT_TEST_DRIVER}
+  NUM_MPI_PROCS 1
+
+  ADDED_TESTS_NAMES_OUT ${testName}_CREATED
+  )
+IF (${testName}_CREATED)
+  SET_PROPERTY(TEST Charon_${testName}_MPI_1 PROPERTY
+    LABELS ${testName} nightly unit)
+  SET_PROPERTY(TEST Charon_${testName}_MPI_1 PROPERTY
+    ENVIRONMENT "ASAN_OPTIONS=detect_leaks=false")
+ENDIF()

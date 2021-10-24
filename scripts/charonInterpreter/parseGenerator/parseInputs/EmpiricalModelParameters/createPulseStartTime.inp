@@ -1,0 +1,11 @@
+
+
+interpreter name PulseStartTime
+
+interpreter inputLine (Pulse start time) = {startTime}
+
+interpreter shortHelp {set the onset time of the pulse in s}
+
+interpreter longHelp {set the onset time of the pulse in s}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,pulse start,double,{startTime}

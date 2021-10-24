@@ -1,0 +1,11 @@
+interpreter name DrivingForce
+
+interpreter inputLine (driving force for high field mobility) is [ (electric field) [ (gradient quasi fermi) ]]
+
+interpreter shortHelp {Use this as the driving force for high-field mobility}
+interpreter longHelp {Use this as the driving force for high-field mobility}
+
+xmlOptional (electric field) Charon->Closure Models->{MaterialBlockName}->Hole Mobility,Driving Force,string,ElectricField
+
+xmlOptional (gradient quasi fermi) Charon->Closure Models->{MaterialBlockName}->Hole Mobility,Driving Force,string,GradQuasiFermi
+

@@ -1,0 +1,27 @@
+interpreterBlock name Heterojunction
+
+interpreterBlock (start heterojunction) on {sidesetName}
+
+xmlDefault Charon->Boundary Conditions->hole1ANONYMOUS,Type,string,Interface
+xmlDefault Charon->Boundary Conditions->hole1ANONYMOUS,Strategy,string,Interface Heterojunction
+xmlDefault Charon->Boundary Conditions->hole1ANONYMOUS,Sideset ID,string,{sidesetName}
+xmlDefault Charon->Boundary Conditions->hole1ANONYMOUS,Equation Set Name,string,HOLE_DENSITY1
+xmlDefault Charon->Boundary Conditions->hole1ANONYMOUS,Equation Set Name2,string,HOLE_DENSITY2
+
+xmlDefault Charon->Boundary Conditions->hole2ANONYMOUS,Type,string,Interface
+xmlDefault Charon->Boundary Conditions->hole2ANONYMOUS,Strategy,string,Interface Heterojunction
+xmlDefault Charon->Boundary Conditions->hole2ANONYMOUS,Sideset ID,string,{sidesetName}
+xmlDefault Charon->Boundary Conditions->hole2ANONYMOUS,Equation Set Name,string,HOLE_DENSITY2
+xmlDefault Charon->Boundary Conditions->hole2ANONYMOUS,Equation Set Name2,string,HOLE_DENSITY1
+
+xmlDefault Charon->Boundary Conditions->elec1ANONYMOUS,Type,string,Interface
+xmlDefault Charon->Boundary Conditions->elec1ANONYMOUS,Strategy,string,Interface Heterojunction
+xmlDefault Charon->Boundary Conditions->elec1ANONYMOUS,Sideset ID,string,{sidesetName}
+xmlDefault Charon->Boundary Conditions->elec1ANONYMOUS,Equation Set Name,string,ELECTRON_DENSITY1
+xmlDefault Charon->Boundary Conditions->elec1ANONYMOUS,Equation Set Name2,string,ELECTRON_DENSITY2
+
+xmlDefault Charon->Boundary Conditions->elec2ANONYMOUS,Type,string,Interface
+xmlDefault Charon->Boundary Conditions->elec2ANONYMOUS,Strategy,string,Interface Heterojunction
+xmlDefault Charon->Boundary Conditions->elec2ANONYMOUS,Sideset ID,string,{sidesetName}
+xmlDefault Charon->Boundary Conditions->elec2ANONYMOUS,Equation Set Name,string,ELECTRON_DENSITY2
+xmlDefault Charon->Boundary Conditions->elec2ANONYMOUS,Equation Set Name2,string,ELECTRON_DENSITY1

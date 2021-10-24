@@ -1,0 +1,13 @@
+
+
+interpreter name EndPoint
+
+interpreter inputLine (end point) = {xloc}, {yloc}, {zloc}
+
+interpreter shortHelp {set the end location of the particle strike}
+
+interpreter longHelp {set the end location of the particle strike <> x, y and z are in microns}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,End Point X,double,{xloc}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,End Point Y,double,{yloc}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,End Point Z,double,{zloc}

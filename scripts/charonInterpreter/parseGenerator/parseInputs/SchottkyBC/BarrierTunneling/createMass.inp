@@ -1,0 +1,9 @@
+interpreter name Mass
+
+interpreter inputLine (mass) = {mass} 
+
+interpreter shortHelp {Set the barrier tunneling model mass value.}
+
+interpreter longHelp {Set the barrier tunneling model mass value.}
+
+xmlRequired Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data->Tunneling,mass,double,{mass}

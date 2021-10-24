@@ -1,0 +1,318 @@
+%YAML 1.1
+---
+ANONYMOUS:
+  Mesh: 
+    Source: Exodus File
+    Exodus File: 
+      File Name: pndiode_dd_equ.exo
+      Restart Index: -1
+  Block ID to Physics ID Mapping: 
+    silicon: Semiconductor
+  Assembly: 
+    Workset Size: 1
+  Physics Blocks: 
+    Semiconductor: 
+      child0: 
+        Type: Frequency Domain
+        Frequency Domain Options:
+          Enable Small Signal Analysis: False
+          Truncation Scheme: 'Box'
+          Hybrid Exponent: 0.5
+          Truncation Order: 1
+          Fundamental Harmonics: [1e5]
+          Remapped Fundamental Harmonics: [1.0]
+          Number of Time Collocation Points: 0
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 1
+        Model ID: Silicon Parameter
+        Prefix: ''
+        Options: 
+          Time Domain Equation Set: Drift Diffusion
+          Solve Electron: 'True'
+          Solve Hole: 'True'
+          SRH: Off
+#          Radiative: Off
+#          Auger: Off
+          SUPG Stabilization: On
+          Add Source Term: Off
+#          Tau_E: Tanh
+#          Tau_H: Tanh
+#          Length Scale: Stream
+  Closure Models: 
+    Lattice Temperature: 3.00000000000000000e+02
+    Concentration Scaling: 1.00000000000000000e+16
+    Silicon Parameter: 
+      Material Name: Silicon
+      Relative Permittivity: 
+        Value: 1.19000000000000004e+01
+      Doping: 
+        Value: Step Junction
+        Acceptor Value: 1.00000000000000000e+15
+        Donor Value: 2.00000000000000000e+15
+        Configuration: PN
+        Direction: X
+        Junction Location: 5.00000000000000000e+00
+      Electron Lifetime: 
+        Value: 0.2E-9
+#        Value: 9.99999999999999939e-12
+      Hole Lifetime: 
+        Value: 0.2E-9
+#        Value: 9.99999999999999939e-12
+  User Data: 
+    function data one: { }
+  Boundary Conditions: 
+    child0: 
+      Type: Dirichlet
+      Sideset ID: anode
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Frequency Domain
+      Data: 
+        Time Domain Strategy: Ohmic Contact
+        Varying Voltage: Parameter
+        Small Signal Perturbation:
+          Frequency: 1.00
+          Amplitude: 1e-3
+          Phase Shift: 0.00
+    child1: 
+      Type: Dirichlet
+      Sideset ID: cathode
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Frequency Domain
+      Data: 
+        Time Domain Strategy: Ohmic Contact
+        Voltage: 
+          Frequencies:  [0.00]
+          Amplitudes:   [0.00]
+          Phase Shifts: [0.00]
+  Initial Conditions: 
+    silicon: 
+      ALL_FD_DOFS_:
+        Value: 'Frequency Domain Defaults'
+        Maximum harmonic: 1
+
+      ELECTRIC_POTENTIAL_CosH0.000000_: 
+        Value: Remap
+        Input DOF Name: ELECTRIC_POTENTIAL
+      ELECTRON_DENSITY_CosH0.000000_: 
+        Value: Remap
+        Input DOF Name: ELECTRON_DENSITY
+      HOLE_DENSITY_CosH0.000000_: 
+        Value: Remap
+        Input DOF Name: HOLE_DENSITY
+
+#      ELECTRIC_POTENTIAL_CosH1.000000_: 
+#        Value: Remap
+#        Input DOF Name: ELECTRIC_POTENTIAL_CosH1.000000_
+#      ELECTRON_DENSITY_CosH1.000000_: 
+#        Value: Remap
+#        Input DOF Name: ELECTRON_DENSITY_CosH1.000000_
+#      HOLE_DENSITY_CosH1.000000_: 
+#        Value: Remap
+#        Input DOF Name: HOLE_DENSITY_CosH1.000000_
+
+#      ELECTRIC_POTENTIAL_SinH1.000000_: 
+#        Value: Remap
+#        Input DOF Name: ELECTRIC_POTENTIAL_SinH1.000000_
+#      ELECTRON_DENSITY_SinH1.000000_: 
+#        Value: Remap
+#        Input DOF Name: ELECTRON_DENSITY_SinH1.000000_
+#      HOLE_DENSITY_SinH1.000000_: 
+#        Value: Remap
+#        Input DOF Name: HOLE_DENSITY_SinH1.000000_
+
+  Output: 
+    File Name: pndiode-shortbase_hb-dd_sweep.exo
+  Active Parameters:
+    Number of Parameter Vectors: 1
+    Parameter Vector 0:
+      Number: 1
+      Parameter 0: Varying Voltage
+#      Initial Value 0: 0.00
+      Initial Value 0: -0.55
+
+  Options: 
+    Write Volume Assembly Graphs: true
+    Volume Assembly Graph Prefix: charon_
+  Solution Control: 
+    Piro Solver: LOCA
+    Compute Sensitivities: false
+    Jacobian Operator: Have Jacobian
+    LOCA: 
+      Bifurcation: { }
+      Constraints: { }
+      Predictor:
+        Method: Constant
+#        Method: Secant
+#        Method: Tangent
+      Stepper: 
+#        Continuation Method: Arc Length
+        Continuation Method: Natural
+        Initial Value: -0.55
+#        Initial Value: 0.00
+        Continuation Parameter: Varying Voltage
+        Max Steps: 1000
+        Max Value: 0.55
+        Min Value: -0.55
+#        Min Value: 0.00
+        Compute Eigenvalues: false
+#        Enable Tangent Factor Step Size Scaling: true
+        Eigensolver: 
+          Method: Anasazi
+          Operator: Shift-Invert
+          Num Blocks: 3
+          Num Eigenvalues: 1
+          Block Size: 1
+          Maximum Restarts: 0
+          Shift: 1.00000000000000000e+00
+      Step Size: 
+        Initial Step Size: 0.1
+        Max Step Size: 0.1
+        Aggressiveness: 1.000000000000000e+00
+    NOX:
+      Direction: 
+        Method: Newton
+        Newton: 
+          Forcing Term Method: Constant
+          Rescue Bad Newton Solve: true
+          Stratimikos Linear Solver: 
+            NOX Stratimikos Options: { }
+            Stratimikos: 
+              Linear Solver Type: AztecOO
+#              Linear Solver Type: Belos
+              Linear Solver Types: 
+                AztecOO: 
+                  Forward Solve: 
+                    AztecOO Settings: 
+                      Aztec Solver: GMRES
+#                      Aztec Solver: CG GMRES CGS TFQMR BiCGStab LU GMRESR FixedPoint
+                      Convergence Test: r0
+                      Size of Krylov Subspace: 120
+                      Output Frequency: 10
+                    Max Iterations: 100
+                    Tolerance: 1.00000000000000008e-04
+                Belos: 
+                  Solver Type: Block GMRES
+                  Solver Types: 
+                    Block GMRES: 
+                      Convergence Tolerance: 1.00000000000000008e-03
+                      Output Frequency: 1
+                      Output Style: 1
+                      Verbosity: 1
+                      Maximum Iterations: 100
+#                      Block Size: 
+                      Num Blocks: 1
+                      Flexible Gmres: false
+              Preconditioner Type: Ifpack
+              Preconditioner Types: 
+                Ifpack: 
+                  Overlap: 0
+#                  Prec Type: point relaxation
+                  Prec Type: block relaxation stand-alone
+#                  Prec Type: ILU
+                  Ifpack Settings:
+#                    'amesos: solver type' : 'Amesos_Klu'
+#                    'relaxation: type': 'Gauss-Seidel'
+                    'relaxation: type': 'Jacobi'
+                    'fact: level-of-fill': 1
+                    'relaxation: min diagonal value': 1.0
+                    'schwarz: reordering type': rcm
+                    'krylov: iterations' : 5
+                    'krylov: tolerance' : 1e-3
+                    'krylov: solver' : 1
+                    'krylov: preconditioner' : 1
+
+# IFPACK SETTINGS
+#    "amesos: solver type" : string = Amesos_Klu
+#    "fact: level-of-fill" : int = 0
+#    "fact: absolute threshold" : double = 0
+#    "fact: relative threshold" : double = 1
+#    "fact: drop tolerance" : double = 0
+#    "fact: ict level-of-fill" : double = 1
+#    "fact: relax value" : double = 0
+#    "fact: ilut level-of-fill" : double = 1
+#    "partitioner: local parts" : int = 1
+#    "partitioner: overlap" : int = 0
+#    "partitioner: print level" : int = 0
+#    "relaxation: type" : string = Jacobi
+#    "relaxation: sweeps" : int = 1
+#    "relaxation: damping factor" : double = 1
+#    "relaxation: min diagonal value" : double = 1
+#    "relaxation: zero starting solution" : bool = 1
+#    "relaxation: backward mode" : bool = 0
+#    "relaxation: use l1" : bool = 0
+#    "relaxation: l1 eta" : double = 1.5
+#    "fact: sparskit: lfil" : int = 0
+#    "fact: sparskit: tol" : double = 0
+#    "fact: sparskit: droptol" : double = 0
+#    "fact: sparskit: permtol" : double = 0.1
+#    "fact: sparskit: alph" : double = 0
+#    "fact: sparskit: mbloc" : int = -1
+#    "fact: sparskit: type" : string = ILUT
+#    "schwarz: compute condest" : bool = 1
+#    "schwarz: combine mode" : string = Zero
+#    "schwarz: reordering type" : string = none
+#    "schwarz: filter singletons" : bool = 0
+#    "partitioner: type" : string = greedy
+#    "partitioner: use symmetric graph" : bool = 1
+#    "krylov: iterations" : int = 5
+#    "krylov: tolerance" : double = 0.001
+#    "krylov: solver" : int = 1
+#    "krylov: preconditioner" : int = 0
+#    "krylov: number of sweeps" : int = 1
+#    "krylov: block size" : int = 1
+#    "krylov: damping parameter" : double = 1
+#    "krylov: zero starting solution" : bool = 1
+
+      Line Search: 
+        Method: Full Step
+        Polynomial: 
+          Maximum Iterations: 10
+          Recovery Step Type: Last Computed Step
+        Full Step: 
+          Full Step: 1.00000000000000000e+00
+#      Nonlinear Solver: Newton
+      Nonlinear Solver: Line Search Based
+      Printing: 
+        Output Precision: 3
+        Output Processor: 0
+        Output Information: 
+          Error: true
+          Warning: true
+          Outer Iteration: true
+          Parameters: true
+          Details: true
+          Linear Solver Details: true
+          Stepper Iteration: true
+          Stepper Details: true
+          Stepper Parameters: true
+      Solver Options: 
+        Status Test Check Type: Minimal
+      Thyra Group Options:
+        Function Scaling: Row Sum
+      Status Tests: 
+        Test Type: Combo
+        Combo Type: OR
+        Number of Tests: 2
+        Test 0:
+          Test Type: NormF
+#          Test Type: NormWRMS
+          Tolerance: 1e-6
+        Test 1: 
+          Test Type: MaxIters
+          Maximum Iterations: 300
+    Rythmos: 
+      Num Time Steps: 10
+      Final Time: 1.00000000000000006e-01
+      Stepper Type: Backward Euler
+      Rythmos Stepper: 
+        VerboseObject: 
+          Verbosity Level: medium
+      Stratimikos: { }
+      Rythmos Integration Control: { }
+      Rythmos Integrator: 
+        VerboseObject: 
+          Verbosity Level: medium
+...

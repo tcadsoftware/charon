@@ -1,0 +1,21 @@
+interpreter name ThreshBehavior
+
+interpreter inputLine (threshold behavior model) [ (van overstraeten) [ (okuto) [ (lackner) [ (university bologna) [ (new university bologna) [ (selberherr) [ (crowell-sze) ]]]]]]]
+
+interpreter shortHelp {Set the threshold behavior of the ionization coefficients}
+
+interpreter longHelp {Set the threshold behavior of the ionization coefficients to the specified model}
+
+xmlOptional (van overstraeten) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,vanOverstraeten
+
+xmlOptional (okuto) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,Okuto
+
+xmlOptional (lackner) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,Lackner
+
+xmlOptional (university bologna) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,UniBo
+
+xmlOptional (new university bologna) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,UniBoNew
+
+xmlOptional (selberherr) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,Selberherr
+
+xmlOptional (crowell-sze) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Value,string,Crowell-Sze

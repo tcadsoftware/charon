@@ -1,0 +1,12 @@
+
+interpreter name AztecKrylovSubSize
+
+interpreter inputLine (aztec krylov subspace size) = {size}
+
+interpreter shortHelp {Specify Aztec Krylov Subspace Size}
+
+interpreter longHelp {Specify Aztec Krylov Subspace Size }
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Size of Krylov Subspace,int,{size}     
+
+

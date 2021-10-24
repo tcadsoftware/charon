@@ -1,0 +1,11 @@
+
+interpreter name CellAverageOutput
+
+interpreter inputLine (Output cell average variables) in {regionName} for [ (scalar) {variableNames} [ (vector) {variableNames} ]]
+
+interpreter shortHelp {Output named cell averaged variables}
+
+interpreter longHelp {Output named cell averaged variables <> {regionName} must be supplied <> variableNames must be in quotes}
+
+xmlOptional (scalar) Charon->Output->Cell Average Quantities,{regionName},string,{variableNames}
+xmlOptional (vector) Charon->Output->Cell Average Vectors,{regionName},string,{variableNames}

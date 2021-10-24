@@ -1,0 +1,8 @@
+
+interpreterBlock name ErfcDoping
+
+interpreterBlock (start erfc doping named) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping,Value,string,Function
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Function Type,string,Erfc

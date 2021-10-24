@@ -1,0 +1,11 @@
+interpreter name ElectronTemperatureDependentFunction
+
+interpreter inputLine (electron lifetime is temperature) dependent [(with exponential variation)]
+
+interpreter shortHelp {Specify that the electon lifetime is temperature dependent.}
+
+interpreter longHelp {Specify that the electon lifetime is temperature dependent.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Lifetime->Function 2,Function Type,string,TempDep
+
+xmlOptional (with exponential variation) Charon->Closure Models->{MaterialBlockName}->Electron Lifetime->Function 2,Function Type,string,ExpTempDep

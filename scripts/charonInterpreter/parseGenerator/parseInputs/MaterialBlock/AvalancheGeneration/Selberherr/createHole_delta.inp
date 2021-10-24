@@ -1,0 +1,8 @@
+interpreter name Hole_delta
+
+interpreter inputLine (hole delta) = {delta_h}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter delta_h for Selberherr model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,delta_h,double,{delta_h}

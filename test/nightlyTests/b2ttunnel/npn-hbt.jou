@@ -1,0 +1,118 @@
+#=======================================================================
+# You can include a refinement at the collector-subcollector junction
+# by changing the value _col_fine_size to be, usually, smaller than
+# _col_coarse_size. Generally you want _sc_fine_size to match
+# _col_fine_size since the two meet at the collector-subcollector
+# junction. The mesh spacing in the base is uniform and controlled by
+# the variable _base_fine_size. Values are in microns and are scaled
+# to centimeters upon output to the exodus file.
+# ======================================================================
+
+graphics mode wireframe
+
+#######################################
+# Device geometry
+#######################################
+# Spatial dimensions (microns)
+${_emit_thickness=0.07+0.08}
+${_base_thickness=0.07}		
+${_coll_thickness=1.00}	
+${_subc_thickness=0.30}
+
+${_dev_height=0.01}
+
+#######################################
+# Mesh sizing
+#######################################
+${_emit_coarse_size = 2.5e-3}
+${_base_fine_size   = 0.2e-3}
+${_base_coarse_size = 1e-3}
+${_col_fine_size    = 1e-3}
+${_col_coarse_size  = 5e-3}
+${_sc_fine_size     = 2e-3}
+${_sc_coarse_size   = 5e-3}
+
+${_y_interval_count=1}
+
+#######################################
+# Geometry creation
+#######################################
+${_dev_length = _emit_thickness + _base_thickness + _coll_thickness + _subc_thickness}
+${_coll_cut = 0.5 * _coll_thickness}
+create brick x {_dev_length} y {_dev_height} z 0.1
+move vertex 4 location 0 0 0
+
+# Emitter -> EB junction -> base contact -> BC junction
+webcut volume 1 with plane xplane offset {_emit_thickness + 0.5 * _base_thickness}
+webcut volume 1 with plane xplane offset {_emit_thickness + _base_thickness}
+
+# Cut the collector in half to allow for mesh grading around subcollector
+webcut volume 1 with plane xplane offset {_emit_thickness + _base_thickness + _coll_cut}
+webcut volume 1 with plane xplane offset {_emit_thickness + _base_thickness + _coll_thickness}
+webcut volume 2 with plane xplane offset {_emit_thickness}
+merge all
+
+#######################################
+# Contacts and heterojunction
+#######################################
+
+# Contacts - emitter, base, collector, respectively
+sideset 1 curve 3
+sideset 1 name "emitter"
+sideset 2 curve 15
+sideset 2 name "base"
+sideset 3 curve 1
+sideset 3 name "collector"
+
+# wrt surface <id> is used to create a one-sided sideset
+# Panzer requires a one-sided sideset for a heterojunction interface
+sideset 4 curve 80 wrt surface 53
+sideset 4 name "ebjunction"
+
+
+#######################################
+# Mesh sizing
+#######################################
+
+# Number of elements in y direction
+curve 3 80 15 29 47 61 1 interval {_y_interval_count}
+
+# Emitter mesh geometry (graded toward base)
+curve 89 scheme bias fine size {_base_fine_size} coarse size {_emit_coarse_size} start vertex 42
+curve 90 scheme bias fine size {_base_fine_size} coarse size {_emit_coarse_size} start vertex 44
+
+# Base mesh geometry (graded from junctions)
+# curve 82 84 43 41 interval size {_base_fine_size}
+curve 82 scheme bias fine size {_base_fine_size} coarse size {_base_coarse_size} start vertex 44
+curve 84 scheme bias fine size {_base_fine_size} coarse size {_base_coarse_size} start vertex 42
+curve 41 scheme bias fine size {_base_fine_size} coarse size {_base_coarse_size} start vertex 18
+curve 43 scheme bias fine size {_base_fine_size} coarse size {_base_coarse_size} start vertex 17
+
+# First half, collector mesh geometry (graded away from base)
+curve 58 scheme bias fine size {_base_fine_size} coarse size {_col_coarse_size} start vertex 17
+curve 60 scheme bias fine size {_base_fine_size} coarse size {_col_coarse_size} start vertex 18
+
+# Second half, collector mesh geometry (graded toward subcollector)
+curve 75 scheme bias fine size {_col_fine_size} coarse size {_col_coarse_size} start vertex 33
+curve 73 scheme bias fine size {_col_fine_size} coarse size {_col_coarse_size} start vertex 34
+
+# Subcollector mesh geometry (graded away from sub/collector junction)
+curve 67 scheme bias fine size {_sc_fine_size} coarse size {_sc_coarse_size} start vertex 33
+curve 68 scheme bias fine size {_sc_fine_size} coarse size {_sc_coarse_size} start vertex 34
+
+#######################################
+# Meshing
+#######################################
+
+# Mesh
+block 1 surface 53
+block 1 name "emitter-ingap"
+block 2 surface 51 24
+block 2 name "base-gaas"
+block 3 surface 35 44 40
+block 3 name "collector-gaas"
+
+block 1 2 3 element type QUAD4
+mesh surface 53 51 24 35 44 40
+
+export mesh "npn-hbt.exo" dimension 2 overwrite

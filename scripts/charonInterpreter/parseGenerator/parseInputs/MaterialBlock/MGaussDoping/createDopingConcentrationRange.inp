@@ -1,0 +1,13 @@
+
+
+interpreter name DopingConcentrationRange
+
+interpreter inputLine (Concentration range) is {minimumConcentration} to {maximumConcentration}
+
+interpreter shortHelp {set the range of the magnitude of the dopant concentration}
+
+interpreter longHelp {set the range of the magnitude of the dopant concentration <> minimumConcentration is the minimum numerical value in 1/cm^3 <> maximumConcentration is the maximum numerical value in 1/cm^3}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Min Value,double,{minimumConcentration}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Max Value,double,{maximumConcentration}

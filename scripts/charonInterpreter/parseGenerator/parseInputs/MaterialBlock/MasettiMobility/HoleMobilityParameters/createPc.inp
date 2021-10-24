@@ -1,0 +1,9 @@
+interpreter name Pc
+
+interpreter inputLine (pc) = {pcval}
+
+interpreter shortHelp {Masetti model parameter p_c}
+
+interpreter longHelp {Masetti model parameter p_c}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,pc,double,{pcval}

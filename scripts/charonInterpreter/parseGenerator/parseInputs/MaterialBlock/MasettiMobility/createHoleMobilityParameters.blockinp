@@ -1,0 +1,7 @@
+
+interpreterBlock name HoleMobilityParameters
+
+interpreterBlock (start hole parameters)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Hole Mobility,Value,string,Masetti
+

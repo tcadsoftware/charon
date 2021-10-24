@@ -1,0 +1,8 @@
+interpreter name SaturationVelocity
+
+interpreter inputLine (saturation velocity) = {satval}
+
+interpreter shortHelp {Specify the saturation velocity}
+interpreter longHelp {Specify the saturation velocity}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Saturation Velocity,double,{satval}

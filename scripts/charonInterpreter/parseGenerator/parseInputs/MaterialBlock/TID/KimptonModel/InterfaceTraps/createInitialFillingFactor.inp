@@ -1,0 +1,10 @@
+
+interpreter name InitialFillingFactor
+
+interpreter inputLine (initial filling factor) = {filling_fac}
+
+interpreter shortHelp {Sets the interface traps initial filling factor for the TID model}
+
+interpreter longHelp {Sets the interface traps initial filling factor for the TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Initial Filling Factor,double,{filling_fac}

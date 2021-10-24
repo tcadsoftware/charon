@@ -1,0 +1,54 @@
+Import State File pndiode.nlp-result.exo
+
+start output parameters
+      Output State File pndiode.dd-result.loca.exo
+end output parameters
+
+assembly workset = 50
+lattice temperature = 300
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is off
+      auger recombination is off
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start Carrier Lifetime Block
+            electron lifetime is constant = 1e-11
+            hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+            acceptor concentration = 1e16
+            donor concentration = 1e16
+            junction location = 0.5
+            dopant order is PN
+      end step junction doping
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon swept from 0.0 to 1.0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
+Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
+
+start sweep options
+  initial step size = 0.1
+  maximum number of steps = 20
+  step size aggressiveness = 0.0
+end sweep options
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block

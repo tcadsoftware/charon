@@ -1,0 +1,9 @@
+interpreter name EffMass
+
+interpreter inputLine (effective mass) = {value}
+
+interpreter shortHelp {Set the effective mass}
+interpreter longHelp {Set the effective mass}
+
+xmlRequired Charon->Boundary Conditions->hole1ANONYMOUS->Data,Effective Mass,double,{value}
+xmlRequired Charon->Boundary Conditions->hole2ANONYMOUS->Data,Effective Mass,double,{value}

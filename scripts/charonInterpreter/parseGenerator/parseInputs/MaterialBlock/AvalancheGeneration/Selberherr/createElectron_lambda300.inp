@@ -1,0 +1,8 @@
+interpreter name Electron_lambda300
+
+interpreter inputLine (electron lambda300) = {lambda300_e}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter lambda300_e for Selberherr model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,lambda300_e,double,{lambda300_e}

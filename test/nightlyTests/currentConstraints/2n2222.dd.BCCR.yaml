@@ -1,0 +1,300 @@
+%YAML 1.1
+---
+ANONYMOUS:
+  Mesh: 
+    Source: Exodus File
+    Exodus File: 
+      File Name: 2n2222.dd.exo
+      Restart Index: 1
+  Block ID to Physics ID Mapping: 
+    silicon: Semiconductor
+  Assembly: 
+    Workset Size: 50
+  Physics Blocks: 
+    Semiconductor: 
+      child0: 
+        Type: Drift Diffusion
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 2
+        Model ID: Silicon Parameter
+        Prefix: ''
+        Options: 
+          Solve Electron: 'True'
+          Solve Hole: 'True'
+          SRH: Off
+          Radiative: Off
+          Auger: Off
+          SUPG Stabilization: On
+          Add Source Term: Off
+          Tau_E: Tanh
+          Tau_H: Tanh
+          Length Scale: Stream
+  Closure Models: 
+    Lattice Temperature: 3.00149999999999977e+02
+    Concentration Scaling: 1.00000000000000000e+16
+    Silicon Parameter: 
+      Material Name: Silicon
+      Relative Permittivity: 
+        Value: 1.18000000000000007e+01
+      Doping: 
+        Value: Function
+        Function 1: 
+          Function Type: Erfc
+          Doping Type: Donor
+          Doping Max Value: 4.00000000000000000e+18
+          Doping Min Value: 7.00000000000000000e+14
+          X Bend Location: 9.00000000000000000e+00
+          X Width: 6.50000000000000022e-01
+          X Direction: Negative
+          Xmin: 0.00000000000000000e+00
+          Xmax: 1.50000000000000000e+01
+        Function 2: 
+          Function Type: Gauss
+          Doping Type: Acceptor
+          Doping Max Value: 4.00000000000000000e+17
+          Doping Min Value: 1.00000000000000000e+15
+          X Peak Location: 0.00000000000000000e+00
+          X Width: 3.29999999999999982e+00
+          X Direction: Both
+        Function 3: 
+          Function Type: Gauss
+          Doping Type: Donor
+          Doping Max Value: 4.00000000000000000e+19
+          Doping Min Value: 1.00000000000000000e+17
+          X Peak Location: 2.00000000000000011e-01
+          X Width: 1.44999999999999996e+00
+          X Direction: Both
+      Electron Mobility: 
+        Value: Arora
+      Hole Mobility: 
+        Value: Arora
+  User Data: 
+    function data one: { }
+  Boundary Conditions: 
+    child0: 
+      Type: Dirichlet
+      Sideset ID: emitter
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Ohmic Contact
+      Data: 
+        Voltage: -6.99999999999999956e-01
+    child1: 
+      Type: Dirichlet
+      Sideset ID: base
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Constant Current
+      Data: 
+        Current Value: -3.90689884000000016e-07
+        Initial Voltage: 1.00000000000000006e-01
+        BJT1D Base Doping Type: Acceptor
+    child2: 
+      Type: Dirichlet
+      Sideset ID: collector
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Resistor Contact
+      Data: 
+        Resistor Value: 1.00000000000000000e+03
+        Applied Voltage: 6.16815484999999963e+00
+        Initial Voltage: 1.00000000000000006e-01
+  Initial Conditions: 
+    silicon: 
+      ELECTRIC_POTENTIAL: 
+        Value: Exodus File
+      ELECTRON_DENSITY: 
+        Value: Exodus File
+      HOLE_DENSITY: 
+        Value: Exodus File
+  Output: 
+    File Name: result.2n2222.dd.BCCR.exo
+    Cell Average Quantities: 
+      silicon: 'Doping,Electron Mobility,Hole Mobility'
+  Options: 
+    Write Volume Assembly Graphs: true
+    Volume Assembly Graph Prefix: charon_
+  Solution Control: 
+    Piro Solver: NOX
+    Compute Sensitivities: false
+    Jacobian Operator: Have Jacobian
+    LOCA: 
+      Bifurcation: { }
+      Constraints: { }
+      Predictor: 
+        Method: Constant
+      Stepper: 
+        Continuation Method: Natural
+        Initial Value: 1.00000000000000000e+00
+        Continuation Parameter: Parameter 0
+        Max Steps: 6
+        Max Value: 1.22500000000000000e+01
+        Min Value: 5.00000000000000000e-01
+        Compute Eigenvalues: true
+        Eigensolver: 
+          Method: Anasazi
+          Operator: Shift-Invert
+          Num Blocks: 3
+          Num Eigenvalues: 1
+          Block Size: 1
+          Maximum Restarts: 0
+          Shift: 1.00000000000000000e+00
+      Step Size: 
+        Initial Step Size: 5.00000000000000000e-01
+        Aggressiveness: 2.00000000000000000e+00
+    NOX: 
+      Direction: 
+        Method: Newton
+        Newton: 
+          Forcing Term Method: Constant
+          Rescue Bad Newton Solve: true
+          Linear Solver: 
+            Tolerance: 9.99999999999999955e-07
+          Stratimikos Linear Solver: 
+            NOX Stratimikos Options: { }
+            Stratimikos: 
+              Linear Solver Type: Belos
+              Linear Solver Types: 
+                AztecOO: 
+                  Forward Solve: 
+                    AztecOO Settings: 
+                      Aztec Solver: GMRES
+                      Convergence Test: r0
+                      Size of Krylov Subspace: 200
+                      Output Frequency: 20
+                    Max Iterations: 300
+                Belos: 
+                  Solver Type: Block GMRES
+                  Solver Types: 
+                    Block GMRES: 
+                      Convergence Tolerance: 1.00000000000000008e-05
+                      Output Frequency: 10
+                      Output Style: 1
+                      Verbosity: 33
+                      Maximum Iterations: 100
+                      Block Size: 1
+                      Num Blocks: 20
+                      Flexible Gmres: false
+              Preconditioner Type: Teko
+              Preconditioner Types: 
+                Ifpack: 
+                  Overlap: 1
+                  Prec Type: ILU
+                  Ifpack Settings: 
+                    'fact: drop tolerance': 0.00000000000000000e+00
+                    'fact: ilut level-of-fill': 1.00000000000000000e+00
+                    'fact: level-of-fill': 1
+                Teko: 
+                  Inverse Type: Schur2x2
+                  Write Block Operator: false
+                  Test Block Operator: false
+                  Inverse Factory Library: 
+                    Schur2x2: 
+                      Type: Schur2x2
+                      Inverse Type: ML-DD
+                      Inverse Type for SC: PrecIterative-Belos
+                    PrecIterative-Belos: 
+                      Type: Belos
+                      Use Preconditioner: ML-DD
+                      Solver Types: 
+                        Block GMRES: 
+                          Convergence Tolerance: 1.00000000000000002e-03
+                          Output Frequency: 10
+                          Output Style: 1
+                          Verbosity: 33
+                          Maximum Iterations: 100
+                          Block Size: 1
+                          Num Blocks: 20
+                          Flexible Gmres: false
+                      VerboseObject: 
+                        Verbosity Level: medium
+                    ML-DD: 
+                      Type: ML
+                      Base Method Defaults: SA
+                      ML Settings: 
+                        ML output: 10
+                        ML label: Velocity
+                        prec type: MGV
+                        print unused: 0
+                        PDE equations: 3
+                        max levels: 10
+                        cycle applications: 2
+                        'aggregation: threshold': 0.00000000000000000e+00
+                        'aggregation: type': Uncoupled
+                        'smoother: type': IFPACK
+                        'smoother: ifpack type': Amesos
+                        'smoother: ifpack overlap': 1
+                        'smoother: ifpack list': 
+                          'fact: level-of-fill': 1
+                          'schwarz: reordering type': rcm
+                          reuse numeric factorization: 1
+                        'smoother: pre or post': both
+                        'smoother: sweeps': 2
+                        'coarse: max size': 500
+                        'coarse: type': Amesos-KLU
+      Line Search: 
+        Method: Backtrack
+        Polynomial: 
+          Maximum Iterations: 10
+          Recovery Step Type: Last Computed Step
+        Full Step: 
+          Full Step: 1.00000000000000000e+00
+      Nonlinear Solver: Line Search Based
+      Printing: 
+        Output Precision: 3
+        Output Processor: 0
+        Output Information: 
+          Error: true
+          Warning: true
+          Inner Iteration: true
+          Outer Iteration: true
+          Outer Iteration StatusTest: true
+          Test Details: true
+          Parameters: true
+          Details: true
+          Linear Solver Details: true
+          Stepper Iteration: true
+          Stepper Details: true
+          Stepper Parameters: true
+      Solver Options: 
+        Status Test Check Type: Minimal
+      Thyra Group Options: 
+        Function Scaling: Row Sum
+      Status Tests: 
+        Test Type: Combo
+        Combo Type: OR
+        Number of Tests: 3
+        Test 0: 
+          Test Type: Combo
+          Combo Type: OR
+          Number of Tests: 2
+          Test 0: 
+            Test Type: NormF
+            Tolerance: 1.00000000000000002e-08
+          Test 1: 
+            Test Type: NormWRMS
+            Tolerance: 1.00000000000000000e+00
+            Relative Tolerance: 1.00000000000000005e-04
+            Absolute Tolerance: 1.00000000000000002e-08
+            alpha: 0.00000000000000000e+00
+            beta: 1.00000000000000000e+00
+        Test 1: 
+          Test Type: MaxIters
+          Maximum Iterations: 30
+        Test 2: 
+          Test Type: FiniteValue
+          Vector Type: F Vector
+    Rythmos: 
+      Num Time Steps: 10
+      Final Time: 1.00000000000000006e-01
+      Stepper Type: Backward Euler
+      Rythmos Stepper: 
+        VerboseObject: 
+          Verbosity Level: medium
+      Stratimikos: { }
+      Rythmos Integration Control: { }
+      Rythmos Integrator: 
+        VerboseObject: 
+          Verbosity Level: medium
+...

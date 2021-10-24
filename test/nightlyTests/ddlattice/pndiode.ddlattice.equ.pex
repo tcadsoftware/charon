@@ -1,0 +1,9 @@
+Input FEM file                   = pndiode.ddlattice.equ.exo
+LB file                          = pndiode.ddlattice.equ.nem
+File Extension for Spread Files  = .exo
+Number of Processors             = 4 
+------------------------------------------------------------
+                Parallel I/O section
+------------------------------------------------------------
+Parallel Disk Info= number=1, offset=1, zeros, nosubdirectory
+Parallel file location = root=/home/xngao/Program/charon/test/ddlattice/, subdir=.

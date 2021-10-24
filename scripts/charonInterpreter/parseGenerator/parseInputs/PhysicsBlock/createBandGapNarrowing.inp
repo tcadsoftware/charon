@@ -1,0 +1,13 @@
+
+
+interpreter name BandGapNarrowing
+
+interpreter inputLine (band gap narrowing) [ (is on) [ (is off)] ]
+
+interpreter shortHelp {Turn on band gap narrowing}
+
+interpreter longHelp {Turn on band gap narrowing}
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Band Gap Narrowing,string,Off
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Band Gap Narrowing,string,On

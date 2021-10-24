@@ -1,0 +1,10 @@
+interpreter name CREF_A
+
+interpreter inputLine (cref_a) = {cref_a}
+
+interpreter shortHelp {Sets the cref_a value for this mobility model}
+
+interpreter longHelp {Sets the cref_a value for this mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,cref_a,double,{cref_a}
+

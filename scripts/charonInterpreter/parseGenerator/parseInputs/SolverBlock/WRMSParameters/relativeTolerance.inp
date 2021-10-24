@@ -1,0 +1,8 @@
+interpreter name RelativeTolerance
+
+interpreter shortHelp {Set the WRMS relative tolerance for the nonlinear solver status test.}
+interpreter longHelp {Set the WRMS relative tolerance for the nonlinear solver status test.}
+
+interpreter inputLine (relative tolerance) = {relTol}
+
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Relative Tolerance,double,{relTol}

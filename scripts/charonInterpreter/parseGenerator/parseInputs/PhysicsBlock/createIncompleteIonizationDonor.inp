@@ -1,0 +1,13 @@
+
+
+interpreter name IncompleteIonizationDonor
+
+interpreter inputLine (donor incomplete ionization) [ (is on) [ (is off) ]]
+
+interpreter shortHelp {Specify incomplete ionization of dopant type donor.}
+
+interpreter longHelp {Enable incomplete ionization model of donor type, with parameters specified in the Incomplete Ionization Acceptor block of the Material Block.}
+
+xmlOptional (is on) Charon->Physics Blocks->Semiconductor->ANONYMOUS->Options,Donor Incomplete Ionization,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->Semiconductor->ANONYMOUS->Options,Donor Incomplete Ionization,string,Off

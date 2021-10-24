@@ -1,0 +1,11 @@
+digraph G {
+0 [fontcolor="", label="Gather STK Fields\n   Evaluates:\n     ELECTRIC_POTENTIAL : MDA<Cell,BASIS>(50,4) : double"];
+1 [fontcolor="", label="SCATTER_ELECTRIC_POTENTIAL Scatter Residual\n   Evaluates:\n     SCATTER_ELECTRIC_POTENTIAL : MDA<Dummy>(0) : double"];
+2 [fontcolor="", label="Gather STK Fields\n   Evaluates:\n     ELECTRON_DENSITY : MDA<Cell,BASIS>(50,4) : double"];
+3 [fontcolor="", label="SCATTER_ELECTRON_DENSITY Scatter Residual\n   Evaluates:\n     SCATTER_ELECTRON_DENSITY : MDA<Dummy>(0) : double"];
+4 [fontcolor="", label="Gather STK Fields\n   Evaluates:\n     HOLE_DENSITY : MDA<Cell,BASIS>(50,4) : double"];
+5 [fontcolor="", label="SCATTER_HOLE_DENSITY Scatter Residual\n   Evaluates:\n     SCATTER_HOLE_DENSITY : MDA<Dummy>(0) : double"];
+1->0  [label="1:0"];
+3->2  [label="3:2"];
+5->4  [label="5:4"];
+}

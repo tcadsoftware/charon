@@ -1,0 +1,5 @@
+ADD_SUBDIRECTORY(Avalanche_CrowellSze)
+ADD_SUBDIRECTORY(CurrentConstraintList)
+ADD_SUBDIRECTORY(Ionization_ParticleStrike)
+ADD_SUBDIRECTORY(Schur2x2PreconditionerFactory)
+ADD_SUBDIRECTORY(UnitTestTemplate)

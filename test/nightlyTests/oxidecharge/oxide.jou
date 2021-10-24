@@ -1,0 +1,32 @@
+
+# create an oxide box
+create brick  x 1 y 0.5 z 1
+move vertex 4 location 0 0 0 nomerge
+
+# Define sidesets for Dirichlet BC
+sideset 1 curve 2
+sideset 1 name "top"
+sideset 2 curve 4
+sideset 2 name "bottom"
+
+# Define blocks for a single material
+block 1 surface 1
+block 1 name  "sio2"
+block 1 element type quad4
+
+# Define meshing size
+curve 1 3 interval 20
+curve 2 4 interval 40
+
+# Actually mesh the geometry using the default meshing engine (Map)
+surface 1 scheme map
+mesh surface 1
+
+# merge all overlapped elements
+merge all
+
+# dimension size is assumed in [um]
+# output the Exodus II mesh
+export mesh "oxide.exo" dimension 2 block all overwrite
+
+

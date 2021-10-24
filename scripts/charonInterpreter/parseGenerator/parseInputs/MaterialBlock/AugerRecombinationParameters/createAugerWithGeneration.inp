@@ -1,0 +1,16 @@
+
+
+interpreter name AugerWithGeneration
+
+interpreter inputLine (Generation) [ (is on) [(is off)]]
+
+interpreter shortHelp {Add generation to the Auger recombination source term}
+
+interpreter longHelp {Add generation to the Auger recombination source term}
+
+xmlOptional (is on) Charon->Closure Models->{MaterialBlockName}->Auger Recombination,With Generation,bool,true
+
+xmlOptional (is off) Charon->Closure Models->{MaterialBlockName}->Auger Recombination,With Generation,bool,false
+
+
+

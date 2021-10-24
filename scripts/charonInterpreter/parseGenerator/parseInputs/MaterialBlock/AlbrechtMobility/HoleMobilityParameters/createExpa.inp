@@ -1,0 +1,10 @@
+
+interpreter name Expa
+
+interpreter inputLine (expa) = {expaval}
+
+interpreter shortHelp {model parameter expa}
+
+interpreter longHelp {Albrecht model parameter expa}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,expa,double,{expaval}

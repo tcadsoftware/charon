@@ -1,0 +1,8 @@
+interpreter name Electron_delta
+
+interpreter inputLine (electron delta) = {delta_e}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter delta_e for Selberherr model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,delta_e,double,{delta_e}

@@ -1,0 +1,81 @@
+
+Import State File surfacecharge.nlp.exo at index 1
+
+start output parameters
+      Output State File surfacecharge.sg.exo
+#      Output cell average variables in silicon for "Doping,Electron Mobility,Hole Mobility,SRH Recombination,Auger Recombination,Radiative Recombination,Band Gap,Effective Band Gap"
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is on
+      auger recombination is on
+      band gap narrowing is on
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start intrinsic concentration
+      	    model is old slotboom
+      end intrinsic concentration
+     
+      start band gap 
+      	    temperature dependence is on
+	    300K gap = 1.08
+	    chi300 = 4.17
+	    alpha = 5e-4
+	    beta = 700
+      end band gap 
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+	    direction is x
+      end step junction doping
+
+      start lucent mobility
+      	    start electron parameters
+	    	  driving force is electric field
+		  enable high field mobility
+	    end electron parameters
+      end lucent mobility
+
+      start philips-thomas mobility
+      	    start hole parameters
+	    	  driving force is electric field
+		  high field component is on
+	    end electron parameters
+      end philips-thomas mobility
+
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0.5
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+start surface charge bc for sheet
+      fixed charge = 1e11
+      geometry block is silicon
+end surface charge bc for sheet
+
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

@@ -1,0 +1,11 @@
+
+
+interpreter name ApproximationType
+
+interpreter inputLine (approximation) is {approximationType}
+
+interpreter shortHelp {Specify approximation type for acceptor dopant type.}
+
+interpreter longHelp {Specify approximation type for acceptor dopant type.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Incomplete Ionized Acceptor->Model,Approximation,string,{approximationType}

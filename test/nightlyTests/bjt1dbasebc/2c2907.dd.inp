@@ -1,0 +1,87 @@
+
+Import State File 2c2907.dd.equ.exo at index 1
+
+start output parameters
+      Output State File 2c2907.dd.interp.exo
+      Output cell average Variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+      band gap narrowing is on
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.8
+
+      start uniform doping named Function1
+      	    type is acceptor
+	    concentration = 2.02700e15
+      end erfc doping named Function1
+
+      start mgauss doping named Function2
+      	    type is acceptor
+	    concentration range is 0 to 1.69088e18
+	    gradient width = 1.8469 in x
+	    gradient width = 1.0 in y
+	    spatial range is 13.25 to 200.0 in x
+	    spatial range is 0.0 to 200.0 in y
+      end mgauss doping named Function2
+
+      start mgauss doping named Function3
+      	    type is acceptor
+	    concentration range is 0 to 2.76254e19
+	    gradient width = 0.3639141 in x
+	    gradient width = 1.0 in y
+	    spatial range is 0.0 to 1.1412949 in x
+	    spatial range is 0.0 to 200.0 in y
+      end mgauss doping named Function3
+
+      start mgauss doping named Function4
+      	    type is acceptor
+	    concentration range is 0 to 2.77666e19
+	    gradient width = 0.3887082 in x
+	    gradient width = 1.0 in y
+	    spatial range is 0.42 to 0.62 in x
+	    spatial range is 0.0 to 200.0 in y
+      end mgauss doping named Function4
+
+      start mgauss doping named Function5
+      	    type is donor
+	    concentration range is 0 to 0.271421e19
+	    gradient width = 1.9613315 in x
+	    gradient width = 1.0 in y
+	    spatial range is -1.4812309 to -1.4812309 in x
+	    spatial range is 0.0 to 200.0 in y
+      end mgauss doping named Function5
+
+      start philips-thomas mobility
+      	    start electron parameters
+	    end electron parameters
+      	    start hole parameters
+	    end hole parameters
+       end philips-thomas mobility
+
+       start intrinsic concentration
+            model is old slotboom
+       end intrinsic concentration
+
+end Material Block siliconParameter
+
+BC is ohmic for emitter on silicon fixed at 0.686
+BC is 1dbjt for Donor base on silicon fixed at 0
+BC is ohmic for collector on silicon fixed at -4.81
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+initial conditions for ELECTRON_DENSITY in silicon is Exodus File
+initial conditions for HOLE_DENSITY in silicon Exodus File
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

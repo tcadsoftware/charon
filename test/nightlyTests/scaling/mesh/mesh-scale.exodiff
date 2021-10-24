@@ -1,0 +1,2 @@
+NODAL VARIABLES relative 1.0e-6
+	ELECTRIC_POTENTIAL relative 1.0e-6 floor 1.0e-12

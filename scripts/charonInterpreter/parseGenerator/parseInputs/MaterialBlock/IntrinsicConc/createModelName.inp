@@ -1,0 +1,16 @@
+interpreter name ModelName
+
+interpreter inputLine (model) [ (is old slotboom) [ (is slotboom) [ (is persson) [ (is harmon) ]]]] 
+
+interpreter shortHelp {Specify the intrinsic concentration model name}
+
+interpreter longHelp {Specify the intrinsic concentration model name: Old Slotboom, Slotboom, Persson, Harmon}
+
+xmlOptional (is old slotboom) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,Old Slotboom
+
+xmlOptional (is slotboom) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,Slotboom
+
+xmlOptional (is persson) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,persson
+
+xmlOptional (is harmon) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,Harmon
+

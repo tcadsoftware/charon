@@ -1,0 +1,12 @@
+interpreter name ErrorStats
+
+interpreter inputLine (error statistics) for {varlist}
+
+interpreter shortHelp {Calculate some global error statistics for the named variables}
+interpreter longHelp {Calculate some global error statistics for the named variables}
+
+xmlRequired Charon->Closure Models->Global MMS Parameters->Global Statistics,Value,string,{varlist}
+xmlRequired Charon->Closure Models->Global MMS Parameters->Analytic Comparison,Value,string,{varlist}
+xmlRequired Charon->Closure Models->Global MMS Parameters->Analytic Comparison: Relative Error,Value,string,{varlist}
+xmlRequired Charon->Closure Models->Global MMS Parameters->Analytic Comparison: Relative Error,Use Absolute,bool,true
+xmlRequired Charon->Closure Models->Global MMS Parameters->Analytic Comparison: L2 Error,Value,string,{varlist}

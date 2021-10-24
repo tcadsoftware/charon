@@ -1,0 +1,10 @@
+interpreter name NREF
+
+interpreter inputLine (reference impurity concentration) = {nref}
+
+interpreter shortHelp {Reference impurity concentration}
+
+interpreter longHelp {Reference impurity concentration}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,nref,double,{nref}
+

@@ -1,0 +1,9 @@
+interpreter name mumin
+
+interpreter inputLine (mumin) = {muminval}
+
+interpreter shortHelp {model parameter Mu min}
+
+interpreter longHelp {Arora model parameter Mu min}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,mumin,double,{muminval}

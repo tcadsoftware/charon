@@ -1,0 +1,9 @@
+interpreter name TemporalFunction
+
+interpreter inputLine (temporal function is) [ (Gauss) ]
+
+interpreter shortHelp {set the optical generation temporal function type}
+
+interpreter longHelp {set the optical generation temporal function type}
+
+xmlOptional (Gauss) Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Function Type,string,Gauss

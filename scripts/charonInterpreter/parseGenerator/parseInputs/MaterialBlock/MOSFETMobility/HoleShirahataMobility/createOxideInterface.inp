@@ -1,0 +1,19 @@
+
+
+interpreter name OxideInterface
+
+interpreter inputLine (spatial range) is {locMin} to {locMax} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the start and end coordinate of the oxide interface in x, y or z}
+
+interpreter longHelp {Set the start and end coordinate of the oxide interface in x, y or z}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,Start X,double,{locMin}
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,End X,double,{locMax}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,Start Y,double,{locMin}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,End Y,double,{locMax}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,Start Z,double,{locMin}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,End Z,double,{locMax}
+

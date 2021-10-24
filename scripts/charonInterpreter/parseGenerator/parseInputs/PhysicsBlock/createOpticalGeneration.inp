@@ -1,0 +1,11 @@
+interpreter name OpticalGeneration
+
+interpreter inputLine (Optical Generation) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on optical generation}
+
+interpreter longHelp {Turn on optical generation <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Optical Generation,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Optical Generation,string,Off

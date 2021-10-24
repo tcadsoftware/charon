@@ -1,0 +1,15 @@
+
+
+interpreter name EmpiricalModel
+
+interpreter inputLine (empirical damage model) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on empirical model for neutron irradiation annealing}
+
+interpreter longHelp {Turn on empirical model for neutron irradiation annealing <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Empirical Defect,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Empirical Defect,string,Off
+
+

@@ -1,0 +1,11 @@
+
+
+interpreter name CriticalDoping
+
+interpreter inputLine (critical doping) = {valueCriticalDoping}
+
+interpreter shortHelp {Specify incomplete ionization for acceptor.}
+
+interpreter longHelp {Specify incomplete ionization for acceptor.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Incomplete Ionized Acceptor->Model,Critical Doping Value,double,{valueCriticalDoping}

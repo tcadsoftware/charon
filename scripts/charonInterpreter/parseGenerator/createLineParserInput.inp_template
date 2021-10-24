@@ -1,0 +1,24 @@
+
+
+interpreter name <PARSER NAME--Example: ImportStateFile>
+
+interpreter inputLine (Keyword to invoke parser) {argumenst in {}}  [(optinon keyword 1) {option 1 argument} [(optinon keyword 2) {option 2 argument}] ]
+
+interpreter shortHelp {brief help line invoked by charonInterpreter.py --help }
+
+interpreter longHelp { Longer help line invoked by charonInterpreter.py --longhelp <>  multiple lines are separated by <>}
+
+An example required line:
+xmlRequired Charon->Mesh->Exodus File,File Name,string,{filename}
+
+An example first option line
+xmlOptional ( optinon keyword 1 ) Charon->Mesh->Exodus File,Restart Index,int,{option 1 argument }
+
+An example second option line
+xmlOptional ( optinon keyword 2 ) Charon->Mesh->Exodus File,Restart Index,int,{option 2 argument }
+
+Default lines:
+xmldefault  Charon->Mesh,Source,string,Exodus File
+xmldefault  Charon->Mesh->Exodus File,Restart Index,int,-1
+
+

@@ -1,0 +1,11 @@
+interpreter name MMSDoping
+
+interpreter inputLine (mms doping named) {functionName}
+
+interpreter shortHelp {A method of manufactured solutions doping function}
+interpreter longHelp {A method of manufactured solutions doping function}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping,Value,string,Function
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->Function1,Function Type,string,{functionName}
+

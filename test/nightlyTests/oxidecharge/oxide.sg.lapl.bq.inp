@@ -1,0 +1,41 @@
+
+Import State File "oxide.lapl.exo"
+
+Assembly workset = 50
+
+start output parameters
+      Output State File oxide.sg.lapl.bq.exo
+      Output nodal variables in sio2 for "Fixed Charge"
+end output parameters
+
+concentration scaling=1e17
+
+start Physics Block Insulator
+      geometry block is sio2
+      standard discretization type is laplace gfem
+      material model is SiO2Parameter
+      bulk fixed charge is on
+end Physics Block Insulator
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+
+      start bulk fixed charge parameters 
+          distribution is uniform 
+          charge density = 1e17
+      end bulk fixed charge parameters 
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in sio2 is uninitialized
+
+BC is contact on insulator for top on sio2 with work function 4.8780 fixed at 1.0
+BC is contact on insulator for bottom on sio2 with work function 4.8780 fixed at 0.0
+
+start solver block
+      use solver pack 1
+      line search method is backtrack
+      nonlinear solver tolerance = 1e-10
+      max nonlinear iterations = 30
+end solver block
+

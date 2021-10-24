@@ -1,0 +1,13 @@
+
+interpreter name TimeIntegratorAbsoluteTolerance
+
+interpreter inputLine (time integrator absolute error) = {error}
+
+interpreter shortHelp {Specify the time integrator absolute error tolerance}
+
+interpreter longHelp {Specify time integrator absolute error tolerance <> {error = target value for the absolute error requirement}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Absolute Error Tolerance,double,{error}
+
+
+

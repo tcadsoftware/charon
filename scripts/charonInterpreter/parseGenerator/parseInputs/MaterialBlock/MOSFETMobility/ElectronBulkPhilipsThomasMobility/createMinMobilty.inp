@@ -1,0 +1,11 @@
+interpreter name MinimumMobility
+
+interpreter inputLine (minimum mobility) = {maxMobility}
+
+interpreter shortHelp {Sets the minimum value for mobility in this mobility model}
+
+interpreter longHelp {Sets the minimum value for mobility in this mobility model <> maxMobilty is the maximum numerical value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,mumin,double,{maxMobility}
+
+

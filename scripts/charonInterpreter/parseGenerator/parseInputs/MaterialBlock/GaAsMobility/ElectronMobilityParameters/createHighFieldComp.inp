@@ -1,0 +1,9 @@
+interpreter name HighFieldComp
+
+interpreter inputLine (high field component) [ (is on) [ (is off) ]]
+
+interpreter shortHelp {Enable or disable the high-field component of the mobility model}
+interpreter longHelp {Enable or disable the high-field component of the mobility model}
+
+xmlOptional (is on) Charon->Closure Models->{MaterialBlockName}->Electron Mobility,High Field,string,On
+xmlOptional (is off) Charon->Closure Models->{MaterialBlockName}->Electron Mobility,High Field,string,Off

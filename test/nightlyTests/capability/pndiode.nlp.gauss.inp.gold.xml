@@ -1,0 +1,187 @@
+<ParameterList name="Charon" >
+  <ParameterList name="Mesh" >
+    <Parameter name="Source" type="string" value="Exodus File" />
+    <ParameterList name="Exodus File" >
+      <Parameter name="Restart Index" type="int" value="-1" />
+      <Parameter name="File Name" type="string" value="pndiode.exo" />
+    </ParameterList>
+  </ParameterList>
+  <ParameterList name="Closure Models" >
+    <Parameter name="Concentration Scaling" type="double" value="1e16" />
+    <ParameterList name="siliconParameter" >
+      <Parameter name="Material Name" type="string" value="Silicon" />
+      <ParameterList name="Doping" >
+        <Parameter name="Value" type="string" value="Function" />
+        <ParameterList name="Function1" >
+          <Parameter name="Function Type" type="string" value="Gauss" />
+          <Parameter name="Doping Type" type="string" value="Acceptor" />
+          <Parameter name="Doping Min Value" type="double" value="1e14" />
+          <Parameter name="Doping Max Value" type="double" value="1e16" />
+          <Parameter name="Xmin" type="double" value="0.0" />
+          <Parameter name="Xmax" type="double" value="0.5" />
+          <Parameter name="X Direction" type="string" value="Positive" />
+          <Parameter name="X Width" type="double" value="0.5" />
+          <Parameter name="X Peak Location" type="double" value="0" />
+        </ParameterList>
+        <ParameterList name="Function2" >
+          <Parameter name="Function Type" type="string" value="Gauss" />
+          <Parameter name="Doping Type" type="string" value="Donor" />
+          <Parameter name="Doping Min Value" type="double" value="1e14" />
+          <Parameter name="Doping Max Value" type="double" value="1e16" />
+          <Parameter name="Xmin" type="double" value="0.5" />
+          <Parameter name="Xmax" type="double" value="1.0" />
+          <Parameter name="X Direction" type="string" value="Negative" />
+          <Parameter name="X Width" type="double" value="0.5" />
+          <Parameter name="X Peak Location" type="double" value="1" />
+        </ParameterList>
+      </ParameterList>
+      <ParameterList name="Relative Permittivity" >
+        <Parameter name="Value" type="double" value="11.9" />
+      </ParameterList>
+    </ParameterList>
+  </ParameterList>
+  <ParameterList name="Solution Control" >
+    <Parameter name="Piro Solver" type="string" value="NOX" />
+    <Parameter name="Compute Sensitivities" type="bool" value="0" />
+    <Parameter name="Jacobian Operator" type="string" value="Have Jacobian" />
+    <ParameterList name="NOX" >
+      <Parameter name="Nonlinear Solver" type="string" value="Line Search Based" />
+      <ParameterList name="Direction" >
+        <Parameter name="Method" type="string" value="Newton" />
+        <ParameterList name="Newton" >
+          <Parameter name="Forcing Term Method" type="string" value="Constant" />
+          <Parameter name="Rescue Bad Newton Solve" type="bool" value="1" />
+          <ParameterList name="Stratimikos Linear Solver" >
+            <ParameterList name="Stratimikos" >
+              <Parameter name="Linear Solver Type" type="string" value="AztecOO" />
+              <Parameter name="Preconditioner Type" type="string" value="Ifpack" />
+              <ParameterList name="Linear Solver Types" >
+                <ParameterList name="AztecOO" >
+                  <ParameterList name="Forward Solve" >
+                    <Parameter name="Max Iterations" type="int" value="400" />
+                    <Parameter name="Tolerance" type="double" value="1e-6" />
+                    <ParameterList name="AztecOO Settings" >
+                      <Parameter name="Aztec Solver" type="string" value="GMRES" />
+                      <Parameter name="Convergence Test" type="string" value="r0" />
+                      <Parameter name="Size of Krylov Subspace" type="int" value="500" />
+                      <Parameter name="Output Frequency" type="int" value="10" />
+                    </ParameterList>
+                  </ParameterList>
+                </ParameterList>
+                <ParameterList name="Belos" >
+                  <Parameter name="Solver Type" type="string" value="Block GMRES" />
+                  <ParameterList name="Solver Types" >
+                    <ParameterList name="Block GMRES" >
+                      <Parameter name="Convergence Tolerance" type="double" value="1e-8" />
+                      <Parameter name="Output Frequency" type="int" value="10" />
+                      <Parameter name="Output Style" type="int" value="1" />
+                      <Parameter name="Verbosity" type="int" value="33" />
+                      <Parameter name="Maximum Iterations" type="int" value="200" />
+                      <Parameter name="Block Size" type="int" value="1" />
+                      <Parameter name="Num Blocks" type="int" value="50" />
+                      <Parameter name="Flexible Gmres" type="bool" value="0" />
+                    </ParameterList>
+                  </ParameterList>
+                </ParameterList>
+              </ParameterList>
+              <ParameterList name="Preconditioner Types" >
+                <ParameterList name="Ifpack" >
+                  <Parameter name="Overlap" type="int" value="1" />
+                  <Parameter name="Prec Type" type="string" value="ILU" />
+                  <ParameterList name="Ifpack Settings" >
+                    <Parameter name="fact: drop tolerance" type="double" value="0" />
+                    <Parameter name="fact: ilut level-of-fill" type="double" value="1" />
+                    <Parameter name="fact: level-of-fill" type="int" value="3" />
+                  </ParameterList>
+                </ParameterList>
+              </ParameterList>
+            </ParameterList>
+          </ParameterList>
+        </ParameterList>
+      </ParameterList>
+      <ParameterList name="Line Search" >
+        <Parameter name="Method" type="string" value="Backtrack" />
+        <ParameterList name="Full Step" >
+          <Parameter name="Full Step" type="double" value="0" />
+        </ParameterList>
+      </ParameterList>
+      <ParameterList name="Printing" >
+        <Parameter name="Output Precision" type="int" value="3" />
+        <Parameter name="Output Processor" type="int" value="0" />
+        <ParameterList name="Output Information" >
+          <Parameter name="Error" type="bool" value="1" />
+          <Parameter name="Warning" type="bool" value="1" />
+          <Parameter name="Outer Iteration" type="bool" value="1" />
+          <Parameter name="Parameters" type="bool" value="1" />
+          <Parameter name="Details" type="bool" value="1" />
+          <Parameter name="Linear Solver Details" type="bool" value="1" />
+          <Parameter name="Stepper Iteration" type="bool" value="1" />
+          <Parameter name="Stepper Details" type="bool" value="1" />
+          <Parameter name="Stepper Parameters" type="bool" value="1" />
+        </ParameterList>
+      </ParameterList>
+      <ParameterList name="Solver Options" >
+        <Parameter name="Status Test Check Type" type="string" value="Minimal" />
+      </ParameterList>
+      <ParameterList name="Status Tests" >
+        <Parameter name="Test Type" type="string" value="Combo" />
+        <Parameter name="Combo Type" type="string" value="OR" />
+        <Parameter name="Number of Tests" type="int" value="2" />
+        <ParameterList name="Test 0" >
+          <Parameter name="Test Type" type="string" value="NormF" />
+          <Parameter name="Tolerance" type="double" value="1.0e-8" />
+        </ParameterList>
+        <ParameterList name="Test 1" >
+          <Parameter name="Test Type" type="string" value="MaxIters" />
+          <Parameter name="Maximum Iterations" type="int" value="30" />
+        </ParameterList>
+      </ParameterList>
+    </ParameterList>
+  </ParameterList>
+  <ParameterList name="Output" >
+    <Parameter name="File Name" type="string" value="potential_pndiode_gauss.exo" />
+  </ParameterList>
+  <ParameterList name="Block ID to Physics ID Mapping" >
+    <Parameter name="silicon" type="string" value="Semiconductor" />
+  </ParameterList>
+  <ParameterList name="Physics Blocks" >
+    <ParameterList name="Semiconductor" >
+      <ParameterList>
+        <Parameter name="Type" type="string" value="NLPoisson" />
+        <Parameter name="Basis Type" type="string" value="HGrad" />
+        <Parameter name="Basis Order" type="int" value="1" />
+        <Parameter name="Integration Order" type="int" value="2" />
+        <Parameter name="Model ID" type="string" value="siliconParameter" />
+      </ParameterList>
+    </ParameterList>
+  </ParameterList>
+  <ParameterList name="Boundary Conditions" >
+    <ParameterList>
+      <Parameter name="Type" type="string" value="Dirichlet" />
+      <Parameter name="Sideset ID" type="string" value="anode" />
+      <Parameter name="Element Block ID" type="string" value="silicon" />
+      <Parameter name="Equation Set Name" type="string" value="ALL_DOFS" />
+      <Parameter name="Strategy" type="string" value="Ohmic Contact" />
+      <ParameterList name="Data" >
+        <Parameter name="Voltage" type="double" value="0" />
+      </ParameterList>
+    </ParameterList>
+    <ParameterList>
+      <Parameter name="Type" type="string" value="Dirichlet" />
+      <Parameter name="Sideset ID" type="string" value="cathode" />
+      <Parameter name="Element Block ID" type="string" value="silicon" />
+      <Parameter name="Equation Set Name" type="string" value="ALL_DOFS" />
+      <Parameter name="Strategy" type="string" value="Ohmic Contact" />
+      <ParameterList name="Data" >
+        <Parameter name="Voltage" type="double" value="0" />
+      </ParameterList>
+    </ParameterList>
+  </ParameterList>
+  <ParameterList name="Initial Conditions" >
+    <ParameterList name="silicon" >
+      <ParameterList name="ELECTRIC_POTENTIAL" >
+        <Parameter name="Value" type="double" value="0.0" />
+      </ParameterList>
+    </ParameterList>
+  </ParameterList>
+</ParameterList>

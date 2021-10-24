@@ -1,0 +1,9 @@
+interpreter name IonizationFile
+
+interpreter inputLine (file) is {fileName}
+
+interpreter shortHelp {Specify a file for ionization energies}
+
+interpreter longHelp {Specify a file for ionization energies}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Incomplete Ionized Acceptor->Model,AccIncmplIoniz File,string,{fileName}

@@ -1,0 +1,10 @@
+interpreter name JunctionDirection
+
+interpreter inputLine (direction) [ (is x) [ (is y) [ (is z) ]]]
+
+interpreter shortHelp {The coordinate direction over which the step doping applies (x, y or z)}
+interpreter longHelp {The coordinate direction over which the step doping applies (x, y or z)}
+
+xmlOptional (is x) Charon->Closure Models->{MaterialBlockName}->Doping,Direction,string,X
+xmlOptional (is y) Charon->Closure Models->{MaterialBlockName}->Doping,Direction,string,Y
+xmlOptional (is z) Charon->Closure Models->{MaterialBlockName}->Doping,Direction,string,Z

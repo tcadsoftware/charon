@@ -1,0 +1,10 @@
+interpreter name PeakTime
+
+interpreter inputLine (Pulse peak time =) {peakTime}
+
+interpreter shortHelp {set the time when the pulse peaks}
+
+interpreter longHelp {set the time when the pulse peaks}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Time Peak Location,double,{peakTime}
+

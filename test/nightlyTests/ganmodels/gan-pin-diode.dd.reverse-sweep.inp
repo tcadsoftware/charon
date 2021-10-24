@@ -1,0 +1,148 @@
+Import State File gan-diode.dd.reverse-sweep0.exo at index -1
+
+start output parameters
+      Output State File gan-diode.dd.reverse-sweep.exo
+      Output cell average variables in gan for scalar "Doping,Acceptor Concentration,Donor Concentration,Intrinsic Concentration,Doping_Raw,Acceptor_Raw Concentration,Donor_Raw Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level, SRH Recombination,Optical Generation,Avalanche Generation,Total Recombination"
+end output parameters
+
+Assembly Workset = 50
+lattice temperature = 300.0
+concentration scaling = 1.0e19
+
+start Physics Block Semiconductor
+      geometry block is gan
+      standard discretization type is drift diffusion cvfem
+      material model is ganParameter
+      srh recombination is on
+      radiative recombination is on
+      auger recombination is on
+      band gap narrowing is off
+      optical generation is on
+      acceptor incomplete ionization is on
+      donor incomplete ionization is on
+      use Fermi Dirac
+      driving force is effective field
+      avalanche is on
+end Physics Block Semiconductor
+
+
+start Material Block ganParameter
+      reference material is GaN
+      material name is GaN
+      relative permittivity = 9.7
+      constant bandgap = 3.437
+      electron affinity = 4.0
+
+      start Effective DOS
+      	    Nc300 = 2.245e18
+	    Nv300 = 3.50783e19
+ 	    Nc_F = 1.5
+            Nv_F = 1.5
+      end Effective DOS
+
+      start uniform doping named Function1
+      	    type is donor
+            concentration = 5e15
+      	    spatial range is 0.0 to 10.0 in x
+    	    spatial range is 0.0 to 100.0 in y	    
+      end uniform doping named Function1
+
+      start uniform doping named Function2
+      	    type is acceptor
+            concentration = 3.0e19
+      	    spatial range is 0.0 to 10.0 in x
+    	    spatial range is 32.0 to 32.5 in y	    
+      end uniform doping named Function2
+
+      start uniform doping named Function3
+      	    type is donor
+            concentration = 2.0e18
+      	    spatial range is 0.0 to 10.0 in x
+    	    spatial range is 0.0 to 1.0 in y	    
+      end uniform doping named Function 3
+
+      start Incomplete Ionization Acceptor
+      	    critical doping = 1e20
+    	    degeneracy factor = 4.0
+    	    ionization energy = 0.18
+    	    approximation is I
+      end Incomplete Ionization Acceptor
+      start Incomplete Ionization Donor
+      	    critical doping = 1e19
+    	    degeneracy factor = 1.0
+    	    ionization energy = 0.012
+    	    approximation is I
+      end Incomplete Ionization Donor
+
+      start Farahmand Mobility
+           start electron parameters
+                 enable high field mobility
+	   	 driving force is electric field
+           end electron mobility
+      end Farahmand
+
+      fixed mobility for holes is 11.0
+
+      start Carrier Lifetime
+            electron lifetime is constant = 5e-10
+            hole lifetime is constant = 5e-10
+      end Carrier Lifetime 
+
+      start avalanche generation
+        threshold behavior model is selberherr
+        driving force is effective field J
+        minimum field = 5.0e4
+        start selberherr parameters
+              electron a0 = 3.1e7
+              electron a1 = 0.0
+              electron a2 = 0.0
+              hole a0 = 3.1e7
+              hole a1 = 0.0
+              hole a2 = 0.0
+              electron delta = 1.0
+              hole delta = 1.0
+              electron E0 = 3.5e7
+              hole E0 = 3.5e7
+              critical field is fixed
+        end selberherr parameters
+      end avalanche generation
+  
+      radiative recombination coefficient = 1.1e-8
+    
+      start auger recombination parameters
+      	    auger coefficient for electron = 1.5e-30
+            auger coefficient for hole = 1.5e-30
+      end auger recombination
+
+      start optical generation named Function1
+            read optical generation from opto_generation.dat
+      	    spatial range is 0.0 to 1e2 in x
+      end optical generation named Function1	      	    
+
+end Material Block ganParameter
+
+BC is ohmic for anode on gan swept from -100.0 to -7.16e+03
+BC is ohmic for cathode on gan fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in gan is Exodus File
+Initial Conditions for ELECTRON_DENSITY in gan is Exodus File
+Initial Conditions for HOLE_DENSITY in gan is Exodus File
+
+start sweep options
+  continuation method is natural
+  initial step size = -5.0
+  maximum number of steps = 10000
+  step size aggressiveness = 0.2
+  predictor method is secant
+end sweep options
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-10
+      max nonlinear iterations = 30
+      line search method is full step
+      aztec max iterations = 500
+      aztec tolerance = 1e-12
+      aztec Krylov subspace size = 200
+      ifpack level of fill = 1
+end solver block

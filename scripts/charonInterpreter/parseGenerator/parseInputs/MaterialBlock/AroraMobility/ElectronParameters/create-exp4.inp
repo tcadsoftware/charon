@@ -1,0 +1,9 @@
+interpreter name exp4
+
+interpreter inputLine (exp4) = {exp4val}
+
+interpreter shortHelp {model parameter exponenetial power for N_ref}
+
+interpreter longHelp {Arora model parameter exponential power for N_ref}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,exp4,double,{exp4val}

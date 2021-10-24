@@ -1,0 +1,9 @@
+interpreter name Affinity
+
+interpreter inputLine (electron affinity) = {affval}
+
+interpreter shortHelp {Sets the electron affinity for the material in this material block}
+
+interpreter longHelp {Sets the electron affinity for the material in this material block <> affval is the value of the electron affinity}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Affinity,Value,double,{affval}

@@ -1,0 +1,8 @@
+interpreter name AlphaParameter
+
+interpreter shortHelp {Set the WRMS alpha parameter for the nonlinear solver status test.}
+interpreter longHelp {Set the WRMS alpha parameter for the nonlinear solver status test.}
+
+interpreter inputLine (alpha) = {alphaVal}
+
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,alpha,double,{alphaVal}

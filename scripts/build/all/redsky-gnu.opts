@@ -1,0 +1,25 @@
+CMAKE_CXX_COMPILER:FILEPATH="mpic++"
+CMAKE_C_COMPILER:FILEPATH="mpicc"
+CMAKE_Fortran_COMPILER:FILEPATH="mpif77"
+
+CMAKE_CXX_FLAGS:STRING="-O3 -mtune=native -std=c++11 -Wall"
+CMAKE_C_FLAGS:STRING="-O3 -mtune=native -Wall"
+CMAKE_Fortran_FLAGS:STRING="-O3"
+
+TPL_ENABLE_Boost:BOOL=ON
+TPL_ENABLE_BoostLib:BOOL=ON
+
+Boost_INCLUDE_DIRS:FILEPATH="/projects/charon/Charon2/redsky/gnu/4.9/include"
+BoostLib_INCLUDE_DIRS:FILEPATH="/projects/charon/Charon2/redsky/gnu/4.9/include"
+BoostLib_LIBRARY_DIRS:FILEPATH="/projects/charon/Charon2/redsky/gnu/4.9/lib"
+
+SEACAS_ENABLE_NETCDF4_SUPPORT:BOOL=ON
+TPL_ENABLE_Netcdf:BOOL=ON
+TPL_Netcdf_INCLUDE_DIRS:PATH="/projects/charon/Charon2/redsky/gnu/4.9/include"
+Netcdf_LIBRARY_DIRS:PATH="/projects/charon/Charon2/redsky/gnu/4.9/lib"
+
+TPL_ENABLE_HDF5:BOOL=ON
+HDF5_INCLUDE_DIRS:PATH="/opt/hdf5-1.8/usr/include"
+HDF5_LIBRARY_DIRS:PATH="/opt/hdf5-1.8/usr/lib64"
+
+Panzer_ENABLE_TESTS:BOOL=OFF

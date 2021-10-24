@@ -1,0 +1,9 @@
+interpreter name IfpackLevelOfFill
+
+interpreter inputLine (ifpack level of fill) = {level}
+
+interpreter shortHelp {Specify Ifpack level of fill}
+
+interpreter longHelp {Specify Ifpack level of fill}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack->Ifpack Settings,fact: level-of-fill,int,{level}

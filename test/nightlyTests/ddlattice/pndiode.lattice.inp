@@ -1,0 +1,50 @@
+Import State File pndiode.exo
+
+start output parameters
+      Output State File pndiode.lattice.exo
+      Output cell average Variables in silicon for scalar "Heat Generation,Heat Capacity,Thermal Conductivity"
+end output parameters
+
+concentration scaling = 1e16
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is lattice gfem
+      material model is siliconParameter
+      heat generation is analytic
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+
+      start heat generation
+      	    behavior model is analytic
+            type is linear 
+            linear factor = -3e9
+      end heat generation
+
+      start heat capacity
+            behavior model is tempdep
+            a = 1.63
+            b = 0.0
+            c = 0.0 
+      end heat capacity
+
+      start thermal conductivity 
+            behavior model is tempdep
+            a = 2.0
+            b = 0.0
+            c = 0.0
+      end thermal conductivity 
+end Material Block siliconParameter
+
+BC is thermal contact for anode on silicon fixed at 600  
+BC is thermal contact for cathode on silicon fixed at 300  
+
+Initial conditions for LATTICE_TEMPERATURE in silicon is constant = 1.0
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+end solver block

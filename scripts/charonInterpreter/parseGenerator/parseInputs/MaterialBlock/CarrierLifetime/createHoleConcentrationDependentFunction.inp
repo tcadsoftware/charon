@@ -1,0 +1,19 @@
+
+
+interpreter name HoleConcentrationDependentFunction
+
+interpreter inputLine (hole lifetime is concentration) dependent [(with Nsrh) = {Nsrh}]
+
+interpreter shortHelp {Specify that the hole lifetime is concentration dependent.}
+
+interpreter longHelp {Specify that the hole lifetime is concentration dependent. <> {Nsrh} is the parameter for the function.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Lifetime,Value,string,Function
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Lifetime->Function 1,Function Type,string,ConcDep
+
+xmlOptional (with Nsrh) Charon->Closure Models->{MaterialBlockName}->Hole Lifetime->Function 1,Nsrh,double,{Nsrh}
+
+
+
+
+

@@ -1,0 +1,11 @@
+
+
+interpreter name Alpha
+
+interpreter inputLine (alpha) = {alpha} 
+
+interpreter shortHelp {Set the band gap model alpha value}
+
+interpreter longHelp {Set the band gap model alpha value.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,alpha,double,{alpha}

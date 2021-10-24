@@ -1,0 +1,15 @@
+
+
+interpreter name FixedLatticeTemperature
+
+interpreter inputLine (lattice temperature) = {temp}
+
+interpreter shortHelp {Set a fixed lattice temperature }
+
+interpreter longHelp { Set a fixed lattice temperature <> temp is the temperature}
+
+xmlRequired Charon->Closure Models,Lattice Temperature,double,{temp}
+
+xmlDefault Charon->Closure Models,Lattice Temperature,double,300
+
+

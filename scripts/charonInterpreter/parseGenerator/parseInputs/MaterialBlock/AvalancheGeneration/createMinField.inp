@@ -1,0 +1,8 @@
+interpreter name MinField
+
+interpreter inputLine (minimum field) = {minF}
+
+interpreter shortHelp {The minimum field for avalanche generation}
+interpreter longHelp {The minimum field for avalanche generation}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Minimum Field,double,{minF}

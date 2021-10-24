@@ -1,0 +1,9 @@
+interpreter name MassDensity
+
+interpreter inputLine (mass density) = {mdensval} 
+
+interpreter shortHelp {Set the mass density value}
+
+interpreter longHelp {Set the mass density value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Capacity,Mass Density,double,{mdensval}

@@ -1,0 +1,63 @@
+
+Import State File potential_pndiode.exo
+
+start output parameters
+      Output State File result_pndiode_hb-sgcvfem-laplace_ac1-linear-SS.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is laplace cvfem
+      apply harmonic balance for small signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = 1
+      end harmonic balance parameters 
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is X
+      end step junction doping
+
+end Material Block siliconParameter
+
+
+start Harmonic Balance BC for anode on silicon
+  type is ohmic
+  frequencies  "0  1"
+  amplitudes   "4  2"
+  phase shifts "0  0"
+end Harmonic Balance BC for anode on silicon
+start Harmonic Balance BC for cathode on silicon
+  type is ohmic
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for cathode on silicon
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized
+Harmonic Balance Initial Conditions for ELECTRON_DENSITY in silicon is uninitialized
+Harmonic Balance Initial Conditions for HOLE_DENSITY in silicon is uninitialized
+Harmonic Balance Initial Conditions for LATTICE_TEMPERATURE in silicon is uninitialized
+
+start solver block
+      use solver pack HB
+      nonlinear solver tolerance = 1.0e-6
+      max nonlinear iterations = 30
+end solver block
+

@@ -1,0 +1,9 @@
+interpreter name Kappa300
+
+interpreter inputLine (kappa300) = {kappa} 
+
+interpreter shortHelp {Set the 300K kappa value}
+
+interpreter longHelp {Set the 300K kappa value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,kappa300,double,{kappa}

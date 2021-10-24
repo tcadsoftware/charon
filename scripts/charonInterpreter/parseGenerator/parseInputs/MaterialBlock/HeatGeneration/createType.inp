@@ -1,0 +1,12 @@
+interpreter name Type
+
+interpreter inputLine (type) is [(constant) [(linear)]]
+
+interpreter shortHelp {Set type}
+
+interpreter longHelp {Set type for heat generation}
+
+xmlOptional (constant) Charon->Closure Models->{MaterialBlockName}->Heat Generation,Type,string,Constant
+
+xmlOptional (linear) Charon->Closure Models->{MaterialBlockName}->Heat Generation,Type,string,Linear
+

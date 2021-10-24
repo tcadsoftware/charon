@@ -1,0 +1,14 @@
+
+
+interpreter name Pulsewaveform
+
+interpreter inputLine (Pulse waveform is) [ (delta) [(square) [(gaussian) [(gaussianlog)]]]]
+
+interpreter shortHelp {set the shape of the neutron pulse waveform}
+
+interpreter longHelp {Set the shape of hte neutron pulse waveform <> options are delta, square, gaussian, gaussianlog }
+
+xmlOptional (gaussian) Charon->Closure Models->Empirical Defect Recombination,pulse type,string,gaussian
+xmlOptional (delta) Charon->Closure Models->Empirical Defect Recombination,pulse type,string,delta
+xmlOptional (square) Charon->Closure Models->Empirical Defect Recombination,pulse type,string,square
+xmlOptional (gaussianlog) Charon->Closure Models->Empirical Defect Recombination,pulse type,string,gaussianlog

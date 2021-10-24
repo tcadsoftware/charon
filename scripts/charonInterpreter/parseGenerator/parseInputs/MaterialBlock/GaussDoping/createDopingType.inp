@@ -1,0 +1,11 @@
+interpreter name DopingType
+
+interpreter inputLine (Type) is [(donor) [ (acceptor)]]
+
+interpreter shortHelp {set the dopant type to acceptor or donor}
+
+interpreter longHelp {set the dopant type to acceptor or donor}
+
+xmlOptional (donor) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Type,string,Donor
+
+xmlOptional (acceptor) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Type,string,Acceptor

@@ -1,0 +1,12 @@
+
+
+interpreter name E2
+
+interpreter inputLine (E2) = {E2}
+
+interpreter shortHelp {Set the E2 value for Shirahata electron model}
+
+interpreter longHelp {Set the E2 value for Shirahata electron model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Perpendicular Field Model,E2,double,{E2}
+

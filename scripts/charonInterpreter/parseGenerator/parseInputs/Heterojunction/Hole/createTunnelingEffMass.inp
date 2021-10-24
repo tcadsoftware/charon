@@ -1,0 +1,9 @@
+interpreter name TunnelingEffMass
+
+interpreter inputLine (tunneling effective mass) = {value}
+
+interpreter shortHelp {Set the carrier effective mass for the local tunneling calculation}
+interpreter longHelp {Set the carrier effective mass for the local tunneling calculation}
+
+xmlRequired Charon->Boundary Conditions->hole1ANONYMOUS->Data,Tunneling Effective Mass,double,{value}
+xmlRequired Charon->Boundary Conditions->hole2ANONYMOUS->Data,Tunneling Effective Mass,double,{value}

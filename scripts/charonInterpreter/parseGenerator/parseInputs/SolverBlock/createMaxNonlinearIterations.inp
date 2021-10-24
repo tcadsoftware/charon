@@ -1,0 +1,12 @@
+
+interpreter name MaxNonlinearIterations
+
+interpreter inputLine (max nonlinear iterations) = {maxIterations}
+
+interpreter shortHelp {Specify the maximum number of non linear iterations before failure is declared}
+
+interpreter longHelp {Specify the maximum number of non linear iterations before failure is declared <> maxIterations = maximum number of iterations}
+
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 1,Maximum Iterations,int,{maxIterations}
+
+

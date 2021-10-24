@@ -1,0 +1,14 @@
+# Copy build scripts from last checkout. This means changes to the
+# build scripts will lag by a day but there is no easy way to just get
+# a single file from a git repo.
+00 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/ctest_regression.cmake /home/glhenni/Nightly-Testing/Charon2/scripts/
+02 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/verne/nightly_cron_driver.sh /home/glhenni/Nightly-Testing/Charon2/scripts/
+04 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/verne/nightly_cron_driver.intel.sh /home/glhenni/Nightly-Testing/Charon2/scripts/
+
+# Update TriBITS
+00 04  *  *  *  cd $HOME/Projects/Charon2/TriBITS;git pull > /tmp/tribits-update-out.txt 2>&1
+
+# Run an OPT (intel and gnu) and COV (gnu) test every day
+00 03  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.sh COV > /home/glhenni/Nightly-Testing/Charon2/nightly-cov.out 2>&1
+00 02  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.sh OPT > /home/glhenni/Nightly-Testing/Charon2/nightly-opt.out 2>&1
+00 01  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.intel.sh OPT > /home/glhenni/Nightly-Testing/Charon2/nightly-opt.intel.out 2>&1

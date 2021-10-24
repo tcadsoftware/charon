@@ -1,0 +1,9 @@
+interpreter name N1
+
+interpreter inputLine (n1) = {n1val}
+
+interpreter shortHelp {Farahmand model parameter n1}
+
+interpreter longHelp {Farahmand model parameter n1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,n1,double,{n1val}

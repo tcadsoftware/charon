@@ -1,0 +1,13 @@
+
+
+interpreter name MaximumNumberSteps
+
+interpreter inputLine (Maximum number of steps) = {numSteps}
+
+interpreter shortHelp {Specify maximum number of steps allowed in the sweep}
+
+interpreter longHelp {Specify maximum number of steps allowed in the sweep <> {numSteps} = the number of steps}
+
+xmlRequired Charon->Solution Control->LOCA->Stepper,Max Steps,int,{numSteps}  priority 5
+
+

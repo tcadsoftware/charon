@@ -1,0 +1,12 @@
+
+interpreter name ChargeDistribution
+
+interpreter inputLine (distribution is) [(uniform)]
+
+interpreter shortHelp {Specify charge distribution function for bulk fixed charge}
+
+interpreter longHelp {Specify charge distribution function for bulk fixed charge <> uniform--specify extents}
+
+
+xmlOptional (uniform) Charon->Closure Models->{MaterialBlockName}->Fixed Charge->Function 1,Function Type,string,Uniform
+

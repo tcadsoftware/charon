@@ -1,0 +1,16 @@
+
+
+interpreter name ThermalBC
+
+interpreter inputLine (BC is thermal contact for) {sidesetID} on {geometryBlock} fixed at {temperature}
+
+interpreter shortHelp {Specify the temperature on a contact}
+
+interpreter longHelp {Specify the temperature on a contact. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> temperature is the value in kelvin.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS,Strategy,string,Thermal Contact
+xmlRequired Charon->Boundary Conditions->{sidesetID}ThermalANONYMOUS->Data,Temperature,double,{temperature}

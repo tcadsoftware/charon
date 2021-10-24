@@ -1,0 +1,6 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+GLOBAL VARIABLES 
+	 ContinuationParameter relative 1.0e-3
+	 cathode_silicon_Current relative 5.0e-3 floor 9.6e-8
+	 anode_silicon_Current relative 5.0e-3 floor 9.6e-8

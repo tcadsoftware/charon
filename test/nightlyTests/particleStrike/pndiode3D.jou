@@ -1,0 +1,139 @@
+undo on
+graphics mode wireframe
+
+
+
+################################################
+# Geometry definition
+################################################
+
+#{st_rad = 0.1}
+#{xn = 0.5}
+#{xp = 0.5}
+#{xn_sc = 0.3}
+#{xp_sc = 0.2}
+
+#{xL = 1}
+#{yL = 0.5}
+#{zL = 0.5}
+
+
+
+################################################
+# Geometry creation
+################################################
+
+# p bulk region
+create brick x {xp-xp_sc} y {yL} z {zL}
+volume 1 rename "p_bulk"
+
+# p sp region 
+create brick x {xp_sc-st_rad} y {yL} z {zL}
+volume 2 rename "p_sc"
+move vertex 11 location vertex 2
+
+# p strike region
+create brick x {st_rad} y {yL} z {zL}
+volume 3 rename "p_st"
+move vertex 19 location vertex 10
+
+# n strike region
+create brick x {st_rad} y {yL} z {zL}
+volume 4 rename "n_st"
+move vertex 27 location vertex 18
+
+# n sp region 
+create brick x {xn_sc-st_rad} y {yL} z {zL}
+volume 5 rename "n_sc"
+move vertex 35 location vertex 26
+
+# n bulk region
+create brick x {xn-xn_sc} y {yL} z {zL}
+volume 6 rename "n_bulk"
+move vertex 43 location vertex 34
+
+imprint all 
+merge all
+
+
+# Move everything to positive coordinate values
+move vertex 4 location x 0 y 0 z 0 include_merged
+
+################################################
+## Boundary conditions
+################################################
+
+sideset 1 surface 4
+sideset 1 name "anode"
+
+sideset 2 surface 36
+sideset 2 name "cathode"
+
+################################################
+## Mesh definition and creation
+################################################
+
+#{pDX_coarse = 0.05}
+#{pDX_fine = 0.005}
+#{pDY_coarse = 0.1}
+#{pDZ_coarse = 0.1}
+
+# p bulk region
+curve 2 4 5 8 interval size {pDX_coarse}
+curve 1 3 5 7 interval size {pDY_coarse}
+curve 11 12 9 10 interval size {pDZ_coarse}
+volume 1 scheme map
+mesh volume 1
+
+# p sp region 
+curve 1 13 5 17 interval size {pDY_coarse}
+curve 12 24 10 22 interval size {pDZ_coarse}
+curve 14 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 10
+curve 16 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 9
+curve 18 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 14
+curve 20 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 13
+volume 2 scheme map
+mesh volume 2
+
+# p strike region
+curve 26 28 30 32 interval size {pDX_fine}
+curve 13 25 17 29 interval size {pDY_coarse}
+curve 24 36 22 34 interval size {pDZ_coarse}
+volume 3 scheme map
+mesh volume 3
+
+# n strike region
+curve 38 40 42 44 interval size {pDX_fine}
+curve 25 37 29 41 interval size {pDY_coarse}
+curve 36 48 34 46 interval size {pDZ_coarse}
+volume 4 scheme map
+mesh volume 4
+
+# p sp region 
+curve 37 49 41 53 interval size {pDY_coarse}
+curve 48 60 46 58 interval size {pDZ_coarse}
+curve 50 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 26
+curve 52 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 25
+curve 54 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 30
+curve 56 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 29
+volume 5 scheme map
+mesh volume 5
+
+# p bulk region
+curve 62 64 66 68 interval size {pDX_coarse}
+curve 53 65 49 61 interval size {pDY_coarse}
+curve 60 72 58 70 interval size {pDZ_coarse}
+volume 6 scheme map
+mesh volume 6
+
+
+################################################
+# Element block
+################################################
+
+block 1 volume 1 2 3 4 5 6 
+block 1 elem type hex8
+block 1 name "Silicon"
+
+
+export mesh 'pndiode3D.gen' overwrite

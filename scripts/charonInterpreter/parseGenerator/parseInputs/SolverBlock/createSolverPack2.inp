@@ -1,0 +1,60 @@
+
+interpreter name SolverPack2
+
+interpreter inputLine (use solver pack 2)
+
+interpreter shortHelp {Specify the use of the steady-state solver pack 2}
+
+interpreter longHelp {Specify the use of the steady-state solver pack 2}
+
+xmlDefault Charon->Solution Control,Piro Solver,string,NOX
+xmlDefault Charon->Solution Control,Compute Sensitivities,bool,0
+xmlDefault Charon->Solution Control,Jacobian Operator,string,Have Jacobian
+xmlDefault Charon->Solution Control->NOX->Direction,Method,string,Newton
+xmlDefault Charon->Solution Control->NOX->Direction->Newton,Forcing Term Method,string,Constant
+xmlDefault Charon->Solution Control->NOX->Direction->Newton,Rescue Bad Newton Solve,bool,1
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Aztec Solver,string,GMRES
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Convergence Test,string,r0
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Size of Krylov Subspace,int,500
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Output Frequency,int,10
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve,Max Iterations,int,400
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve,Tolerance,double,1e-6
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos,Solver Type,string,Block GMRES
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Convergence Tolerance,double,1e-8
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Output Frequency,int,10
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Output Style,int,1
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Verbosity,int,33
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Maximum Iterations,int,200
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Block Size,int,1
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Num Blocks,int,50
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Flexible Gmres,bool,0
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack,Overlap,int,1
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack,Prec Type,string,ILU
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack->Ifpack Settings,fact: drop tolerance,double,0
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack->Ifpack Settings,fact: ilut level-of-fill,double,1
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack->Ifpack Settings,fact: level-of-fill,int,3
+xmlDefault Charon->Solution Control->NOX->Line Search->Full Step,Full Step,double,0
+xmlDefault Charon->Solution Control->NOX->Line Search,Method,string,Backtrack
+xmlDefault Charon->Solution Control->NOX,Nonlinear Solver,string,Line Search Based
+xmlDefault Charon->Solution Control->NOX->Printing,Output Precision,int,3
+xmlDefault Charon->Solution Control->NOX->Printing,Output Processor,int,0
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Error,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Warning,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Parameters,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Details,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Linear Solver Details,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Stepper Iteration,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Stepper Details,bool,1
+xmlDefault Charon->Solution Control->NOX->Printing->Output Information,Stepper Parameters,bool,1
+xmlDefault Charon->Solution Control->NOX->Solver Options,Status Test Check Type,string,Minimal
+xmlDefault Charon->Solution Control->NOX->Status Tests,Test Type,string,Combo
+xmlDefault Charon->Solution Control->NOX->Status Tests,Combo Type,string,OR
+xmlDefault Charon->Solution Control->NOX->Status Tests,Number of Tests,int,2
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Test Type,string,NormF
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Tolerance,double,1.0e-6
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 1,Test Type,string,MaxIters
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 1,Maximum Iterations,int,30
+

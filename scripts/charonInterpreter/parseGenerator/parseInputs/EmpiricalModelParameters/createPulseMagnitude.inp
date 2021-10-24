@@ -1,0 +1,12 @@
+
+
+interpreter name PulseMagnitude
+
+interpreter inputLine (pulse magnitude) = {pulseMag}
+
+interpreter shortHelp {set the maximum value of the pulse}
+
+interpreter longHelp {set the maximum value of the pulse <> This the maximum rate of Frenkel pair prodution through the lifetime of the pulse}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,pulse magnitude,double,{pulseMag}
+

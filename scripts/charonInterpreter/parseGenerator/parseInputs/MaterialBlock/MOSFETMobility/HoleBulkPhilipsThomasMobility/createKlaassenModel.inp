@@ -1,0 +1,10 @@
+interpreter name KlaassenModel
+
+interpreter inputLine (use klaassen parameters)
+
+interpreter shortHelp {Sets the G parameters to Klaassen in the Philips model}
+
+interpreter longHelp {Sets the G parameters to Klaassen in the Philips model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,G Parameter Set,string,Klaassen
+

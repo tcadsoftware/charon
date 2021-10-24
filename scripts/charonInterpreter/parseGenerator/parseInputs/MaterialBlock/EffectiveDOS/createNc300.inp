@@ -1,0 +1,9 @@
+interpreter name Nc300
+
+interpreter inputLine (Nc300) = {valnc} 
+
+interpreter shortHelp {Set the 300K Nc value}
+
+interpreter longHelp {Set the 300K Nc value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Effective DOS,Nc300,double,{valnc}

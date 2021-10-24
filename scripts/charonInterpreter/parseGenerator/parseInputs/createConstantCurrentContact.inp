@@ -1,0 +1,20 @@
+
+interpreter name ConstantCurrentContact
+
+interpreter inputLine (BC is current for) {sidesetID} on {geometryBlock} fixed at {current} and initial voltage {voltage} [(with area) {cntarea} [ (and length) {cntlength} [ (with base doping type) {baseType} ]]]
+
+interpreter shortHelp {Specify a current boundary condition}
+
+interpreter longHelp {Specify a current boundary condition, <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> fixed at current in A <> with initial voltage in volts}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Constant Current
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Current Value,double,{current}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Voltage,double,{voltage}
+
+xmlOptional (with area) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Device Contact Area,double,{cntarea}
+xmlOptional (and length) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Simulation Contact Length,double,{cntlength}
+xmlOptional (with base doping type) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,BJT1D Base Doping Type,string,{baseType}

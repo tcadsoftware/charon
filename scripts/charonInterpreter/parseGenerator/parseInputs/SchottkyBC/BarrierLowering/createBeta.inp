@@ -1,0 +1,11 @@
+
+
+interpreter name Beta
+
+interpreter inputLine (beta) = {beta} 
+
+interpreter shortHelp {Set the barrier lowering model beta value.}
+
+interpreter longHelp {Set the barrier lowering model beta value.}
+
+xmlRequired Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data->Barrier Lowering,beta,double,{beta}

@@ -1,0 +1,48 @@
+
+Import State File pndiode.exo
+
+start output parameters
+      Output State File potential_pndiode_gauss.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start gauss doping named Function1
+	    type is acceptor
+	    concentration range is 1e14 to 1e16
+	    spatial range is 0.0 to 0.5 in x
+	    direction is Positive in x
+	    gradient width = 0.5 in x
+	    peak location = 0 in x
+      end uniform doping named Function1
+
+      start gauss doping named Function2
+	    type is donor
+	    concentration range is 1e14 to 1e16
+	    spatial range is 0.5 to 1.0 in x
+	    direction is Negative in x
+	    gradient width = 0.5 in x
+	    peak location = 1 in x
+      end uniform doping named Function2
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

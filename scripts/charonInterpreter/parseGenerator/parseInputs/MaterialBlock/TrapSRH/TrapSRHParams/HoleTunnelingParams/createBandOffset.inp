@@ -1,0 +1,8 @@
+interpreter name BandOffset
+
+interpreter inputLine (heterojunction band offset) = {value}
+
+interpreter shortHelp {Valence band offset in eV for hole tunneling}
+interpreter longHelp {Valence band offset in eV for hole tunneling}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Hole HJ Band Offset,double,{value}

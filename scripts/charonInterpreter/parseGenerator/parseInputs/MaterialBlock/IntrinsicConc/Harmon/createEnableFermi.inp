@@ -1,0 +1,9 @@
+interpreter name EnableFermi
+
+interpreter inputLine (enable fermi) = {boolFlag}] 
+
+interpreter shortHelp {Specify the flag for enable fermi, either true or false}
+
+interpreter longHelp {Specify the flag for enable fermi, either true or false, which adds a Fermi-Dirac related correction to band gap narrowing value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Enable Fermi Correction,bool,{boolFlag}

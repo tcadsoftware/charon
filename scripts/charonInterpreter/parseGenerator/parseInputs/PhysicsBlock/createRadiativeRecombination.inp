@@ -1,0 +1,15 @@
+
+
+interpreter name RadiativeRecombination
+
+interpreter inputLine (Radiative Recombination) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on radiative recombination}
+
+interpreter longHelp {Turn on radiative recombination <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Radiative,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Radiative,string,Off
+
+

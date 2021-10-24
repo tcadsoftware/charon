@@ -1,0 +1,9 @@
+interpreter name FermiDirac
+
+interpreter inputLine (fermi dirac density) = {value}
+
+interpreter shortHelp {Set the fermi dirac density}
+interpreter longHelp {Set the fermi dirac density}
+
+xmlRequired Charon->Boundary Conditions->hole1ANONYMOUS->Data,Fermi Dirac Density,double,{value}
+xmlRequired Charon->Boundary Conditions->hole2ANONYMOUS->Data,Fermi Dirac Density,double,{value}

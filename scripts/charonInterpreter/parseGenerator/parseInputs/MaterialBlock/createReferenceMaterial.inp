@@ -1,0 +1,12 @@
+
+
+interpreter name ReferenceMaterial
+
+interpreter inputLine (Reference Material) is {material}
+
+interpreter shortHelp {Set the Reference Material. }
+
+interpreter longHelp { Set the Reference Material. <> Options: Silicon. }
+
+xmlRequired Charon->Closure Models,Reference Material,string,{material}
+

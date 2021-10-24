@@ -1,0 +1,9 @@
+interpreter name AztecMaxIterations
+
+interpreter inputLine (aztec max iterations) = {maxIterations}
+
+interpreter shortHelp {Specify Aztec maximum number of linear iterations before failure is declared}
+
+interpreter longHelp {Specify Aztec maximum number of linear iterations before failure is declared <> maxIterations = maximum number of iterations}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve,Max Iterations,int,{maxIterations}

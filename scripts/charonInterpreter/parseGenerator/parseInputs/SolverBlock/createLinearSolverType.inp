@@ -1,0 +1,11 @@
+
+interpreter name LinearSolverType
+
+interpreter inputLine (linear solver) is {linearSolver}
+
+interpreter shortHelp {Specify the linear solver type}
+
+interpreter longHelp {Specify the linear solver type, AztecOO, Belos, or others}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,{linearSolver}
+

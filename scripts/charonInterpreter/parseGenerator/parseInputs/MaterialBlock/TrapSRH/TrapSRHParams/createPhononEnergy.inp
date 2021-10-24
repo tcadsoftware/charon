@@ -1,0 +1,8 @@
+interpreter name PhononEnergy
+
+interpreter inputLine (phonon energy) = {value}
+
+interpreter shortHelp {Optical phonon energy in unit of eV}
+interpreter longHelp {Optical phonon energy in unit of eV}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Phonon Energy,double,{value}

@@ -1,0 +1,13 @@
+
+
+interpreter name DirectXMLInput
+
+interpreter inputLine (Direct input) {inputFodder} 
+
+interpreter shortHelp {Input directly a quoted, LCM formatted parameter\" into the xml parameter list.}
+
+interpreter longHelp {Input directly a quoted \"LCM formatted parameter\" into the xml parameter list. <> The LCM format is:  Nest0->Nest1->Nest2...Nestn,parameterName,parameterDataType,parameterValue}
+
+xmlRequired {inputFodder} priority 100
+
+

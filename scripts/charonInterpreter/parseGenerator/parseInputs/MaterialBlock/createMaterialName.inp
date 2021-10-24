@@ -1,0 +1,12 @@
+
+
+interpreter name MaterialName
+
+interpreter inputLine (material name) is {materialName}
+
+interpreter shortHelp {Set the Material name }
+
+interpreter longHelp { Set the Material name <> materialName is the material in this material block (e.g. Silicon)}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName},Material Name,string,{materialName}
+

@@ -1,0 +1,9 @@
+
+interpreterBlock name DopingFile1D
+
+interpreterBlock (start file1d doping named) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping,Value,string,Function
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Function Type,string,File1D
+
+

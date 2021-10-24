@@ -1,0 +1,9 @@
+interpreter name APV_BGN
+
+interpreter inputLine (APV_BGN) = {APV_BGN_val}
+
+interpreter shortHelp {Specify a value for the APV_BGN parameter}
+
+interpreter longHelp {Specify a value for the APV_BGN parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,APV_BGN,double,{APV_BGN_val}

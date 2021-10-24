@@ -1,0 +1,12 @@
+
+
+interpreter name CrossSection
+
+interpreter inputLine (Cross section) = {cs}
+
+interpreter shortHelp {set the cross section in cm^2}
+
+interpreter longHelp {set the cross section in cm^2}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,cross section,double,{cs}
+

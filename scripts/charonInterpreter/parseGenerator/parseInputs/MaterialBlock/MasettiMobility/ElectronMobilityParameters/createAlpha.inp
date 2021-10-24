@@ -1,0 +1,9 @@
+interpreter name Alpha
+
+interpreter inputLine (alpha) = {alphaval}
+
+interpreter shortHelp {Masetti model parameter alpha}
+
+interpreter longHelp {Masetti model parameter alpha}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,alpha,double,{alphaval}

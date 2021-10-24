@@ -1,0 +1,13 @@
+interpreter name DiscretizationMethod
+
+interpreter inputLine (discretization method) [ (is FEM-EFFPG) [ (is FEM-SUPG) [ (CVFEM-SG) ]]]
+
+interpreter shortHelp {Select discretization method}
+
+interpreter longHelp {Select discretization method}
+
+xmlOptional (is FEM-EFFPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,FEM-EFFPG
+
+xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,FEM-SUP
+
+xmlOptional (is CVFEM-SG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,CVFEM-SG

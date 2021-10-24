@@ -1,0 +1,12 @@
+
+
+interpreter name PulseResolution
+
+interpreter inputLine (pulse resolution) = {pulseRes}
+
+interpreter shortHelp {set the resolution of the pulse}
+
+interpreter longHelp {set the resolution of the pulse <> The radiation pulse gets chopped up into individual dirac impulses.  This sets the number of impulses over the whole finite width pulse.}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,pulse resolution,int,{pulseRes}
+

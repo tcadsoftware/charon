@@ -1,0 +1,11 @@
+interpreter name BehaviorModel
+
+interpreter inputLine (behavior model) is [ (tempdep) [ (powerlawtempdep) ]]
+
+interpreter shortHelp {Set behavior model for heat capacity}
+
+interpreter longHelp {Set behavior model for heat capacity}
+
+xmlOptional (tempdep) Charon->Closure Models->{MaterialBlockName}->Heat Capacity,Value,string,TempDep
+
+xmlOptional (powerlawtempdep) Charon->Closure Models->{MaterialBlockName}->Heat Capacity,Value,string,PowerLawTempDep

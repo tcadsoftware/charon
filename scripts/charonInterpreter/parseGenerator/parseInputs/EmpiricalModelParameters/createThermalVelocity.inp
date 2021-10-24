@@ -1,0 +1,11 @@
+
+
+interpreter name ThermalVelocity
+
+interpreter inputLine (Thermal velocity) = {tv}
+
+interpreter shortHelp {set the thermal velocity in cm/s}
+
+interpreter longHelp {set the thermal velocity in cm/s}
+
+xmlRequired Charon->Closure Models->Empirical Defect Recombination,thermal velocity,double,{tv}

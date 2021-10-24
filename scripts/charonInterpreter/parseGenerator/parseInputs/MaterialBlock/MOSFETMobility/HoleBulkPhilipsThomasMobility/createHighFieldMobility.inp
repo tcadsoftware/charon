@@ -1,0 +1,10 @@
+interpreter name HighFieldMobility
+
+interpreter inputLine (enable high field mobility)
+
+interpreter shortHelp {Use a high field mobility model for holes}
+
+interpreter longHelp {Use a high field mobility model for holes}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,Enable High Field,bool,true
+

@@ -1,0 +1,13 @@
+interpreter name CriticalField
+
+interpreter inputLine (critical field) is [(fixed) [ (computed)]]
+
+interpreter shortHelp {Set the critical field computation}
+
+interpreter longHelp {Set the critical field computation}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Critical Field,string,Computed
+
+xmlOptional (fixed) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Critical Field,string,Fixed
+
+xmlOptional (computed) Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,Critical Field,string,Computed

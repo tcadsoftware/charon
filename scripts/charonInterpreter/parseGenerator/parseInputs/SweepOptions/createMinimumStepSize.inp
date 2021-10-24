@@ -1,0 +1,9 @@
+interpreter name MinimumStepSize
+
+interpreter inputLine (Minimum Step Size) = {stepSize}
+
+interpreter shortHelp {Specify minimum step size for parameter sweep}
+
+interpreter longHelp {Specify minimum step size for parameter sweep <> {stepSize} = the step size}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Min Step Size,double,{stepSize} priority 5

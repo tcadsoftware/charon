@@ -1,0 +1,14 @@
+
+interpreterBlock name MGaussDoping
+
+interpreterBlock (start mgauss doping named) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping,Value,string,Function
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Function Type,string,MGauss
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},X ERFC_ON,bool,false
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Y ERFC_ON,bool,false
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Z ERFC_ON,bool,false
+
+
+

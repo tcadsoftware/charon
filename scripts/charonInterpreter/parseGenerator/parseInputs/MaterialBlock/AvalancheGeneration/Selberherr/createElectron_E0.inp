@@ -1,0 +1,8 @@
+interpreter name Electron_E0
+
+interpreter inputLine (electron E0) = {E0_e}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter E0_e for Selberherr model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,E0_e,double,{E0_e}

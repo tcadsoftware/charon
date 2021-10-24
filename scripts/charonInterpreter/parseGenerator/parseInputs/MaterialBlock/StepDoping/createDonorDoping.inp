@@ -1,0 +1,12 @@
+
+
+interpreter name DonorConcentration
+
+interpreter inputLine (Donor Concentration) = {concentration}
+
+interpreter shortHelp {set the magnitude of the donor dopant concentration}
+
+interpreter longHelp {set the magnitude of the donor dopant concentration <> concentration is the numerical value in 1/cm^3}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping,Donor Value,double,{concentration}
+

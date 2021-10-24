@@ -1,0 +1,587 @@
+
+
+\section{Tutorials}
+
+
+This section contains several tutorials on how to create parsers.  It
+starts with a tutorial on a very simple line parser with one optional
+section. Simple block parsers with named blocks and nested line
+parsers are next.  Finally, advanced line parsers with custom priority
+and logic modifiers are last.  The details of the input files to
+create line and block parsers are described in the initial chapter of
+this document.  The purpose of this chapter is to take a developer
+step-by-step through the creation of a new parser using some of the
+tools available for the purpose.  The developer should refer to
+chapter 1 for deeper insight to the creation of a parser.
+
+\subsection{Some Quick Notes on the Interpreter}
+
+In the Charon tcad-charon repository, there are two main python
+scripts associated with the interpreter: charonInterpreter.py in the
+\texttt{scripts/charonInterpreter} directory and
+generateInterpreter.py in the
+\texttt{scripts/charonInterpreter/parseGenerator} directory.  The
+former is the user end main script and the latter the developer end
+main script.
+
+The charonInterpreter.py script may be invoked with multiple options.
+The one that is almost always used is the \texttt{--input} option.
+This is simply the option to use a specific input file for an
+interpreter run.  Executing
+\begin{lstlisting}
+charonInterpreter.py --input input.inp
+\end{lstlisting}
+will process the contents of the \texttt{input.inp} file into the xml
+formatted parameter list file that is native to Charon and stops
+there.  The filename will be \texttt{input.inp.xml}.  Charon may be
+run through the mpirun command with that xml file if desired.
+
+A Charon run may also be executed with the interpreter script with
+additional options.  For example,
+\begin{lstlisting}
+charonInterpreter.py --input input.inp --np 4 --run
+\end{lstlisting}
+This will process \texttt{input.inp} into a parameter list and then
+execute Charon on that parameter list on 4 processors.  If the Charon
+executable is located in a place included in the user's \texttt{path}
+variable, the script will find it and use it.  If not, the
+\texttt{CHARON\_EXECUTABLE\_PATH} environment variable may be set that
+contains the path to the executable, for example,
+\begin{lstlisting}
+export CHARON_EXECUTABLE_PATH=/home/lcmusso/TCAD/build/src
+\end{lstlisting}
+There is also an implicit assumption that the name of the executable
+is \texttt{charon\_mp.exe}.  If it is not, the
+\texttt{CHARON\_EXECUTABLE} environment variable may be set to force
+the interpreter to look for an otherwise named charon executable.
+
+The generateInterpreter.py script is usually invoked with no options.
+It will automatically process all of the parser generator input files
+located in
+\texttt{scripts/charonInterpreter/parseGenerator/parseInputs} and all
+of its subdirectories into line and block parsers and all of the
+modifiers and parser libraries required by the charon interpreter.  Of
+the of parsers will be created in the
+\texttt{scripts/charonInterpreter/parsers} directory and will have a
+subdirectory structure that mirrors the directory structure under
+\texttt{parseInputs.}
+
+
+\subsection{Creating a Simple Line Parser}
+
+Whether a developer is creating a parser for a new or existing
+feature, the parameter list almost always antedates the interpreter
+parser.  That is, a developer will ``work the kinks out'' modifying
+parameter list input prior even to thinking about the interpreter.  So
+an xml formatted parameter list is generally the place to start when
+creating a parser to handle this part of the parameter list.
+
+An input file to generate a parser consists of two major subsections.
+The first is every line that starts with the \texttt{interpreter}
+keyword and the second is every line that starts with the
+\texttt{xml*} family of keywords.  \texttt{interpreter} keywords can be
+thought of as a front end of the interpreter.  They define the name of
+the parser, the syntax the developer wants the user to employ and all
+of the help information the developer wishes the user to see.  All of
+the keywords that start with \texttt{xml} are ones which define the
+parameter lists that are the target mapping of the user's input line.
+Chapter 1 defines each of these in detail.
+
+A full-blown Charon input file is not required to work on a new
+parser.  One should always start with the parameter list entries
+required, create the parser generator input file and iterate until the
+parser reproduces the xml parameter list faithfully.  There are two
+tools available to speed this process.
+
+A good example of a simple parser is importing a state file.  One of
+the first things commonly seen in a Charon parameter list is the named
+``initial guess'' file.  In interpreter parlance, this is called a
+state file.  The xml formatted parameter list is:
+\begin{lstlisting}
+<ParameterList name="Charon">
+    <ParameterList name="Mesh">
+        <Parameter name="Source" type="string" value="Exodus File" />
+        <ParameterList name="Exodus File">
+            <Parameter name="File Name" type="string" value="bjt2d_equ.exo" />
+            <Parameter name="Restart Index" type="int" value="3" />
+        </ParameterList>
+    </ParameterList>
+</ParameterList>
+\end{lstlisting}
+So what's known about this parser is that it must contain sensible
+syntax to specify a file name and a restart index.  And it may be
+desirable to make the restart index an optional part of the line.
+
+The first thing to do is to create the input file for the parser.  In
+this case, the file \texttt{createImportStateFile.inp} is created in
+the \texttt{parseInputs} subdirectory.  The first line in that file
+gives a unique name to the parser to be created:
+\begin{lstlisting}
+interpreter name ImportStateFile
+\end{lstlisting}
+In practice, it is preferred to have the name of the parser match the
+name of the input file with a \texttt{create} prefix and a
+\texttt{.inp} suffix.  Note that the parser generated will be located
+in the \texttt{parsers} directory with the name
+\texttt{charonLineParserImportStateFile.py} with the
+\texttt{ImportStateFile} part of it coming from the name of the
+parser, not the name of the parser input file name.  This keeps things
+systematic and easy to find.
+
+The second line of the parser input file will contain the syntax the
+developer wishes the user to employ.  Let's say the line should be
+\begin{lstlisting}
+import state file bjt2d_equ.exo at index 3
+\end{lstlisting}
+Let's say furthermore that the only required part of this line be the
+specification of the state file name and that the restart index be
+optional.  Moreover, we need to select keyword sequences which will
+uniquely identify this line to the parser for both the required and
+optional parts of this line.  Keywords of the line are enclosed in
+parentheses and optional parts of the line are enclosed in square
+brackets and include a parenthetical part that contains the keywords
+for the option.  Putting this together, the second line of the parser
+input file becomes
+\begin{lstlisting}
+interpreter inputLine (Import State File) {filename} [(at Index) {index}]
+\end{lstlisting}
+where the keywords \texttt{interpreter inputline} tell the
+generateInterpreter script to process this line as interpreter syntax.
+The \texttt{(import state file)} section tells the interpreter the
+keyword sequence to trigger the parser.  The \texttt{\{filename\}} is
+a variable for the name of the file the user wishes to import.  It was
+decided that the restart index should be optional and so the section
+of the line that pertains to the specification of the restart index is
+enclosed in square brackets and necessarily contains the parenthetical
+\texttt{(at index)} which triggers the option processing in the
+parser.  Note that on the interpreter end, only \texttt{filename} is
+case sensitive.  Everything else may be any combination of upper and
+lower case except for \texttt{index} which must be an integer.
+
+Two additional lines with the \texttt{interpreter} keyword contain
+help information for the user.  In this example,
+\begin{lstlisting}
+interpreter shortHelp {Specify state file name and state index}
+
+interpreter longHelp {Specify the name of the file (exodus) that contains the states for input/initial guess. <> Optionally, specify the index of the time plane or parameter plane if the file contains multiple states. <> filename is the name of the file.  It is case sensitive. <> index is the integer index of the state to be used as input.}
+\end{lstlisting}
+provide a pithy description of what this interpreter line means and a
+more detailed description that includes a description of optional
+inputs.  These are invoked by the user issuing the \texttt{--help} or
+\texttt{--longhelp} options to the charonInterpreter.py script.
+
+
+Now in the second major subsection of the parser input file, the
+parameter list and how it maps from the interpreter line must be
+specified so that the xml formatted input seen above is created.
+Internally, the interpreter does not store parameters in an xml
+format.  It has its own format for parameter lists in which the
+nesting information accompanies every parameter.  Generally, the
+format is for example
+\begin{lstlisting}
+Nest0->Nest1->Nest2,parameter name, parameter type, parameter value
+\end{lstlisting}
+The xml parameter list seen above must be translated into the
+interpreter format for the parser input file. For this simple example,
+the manual translation from xml to interpreter is relatively easy.
+However, when the interpreter line maps to dozens of parameters with a
+complicated nesting, such as might be seen for solver parameters, this
+process is tedious and error prone.  In the
+\texttt{scripts/charonInterpreter/tools} directory, there is a script
+called \texttt{xmlToLCM.py} which does this translation automatically.
+This script will take a text file \texttt{xmlbjt.xml} which contains
+the xml formatted parameter list seen above and create a new text file
+called \texttt{xmlbjt.xml.LCMified} which contains the translated
+interpreter formatted parameter list, viz
+\begin{lstlisting}
+Charon->Mesh,Source,string,Exodus File
+Charon->Mesh->Exodus File,File Name,string,bjt2d_equ.exo
+Charon->Mesh->Exodus File,Restart Index,int,3
+\end{lstlisting}
+These lines must be categorized as default, required and optional and
+added to the parser input file appropriately.
+
+The \texttt{Source} parameter in the first line,
+\begin{lstlisting}
+Charon->Mesh,Source,string,Exodus File
+\end{lstlisting}
+must always be present in an identical way.  It must not ever vary the
+way Charon works now.  It is nothing but a useless burden to require a
+user to put this into every input file they create.  This is an ideal
+candidate for a default line.  The interpreter will always write it
+into the parameter list and the user need never see it.  This is
+specified in the parser input file as
+\begin{lstlisting}
+xmlDefault Charon->Mesh,Source,string,Exodus File
+\end{lstlisting}
+The name of the file the user wishes to import must always be
+specified and is never a default name.  This is a good candidate for a
+required input and is specified in the parser input file as
+\begin{lstlisting}
+xmlRequired Charon->Mesh->Exodus File,File Name,string,{filename}
+\end{lstlisting}
+where the filename variable replaces the explicit file name in the
+example and ties this particular parameter to the interpreter input.
+That is, \texttt{\{filename\}} gets replaced in the parameter list by
+the string specified in the interpreter input file.
+
+Lastly, we wish to include the restart index as an optional parameter.
+Moreover, we may also wish for the restart index to take on a default
+value if the option is not specified by the user.  The default value
+for the restart index is specified in the same way the \texttt{Source}
+parameter was specified,
+\begin{lstlisting}
+xmlDefault Charon->Mesh->Exodus File,Restart Index,int,-1
+\end{lstlisting}
+This creates a parameter \texttt{Restart Index} with a value of -1.
+To create the optional parameter, the parser input syntax is similar
+to default and required parameters, but must also contain the optional
+keywords,
+\begin{lstlisting}
+xmlOptional (at index) Charon->Mesh->Exodus File,Restart Index,int,{index}
+\end{lstlisting}
+so the \texttt{Restart Index} appears twice in the parser input file.
+In one it contains default value information and in the other,
+optional user-supplied information.  Here again, the
+\texttt{\{index\}} variable maps back to the interpreter input line.
+
+By pulling all of this together, the entire parser input file now reads:
+\begin{lstlisting}
+interpreter name ImportStateFile
+
+interpreter inputLine (Import State File) {filename} [(at Index) {index}]
+
+interpreter shortHelp {Specify state file name and state index}
+
+interpreter longHelp {Specify the name of the file (exodus) that contains the states for input/initial guess. <> Optionally, specify the index of the time plane or parameter plane if the file contains multiple states. <> filename is the name of the file.  It is case sensitive. <> index is the integer index of the state to be used as input.}
+
+xmlRequired Charon->Mesh->Exodus File,File Name,string,{filename} 
+
+xmlOptional (at Index) Charon->Mesh->Exodus File,Restart Index,int,{index}
+
+xmldefault  Charon->Mesh,Source,string,Exodus File
+xmldefault  Charon->Mesh->Exodus File,Restart Index,int,-1
+\end{lstlisting}
+The parser is then generated by executing the generateInterpreter.py
+script.
+
+The final step the developer must execute is to validate the parser by
+running the charon interpreter on a file that contains the new
+interpreter line.  Say our file is \texttt{bjt\_2d.inp} and has the
+line
+\begin{lstlisting}
+import state file bjt2d_equ.exo at index 3
+\end{lstlisting}
+Executing
+\begin{lstlisting}
+charonInterpreter.py --input bjt_2d.inp
+\end{lstlisting}
+produces a file named \texttt{bjt\_2d.inp.xml} with the contents
+\begin{lstlisting}
+<ParameterList name="Charon" >
+  <ParameterList name="Mesh" >
+    <ParameterList name="Exodus File" >
+      <Parameter name="Restart Index" type="int" value="3" />
+      <Parameter name="File Name" type="string" value="bjt2d_equ.exo" />
+    </ParameterList>
+    <Parameter name="Source" type="string" value="Exodus File" />
+  </ParameterList>
+</ParameterList>
+\end{lstlisting}
+Other than ordering of lines, this parameter list is identical.  In
+this simple example, this is easy to see. Once again, however, if this
+parameter list were long and complicated, the validation will be
+tedious and error prone.  Another script in the tools directory will
+make the comparison and provide a kind of diff between the two files.
+It reports what exists in one file that does not exist in the other.
+In this case, the script \texttt{compareParameterLists.py} can be used
+to compare \texttt{bjt\_2d.inp.xml} and the file that contained the
+original xml input we worked from to get the following report:
+\begin{lstlisting}
+compareParameterLists.py bjt_2dOriginal.xml bjt_2d.inp.xml
+The following is a list of items contained in bjt_2dOriginal.xml, but not in bjt_2d.inp.xml
+
+
+
+The following is a list of items contained in bjt_2d.inp.xml, but not in bjt_2dOriginal.xml
+
+\end{lstlisting}
+If something went wrong with the mapping in the interpreter and the
+xml generated turned out to be
+\begin{lstlisting}
+<ParameterList name="Charon" >
+  <ParameterList name="Mesh" >
+    <ParameterList name="Exodus File" >
+      <Parameter name="Restart Index" type="int" value="300" />
+      <Parameter name="File Name" type="string" value="bjt2d_equ.exo" />
+    </ParameterList>
+    <Parameter name="Source" type="string" value="Exodus File" />
+  </ParameterList>
+</ParameterList>
+\end{lstlisting}
+the report would be
+\begin{lstlisting}
+The following is a list of items contained in bjt_2dOriginal.xml, but not in bjt_2d.inp.xml
+
+Charon->Mesh->Exodus File,Restart Index,int,3
+
+
+The following is a list of items contained in bjt_2d.inp.xml, but not in bjt_2dOriginal.xml
+
+Charon->Mesh->Exodus File,Restart Index,int,300
+\end{lstlisting}
+which highlights the difference.  A more complicated example would be
+if the nesting were incorrect.  The compare script is too naive to
+figure out how nesting should have been done.  When it finds nested
+parameters in one file and not in another, it stops ever reporting the
+one contains a parameter list not contained in the other.  For
+example, suppose instead of the parameter list \texttt{Exodus File},
+the parser input file contained a typo, \texttt{Eoxdus File}.  The
+compare script is not smart enough to figure out the typo, but will
+indicate that the two files differ with the following report:
+\begin{lstlisting}
+The following is a list of items contained in bjt_2dOriginal.xml, but not in bjt_2d.inp.xml
+
+Charon->Mesh->Exodus File
+
+
+The following is a list of items contained in bjt_2d.inp.xml, but not in bjt_2dOriginal.xml
+
+Charon->Mesh->Eoxdus File
+\end{lstlisting}
+Nothing below the level of \texttt{Exodus File} is reported, but
+sufficient information is provided to the developer to indicate the
+error.
+
+\subsection{Creating a Block Parser}
+
+The line parsers in the Charon interpreter are where the bulk of the
+work is done in parsing and running a Charon job.  As was described in
+the previous section, a single line of interpreter input can map to
+many lines of parameter lists.  It still often makes sense to bundle
+line parsers into sensible groups.  This makes the input file neater,
+more organized and easier to navigate.  These groups in the
+interpreter are called blocks and they have their own parsers.  Block
+parsers are in principle simpler than line parsers.  Their sole
+purpose for existence is for organization and to make data input
+simpler.  A good example of a block in the Charon input is where
+material models are spelled out for a common region of a device, e.g.
+\begin{lstlisting}
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+      end step junction doping
+end Material Block siliconParameter
+\end{lstlisting}
+In this instance, two blocks are nested.  There is no limitation to
+the depth that blocks may be nested, but it should be limited to as
+few layers as makes sense to keep things simple.  Block parsers
+control this nesting in an organized way and provide some of the
+mapping information.  
+
+Every line inside the blocks that begins neither with ``start'' nor
+``end'' is just a line parser like the one created in the previous
+section's tutorial.  The way the parser input files and thus the
+parsers are organized mirrors the nested structure of the blocks.  So
+the root directory for the parser input files,
+\texttt{charonInterpreter/parseGenerator/parseInputs} contains the
+block parser for the material block.  The structure and composition of
+the block parser input file is similar though simpler than the line
+parser input files.  The name of the block parser input file is
+required only to have the suffix \texttt{blockinp}, but the following
+convention has been used exclusively,
+\begin{lstlisting}
+create<BlockParserName>.blockinp
+\end{lstlisting}
+In this example, \texttt{BlockParserName} = \texttt{MaterialBlock} and
+the first line in the block parser makes that specification,
+\begin{lstlisting}
+interpreterBlock name MaterialBlock
+\end{lstlisting}
+And just as in the line parser input file, there must be a line which
+specifies the keywords that trigger the block parser,
+\begin{lstlisting}
+interpreterBlock (start Material Block) {MaterialBlockName}
+\end{lstlisting}
+where as before the key words are enclosed in parentheses and the
+variable MaterialBlockName is enclosed in curly braces.  This
+represents the minimum input to create a block parser.  It is often
+the only input.
+
+With blocks, there is a directory structure that accompanies and
+mirrors the block structure.  Under the \texttt{parseInputs}
+directory, the developer must create a subdirectory that has the same
+name as the block parser.  In this example, it is the developer's
+burden to create the\texttt{parseInputs/MaterialBlock} subdirectory.
+Every line parser that accompanies every line in the block has an
+input file that lives in this subdirectory.  That is, the line parsers
+for
+\begin{lstlisting}
+  material name is Silicon
+\end{lstlisting}
+and 
+\begin{lstlisting}
+  relative permittivity = 11.9
+\end{lstlisting}
+namely \texttt{createMaterialName.inp} and
+\texttt{createRelativePermattivity.inp} are located in the
+\texttt{parseInputs/MaterialBlock} subdirectory.
+
+This example contains one nested block layer.  The
+directory-subdirectory structure simply repeats itself with nested
+blocks.  There is a \texttt{createStepDoping.blockinp} block parser
+input file and a \texttt{StepDoping} subdirectory in the
+\texttt{MaterialBlock} block directory.  All line parse input files
+related to the step doping block are located in the
+\texttt{StepDoping} directory.
+
+It is important to note that very commonly, parameters created by line
+parsers in blocks almost always need to know the block name in order
+to get the parameter list correct.  Every line parser inside the
+blocks will have defined any variable specified in the block parser.
+In this example, the variable \texttt{MaterialBlockName} is defined
+and can be used in every line parser input file that exists under the
+\texttt{MaterialBlock} directory tree.  The \texttt{MaterialName} line
+parser input file is
+\begin{lstlisting}
+interpreter name MaterialName
+
+interpreter inputLine (material name) is {materialName}
+
+interpreter shortHelp {Set the Material name }
+
+interpreter longHelp {Set the Material name <> materialName is the material in this material block (e.g. Silicon)}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName},Material Name,string,{materialName}
+\end{lstlisting}
+
+\subsection{Custom Parameter Priority}
+
+It can happen on occasion that a parameter gets defined more than
+once.  Most of the time, this presents no problem.  But sometimes it
+does.  An example of this is doing potential sweeps on contacts.  An
+interpreter input line for sweeping is
+\begin{lstlisting}
+BC is ohmic for anode on silicon swept from 0.5 to 0.25
+\end{lstlisting}
+The parser that processes this line will create the appropriate
+parameter list for the boundary condition.  It also creates as
+xmlOptional parameters the necessary inputs to switch the run from NOX
+solver to LOCA solver and sets LOCA stepper information.  This parser
+will set the initial step size of the sweep to 1.0.  A step size of 1
+volt is often far too large to take and so a smaller step size should
+be specified.  This can be done in an optional block for sweep
+parameters,
+\begin{lstlisting}
+start sweep options
+      initial step size = 0.25
+end sweep options
+\end{lstlisting}
+With this, a parameter has been set that creates an initial step size
+of 1.0 and a second one has been set that creates an initial step size
+of 0.25.  This presents a potential problem because in the first
+instance, the parameter is xmlOptional and the second, the parameter
+is xmlRequired.  Optionals and Requireds have the same priority and
+the one which will get used is the one last encountered in the list.
+This makes the input file order dependent and undesirable.  This is
+remedied by adding a custom priority tag to the desired specification.
+When the user adds the optional sweep options block, anything
+specified in there must take priority over anything else that is
+default behavior.  The tag is set in the line parser input file for
+the initial step size in the sweep option block as follows:
+\begin{lstlisting}
+interpreter name InitialStepSize
+
+interpreter inputLine (Initial Step Size) = {stepSize}
+
+interpreter shortHelp {Specify initial step size for parameter sweep}
+
+interpreter longHelp {Specify initial step size for parameter sweep <> {stepSize} = the step size}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,{stepSize} priority 5
+\end{lstlisting}
+If the priority tag is missing from the xmlRequired line, default
+priority is assigned.  If the tag is present, the requested priority
+is assigned.
+
+
+\subsection{Anonymous Parameter Lists}
+
+There are unfortunate instances in the Charon parameter lists that a
+parameter list is unnamed.  This is called an anonymous parameter list
+and it does create an organizational hazard.  The interpreter relies
+on a unique nesting path to do its mapping from interpreter
+specifications into parameter lists.  These are managed in a special
+way in the interpreter and some care must be taken to get them right.
+The parameter list name \texttt{ANONYMOUS} is always used where there
+is an unnamed parameter list.  If the unnamed parameter list has no
+peers, that is if it sits alone at its particular nesting level and
+path, \texttt{ANONYMOUS} is all that is required to handle the mapping
+correctly.  However, if there is more than one, \texttt{ANONYMOUS} is
+not unique and the mapping will not be done correctly.  An important
+example of this is contact boundary conditions.  The boundary
+conditions on a diode are as follows:
+\begin{lstlisting}
+<ParameterList name="Charon">
+    <ParameterList name="Boundary Conditions">
+        <ParameterList>
+            <Parameter name="Type" type="string" value="Dirichlet"/> 
+            <Parameter name="Sideset ID" type="string" value="anode"/> 
+            <Parameter name="Element Block ID" type="string" value="silicon"/> 
+            <Parameter name="Equation Set Name" type="string" value="ALL_DOFS"/> 
+            <Parameter name="Strategy" type="string" value="Ohmic Contact"/> 
+            <ParameterList name="Data">
+                <Parameter name="Voltage" type="double" value="0.5"/>
+            </ParameterList>
+        </ParameterList>    
+        <ParameterList>
+            <Parameter name="Type" type="string" value="Dirichlet"/> 
+            <Parameter name="Sideset ID" type="string" value="cathode"/> 
+            <Parameter name="Element Block ID" type="string" value="silicon"/> 
+            <Parameter name="Equation Set Name" type="string" value="ALL_DOFS"/> 
+            <Parameter name="Strategy" type="string" value="Ohmic Contact"/>
+            <ParameterList name="Data">
+                <Parameter name="Voltage" type="double" value="0"/>
+            </ParameterList>
+        </ParameterList>
+    </ParameterList>
+</ParameterList>
+\end{lstlisting}
+The anode and cathode are peer parameter lists and are unnamed and are
+not unique.  Internally, Trilinos-Teuchos will replace anonymous
+parameter lists with assigned names \texttt{child0}, \texttt{child1}
+etc., but the user never sees it.  The interpreter can only handle
+parameters with a unique path.  The way the interpreter manages this
+is that any parameter list named \texttt{ANONYMOUS} will get written
+to the mapped parameter list as unnamed.  This is true even if
+\texttt{ANONYMOUS} represents only a fraction of the name.  The parser
+input file in part for boundary conditions is
+\begin{lstlisting}
+interpreter name OhmicBC
+
+interpreter inputLine (BC is ohmic for) {sidesetID} on {geometryBlock} [(fixed at) {potential}[ (swept from) {potential1} to {potential2}]]
+
+interpreter shortHelp {Specify the potential on a contact}
+
+interpreter longHelp {Specify the potential on a contact. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> potential is the value in volts}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Ohmic Contact
+\end{lstlisting}
+Because the sidesetID that must be specified for the boundary
+condition will be unique for that parameter list, it is prepended to
+the ANONYMOUS part of the parameter.  This has the effect of giving
+the interpreter a unique name to work with.  When the parameter list
+is ultimately mapped and written, the entire
+\texttt{{sidesetID}ANONYMOUS} string gets replaced with nothing and
+becomes and unnamed parameter list.
+
+

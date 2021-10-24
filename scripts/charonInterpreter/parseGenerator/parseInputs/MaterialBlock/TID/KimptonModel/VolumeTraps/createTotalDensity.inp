@@ -1,0 +1,10 @@
+
+interpreter name TotalDensity
+
+interpreter inputLine (total density) = {Nt}
+
+interpreter shortHelp {Sets the total volume trap density for the TID model}
+
+interpreter longHelp {Sets the total volume trap density for the TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Volume Traps,Total Density,double,{Nt}

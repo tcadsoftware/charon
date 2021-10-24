@@ -1,0 +1,11 @@
+
+
+interpreter name Gamma
+
+interpreter inputLine (gamma) = {gamma} 
+
+interpreter shortHelp {Set the barrier lowering model gamma value.}
+
+interpreter longHelp {Set the barrier lowering model gamma value.}
+
+xmlRequired Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data->Barrier Lowering,gamma,double,{gamma}

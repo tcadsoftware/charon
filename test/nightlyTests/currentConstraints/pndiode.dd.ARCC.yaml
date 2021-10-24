@@ -1,0 +1,254 @@
+%YAML 1.1
+---
+ANONYMOUS:
+  Mesh: 
+    Source: Exodus File
+    Exodus File: 
+      File Name: pndiode.dd.exo
+      Restart Index: 1
+  Pause To Attach: false
+  Block ID to Physics ID Mapping: 
+    silicon: Semiconductor
+  Assembly: 
+    Workset Size: 50
+    Use DOFManager FEI: true
+  Physics Blocks: 
+    Semiconductor: 
+      child0: 
+        Type: Drift Diffusion
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 2
+        Model ID: Silicon Parameter
+        Prefix: ''
+        Options: 
+          Solve Electron: 'True'
+          Solve Hole: 'True'
+          SRH: Off
+          Radiative: Off
+          Auger: Off
+          SUPG Stabilization: On
+          Add Source Term: Off
+          Tau_E: Tanh
+          Tau_H: Tanh
+          Length Scale: Stream
+  Closure Models: 
+    Lattice Temperature: 3.00000000000000000e+02
+    Concentration Scaling: 1.00000000000000000e+16
+    Silicon Parameter: 
+      Material Name: Silicon
+      Relative Permittivity: 
+        Value: 1.19000000000000004e+01
+      Doping: 
+        Value: Step Junction
+        Acceptor Value: 1.00000000000000000e+16
+        Donor Value: 1.00000000000000000e+16
+        Configuration: PN
+        Direction: X
+        Junction Location: 5.00000000000000000e-01
+      Electron Mobility: 
+        Value: 1.00000000000000000e+03
+      Hole Mobility: 
+        Value: 5.00000000000000000e+02
+  User Data: 
+    function data one: { }
+  Boundary Conditions: 
+    child0: 
+      Type: Dirichlet
+      Sideset ID: anode
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Resistor Contact
+      Data: 
+        Resistor Value: 1.00000000000000000e+03
+        Applied Voltage: 4.50464521999999978e-01
+        Initial Voltage: 5.00000000000000000e-01
+    child1: 
+      Type: Dirichlet
+      Sideset ID: cathode
+      Element Block ID: silicon
+      Equation Set Name: ALL_DOFS
+      Strategy: Constant Current
+      Data: 
+        Current Value: 3.99999999999999982e-06
+        Initial Voltage: 1.00000000000000006e-01
+  Initial Conditions: 
+    silicon: 
+      ELECTRIC_POTENTIAL: 
+        Value: Exodus File
+      ELECTRON_DENSITY: 
+        Value: Exodus File
+      HOLE_DENSITY: 
+        Value: Exodus File
+  Output: 
+    File Name: result.pndiode.dd.ARCC.exo
+  Options: 
+    Write Volume Assembly Graphs: true
+    Volume Assembly Graph Prefix: charon_
+  Solver Factories: 
+    NOX Observers: 
+      Write Linear System: OFF
+  Solution Control: 
+    Piro Solver: NOX
+    Compute Sensitivities: false
+    Jacobian Operator: Have Jacobian
+    LOCA: 
+      Bifurcation: { }
+      Constraints: { }
+      Predictor: 
+        Method: Constant
+      Stepper: 
+        Continuation Method: Natural
+        Initial Value: 1.00000000000000000e+00
+        Continuation Parameter: Parameter 0
+        Max Steps: 6
+        Max Value: 1.22500000000000000e+01
+        Min Value: 5.00000000000000000e-01
+        Compute Eigenvalues: true
+        Eigensolver: 
+          Method: Anasazi
+          Operator: Shift-Invert
+          Num Blocks: 3
+          Num Eigenvalues: 1
+          Block Size: 1
+          Maximum Restarts: 0
+          Shift: 1.00000000000000000e+00
+      Step Size: 
+        Initial Step Size: 5.00000000000000000e-01
+        Aggressiveness: 2.00000000000000000e+00
+    NOX: 
+      Direction: 
+        Method: Newton
+        Newton: 
+          Forcing Term Method: Constant
+          Rescue Bad Newton Solve: true
+          Linear Solver: 
+            Tolerance: 1.00000000000000002e-08
+          Stratimikos Linear Solver: 
+            NOX Stratimikos Options: { }
+            Stratimikos: 
+              Linear Solver Type: Belos
+              Linear Solver Types: 
+                AztecOO: 
+                  Forward Solve: 
+                    AztecOO Settings: 
+                      Aztec Solver: GMRES
+                      Convergence Test: r0
+                      Size of Krylov Subspace: 200
+                      Output Frequency: 10
+                    Max Iterations: 300
+                    Tolerance: 1.00000000000000008e-05
+                Belos: 
+                  Solver Type: Block GMRES
+                  Solver Types: 
+                    Block GMRES: 
+                      Convergence Tolerance: 1.00000000000000008e-05
+                      Output Frequency: 10
+                      Output Style: 1
+                      Verbosity: 33
+                      Num Blocks: 100
+                      Maximum Iterations: 100
+                      Block Size: 1
+                      Flexible Gmres: false
+                  VerboseObject: 
+                    Verbosity Level: medium
+              Preconditioner Type: Teko
+              Preconditioner Types: 
+                Ifpack: 
+                  Overlap: 1
+                  Prec Type: ILU
+                  Ifpack Settings: 
+                    'fact: drop tolerance': 0.00000000000000000e+00
+                    'fact: ilut level-of-fill': 1.00000000000000000e+00
+                    'fact: level-of-fill': 1
+                Teko: 
+                  Inverse Type: Schur2x2
+                  Write Block Operator: false
+                  Test Block Operator: false
+                  Inverse Factory Library: 
+                    Schur2x2: 
+                      Type: Schur2x2
+                      Inverse Type: ML-DD
+                      Inverse Type for SC: PrecIterative-Belos
+                    PrecIterative-Belos: 
+                      Type: Belos
+                      Use Preconditioner: ML-DD
+                      Solver Types: 
+                        Block GMRES: 
+                          Convergence Tolerance: 1.00000000000000002e-03
+                          Output Frequency: 10
+                          Output Style: 1
+                          Verbosity: 33
+                          Maximum Iterations: 100
+                          Block Size: 1
+                          Num Blocks: 20
+                          Flexible Gmres: false
+                      VerboseObject: 
+                        Verbosity Level: medium
+                    ML-DD: 
+                      Type: ML
+                      Base Method Defaults: SA
+                      ML Settings: 
+                        ML output: 10
+                        ML label: Velocity
+                        prec type: MGV
+                        print unused: 0
+                        PDE equations: 3
+                        max levels: 10
+                        cycle applications: 2
+                        'aggregation: threshold': 0.00000000000000000e+00
+                        'aggregation: type': Uncoupled
+                        'smoother: type': IFPACK
+                        'smoother: ifpack type': Amesos
+                        'smoother: ifpack overlap': 1
+                        'smoother: ifpack list': 
+                          'fact: level-of-fill': 1
+                          'schwarz: reordering type': rcm
+                          reuse numeric factorization: 1
+                        'smoother: pre or post': both
+                        'smoother: sweeps': 2
+                        'coarse: max size': 500
+                        'coarse: type': Amesos-KLU
+      Line Search: 
+        Full Step: 
+          Full Step: 1.00000000000000000e+00
+        Method: Full Step
+      Nonlinear Solver: Line Search Based
+      Printing: 
+        Output Precision: 3
+        Output Processor: 0
+        Output Information: 
+          Error: true
+          Warning: true
+          Outer Iteration: true
+          Parameters: true
+          Details: true
+          Linear Solver Details: true
+          Stepper Iteration: true
+          Stepper Details: true
+          Stepper Parameters: true
+      Solver Options: 
+        Status Test Check Type: Minimal
+      Status Tests: 
+        Test Type: Combo
+        Combo Type: OR
+        Number of Tests: 2
+        Test 0: 
+          Test Type: NormF
+          Tolerance: 1.00000000000000002e-08
+        Test 1: 
+          Test Type: MaxIters
+          Maximum Iterations: 30
+    Rythmos: 
+      Num Time Steps: 10
+      Final Time: 1.00000000000000006e-01
+      Stepper Type: Backward Euler
+      Rythmos Stepper: 
+        VerboseObject: 
+          Verbosity Level: medium
+      Stratimikos: { }
+      Rythmos Integration Control: { }
+      Rythmos Integrator: 
+        VerboseObject: 
+          Verbosity Level: medium
+...

@@ -1,0 +1,9 @@
+interpreter name Vsat
+
+interpreter inputLine (vsat) = {vsatval}
+
+interpreter shortHelp {Farahmand model parameter vsat}
+
+interpreter longHelp {Farahmand model parameter vsat}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,vsat,double,{vsat}

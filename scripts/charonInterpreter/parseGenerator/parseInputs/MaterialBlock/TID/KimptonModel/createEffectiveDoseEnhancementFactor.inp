@@ -1,0 +1,10 @@
+
+interpreter name EffectiveDoseEnhancementFactor
+
+interpreter inputLine (effective dose enhancement factor) = {dose_enh_factor}
+
+interpreter shortHelp {Sets the effective dose enhancement factor for the TID model}
+
+interpreter longHelp {Sets the effective dose enhancement factor for the TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model,Effective Dose Enhancement Factor,double,{dose_enh_factor}

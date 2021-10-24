@@ -1,0 +1,11 @@
+interpreter name ContinuationMethod
+
+interpreter inputLine (continuation method) is [ (arc length) [ (natural) ]]
+
+interpreter shortHelp {Specify the continuation method to use, Arc Length or Natural}
+
+interpreter longHelp {Specify the continuation method to use, Arc Length or Natural}
+
+xmlOptional (arc length) Charon->Solution Control->LOCA->Stepper,Continuation Method,string,Arc Length
+xmlOptional (natural)    Charon->Solution Control->LOCA->Stepper,Continuation Method,string,Natural
+

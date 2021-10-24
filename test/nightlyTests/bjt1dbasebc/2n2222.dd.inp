@@ -1,0 +1,68 @@
+import state file 2n2222.dd.equ.exo at index 1
+
+start output parameters
+  output state file 2n2222.dd.exo
+end
+
+start physics block Semiconductor
+  geometry block is silicon
+  standard discretization type is drift diffusion gfem
+  material model is siliconParameter
+end physics block
+
+assembly workset = 50
+
+lattice temperature = 300.15
+
+start material block siliconParameter
+  material name is Silicon
+  relative permittivity = 11.8
+
+  start arora mobility
+    start electron parameters
+    end
+
+    start hole parameters
+    end
+  end
+
+  start erfc doping named Function1
+    type is donor
+    concentration range is 7.0e14 to 4.0e18
+    gradient width = 0.65 in x
+    spatial range is 0.0 to 15.0 in x
+    direction is Negative in x
+    gradient center = 9.0 in x
+  end erfc doping
+
+  start gauss doping named Function2
+    type is acceptor
+    concentration range is 1.0e15 to 4.0e17
+    direction is Both in x
+    gradient width = 3.3 in x
+    peak location = 0.0 in x
+  end gauss doping
+
+  start gauss doping named Function3
+    type is donor
+    concentration range is 1.0e17 to 4.0e19
+    peak location = 0.2 in x
+    gradient width = 1.45 in x
+    direction is Both in x
+  end gauss doping 
+  
+end material block siliconParameter
+
+BC is ohmic for emitter on silicon fixed at 0.0
+BC is 1dbjt for Acceptor base on silicon fixed at 0.5
+BC is ohmic for collector on silicon fixed at 0.5
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+initial conditions for ELECTRON_DENSITY in silicon is Exodus File
+initial conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+  use solver pack 2
+  nonlinear solver tolerance = 1.0e-8
+  max nonlinear iterations = 30
+end

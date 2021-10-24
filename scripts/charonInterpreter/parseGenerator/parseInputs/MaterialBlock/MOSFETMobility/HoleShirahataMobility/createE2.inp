@@ -1,0 +1,12 @@
+
+
+interpreter name E2
+
+interpreter inputLine (E2) = {E2}
+
+interpreter shortHelp {Set the E2 value for Shirahata hole model}
+
+interpreter longHelp {Set the E2 value for Shirahata hole model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,E2,double,{E2}
+

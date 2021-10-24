@@ -1,0 +1,9 @@
+interpreter name Eps
+
+interpreter inputLine (eps) = {epsval}
+
+interpreter shortHelp {Farahmand model parameter eps}
+
+interpreter longHelp {Farahmand model parameter eps}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,eps,double,{epsval}

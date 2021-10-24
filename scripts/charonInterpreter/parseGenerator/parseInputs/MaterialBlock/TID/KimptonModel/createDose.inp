@@ -1,0 +1,10 @@
+
+interpreter name Dose
+
+interpreter inputLine (dose) = {rad_dose}
+
+interpreter shortHelp {Sets the radiation dose for the TID model}
+
+interpreter longHelp {Sets the radiation dose for the TID model <> rad_dose is the value of the radiation dose}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model,Dose,double,{rad_dose}

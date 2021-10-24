@@ -1,0 +1,12 @@
+
+
+interpreter name HarmonicBalancePhaseShifts
+
+interpreter inputLine (phase shifts) {phaseshiftValues}
+
+interpreter shortHelp {Specify the frequency domain boundary condition's phase shifts.}
+
+interpreter longHelp {Specify the frequency domain boundary condition's phase shifts. <> phaseshiftValues is a list of phase shift (fraction of 1) values, formatted in double quotes with a space between each phase shift. For example, the input line can read <> phase shifts \"0  0.5  0.75\"}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Voltage,Phase Shifts,Array(double),{PHASESHIFTS{phaseshiftValues}PHASESHIFTS}
+xmlRequired use Modifier 0

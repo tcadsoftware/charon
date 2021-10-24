@@ -1,0 +1,10 @@
+interpreter name TrapFreeze
+
+interpreter inputLine (freeze traps at) voltage = {V_freeze} on {sidesetID}
+
+interpreter shortHelp {Sets the trap freeze voltage for the Kimpton TID model}
+
+interpreter longHelp {Sets the trap freeze voltage for the Kimpton TID model <> for a certain voltage on gate contact}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model,Freeze Voltage,double,{V_freeze}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model,Gate Contact,string,{sidesetID}

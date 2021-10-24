@@ -1,0 +1,73 @@
+
+interpreter name DiscretizationType
+
+interpreter inputLine (standard discretization type) is [ (drift diffusion gfem) [ (drift diffusion effpg) [ (nlp) [ (nlp cvfem) [ (drift diffusion cvfem) [ (laplace gfem) [ (laplace cvfem) [(ddlattice gfem) [ with (source term stabilization) [ (lattice gfem) ]]]]]]]]]]
+
+interpreter shortHelp {Set the discretization type and the equations to be solved}
+
+interpreter longHelp {Set the discretization and the equations to be solved <> drift diffusion gfem sets the type to the stabilized Galerkin finite element method for the drift diffusion equations <> drift diffusion cvfem sets the type to the Scharfetter Gummel method for the drift diffusion equations <> drift diffusion effpg sets the type to the Exponentially-Fitted Flux Petrov-Glarkin stabilized Galerkin finite element method for the drift diffusion equations <> nlp sets the nonlinear poisson equations <> laplace gfem sets the type to the stabilized Galerkin finite element method for the Laplace equation <> laplace cvfem sets the type to a finite volume method for Laplace equation}
+
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,Drift Diffusion
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Electron,string,True
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Hole,string,True
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,SUPG Stabilization,string,On
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Tau_E,string,Tanh
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Tau_H,string,Tanh
+xmlOptional (drift diffusion gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Length Scale,string,Stream
+
+xmlOptional (drift diffusion effpg) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,EFFPG Drift Diffusion
+xmlOptional (drift diffusion effpg) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (drift diffusion effpg) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (drift diffusion effpg) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+xmlOptional (drift diffusion effpg) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Electron,string,True
+xmlOptional (drift diffusion effpg) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Hole,string,True
+
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,DDLattice
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Electron,string,True
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Hole,string,True
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,SUPG Stabilization,string,On
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Tau_E,string,Tanh
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Tau_H,string,Tanh
+xmlOptional (ddlattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Length Scale,string,Stream
+
+# Only valid for FEM discretizations (enforced by charon)
+xmlOptional (source term stabilization) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Add Source Term,string,On
+
+xmlOptional (nlp) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,NLPoisson
+xmlOptional (nlp) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (nlp) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (nlp) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+
+xmlOptional (nlp cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,SGCVFEM NLPoisson
+xmlOptional (nlp cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (nlp cvfem ) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (nlp cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+
+xmlOptional (laplace gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,Laplace
+xmlOptional (laplace gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (laplace gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (laplace gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+
+xmlOptional (drift diffusion cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,SGCVFEM Drift Diffusion
+xmlOptional (drift diffusion cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (drift diffusion cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (drift diffusion cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+xmlOptional (drift diffusion cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Electron,string,True
+xmlOptional (drift diffusion cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Hole,string,True
+
+xmlOptional (laplace cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,SGCVFEM Laplace
+xmlOptional (laplace cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (laplace cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (laplace cvfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+
+xmlOptional (lattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Type,string,Lattice
+xmlOptional (lattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Type,string,HGrad
+xmlOptional (lattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Basis Order,int,1
+xmlOptional (lattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Integration Order,int,2
+xmlOptional (lattice gfem) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Heat Generation,string,Analytic

@@ -1,0 +1,11 @@
+
+
+interpreter name StrikeTemporalWaveform
+
+interpreter inputLine (strike temporal waveform) = {waveform}
+
+interpreter shortHelp {set the temporal wave form of the strike}
+
+interpreter longHelp {set the  temporal waveform <> options are Gaussian}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Temporal Waveform,string,{waveform}

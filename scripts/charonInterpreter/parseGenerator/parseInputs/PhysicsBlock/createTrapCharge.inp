@@ -1,0 +1,11 @@
+interpreter name TrapCharge
+
+interpreter inputLine (trap charge) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on the trap charge}
+
+interpreter longHelp {Turn on the trap charge <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Add Trap Charge,string,True
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Add Trap Charge,string,False

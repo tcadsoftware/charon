@@ -1,0 +1,40 @@
+
+brick x 0.05 y 0.01 z 0.01
+volume 1 name "mybrick"
+list names volume
+
+# This will make all coordinates positive. Not necessary
+# but can be convenient. Cubit uses symmetrical coordinates by default.
+move vertex 4 location 0 0 0 nomerge
+
+# Define sidesets for Dirichlet BC
+sideset 1 surface 4
+sideset 1 name "left"
+sideset 2 surface 6
+sideset 2 name "right"
+
+# Define blocks for a single material
+block 1 volume 1
+block 1 name "tio2"
+
+# Mesh
+# volume 1 size 0.002
+volume 1 size 0.005
+surface 4 scheme pave
+mesh surface 4
+
+# curve 2 interval 75
+curve 2 interval 50
+volume 1 scheme sweep
+mesh volume 1
+quality volume 1
+
+# Merge all meshing elements
+merge all
+
+# the structure size is assumed in [um] in Cubit
+# Output the Exodus II mesh
+export mesh "tiox.exo" dimension 3 block all overwrite
+
+
+

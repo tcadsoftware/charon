@@ -1,0 +1,8 @@
+interpreter name Hole_al
+
+interpreter inputLine (hole a(low)) = {al_h}
+
+interpreter shortHelp {Parameter for van Overstraeten model}
+interpreter longHelp {Parameter for van Overstraeten model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,al_h,double,{al_h}

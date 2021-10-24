@@ -1,0 +1,34 @@
+
+interpreter name ChargeDensity
+
+interpreter inputLine (charge density) [(=) {chargeDensity} [ (is swept from) {chargeDensity1} to {chargeDensity2}]]
+
+interpreter shortHelp {Specify charge density for bulk fixed charge}
+
+interpreter longHelp {Specify charge density for bulk fixed charge <> charge density in 1/cm^3}
+
+
+xmlOptional (=) Charon->Closure Models->{MaterialBlockName}->Fixed Charge->Function 1,Charge Density,double,{chargeDensity}
+
+xmlOptional (is swept from)  Charon->Closure Models->{MaterialBlockName}->Fixed Charge->Function 1,Varying Charge Density,string,Parameter
+
+# Modify the solver type from NOX to LOCA
+xmlOptional (is swept from) Charon->Solution Control,Piro Solver,string,LOCA
+
+#LOCA Parameters
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Initial Value,double,{chargeDensity1}
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Continuation Parameter,string,Varying Charge Density
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Max Steps,int,1000
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Max Value,double,{chargeDensity2}
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Min Value,double,{chargeDensity1}
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Stepper,Compute Eigenvalues,bool,0
+xmlOptional (is swept from) Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,1.0
+
+# Set the parameters block
+xmlOptional (is swept from) Charon->Active Parameters,Number of Parameter Vectors,int,1
+xmlOptional (is swept from) Charon->Active Parameters->Parameter Vector 0,Number,int,1
+xmlOptional (is swept from) Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Varying Charge Density
+xmlOptional (is swept from) Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,{chargeDensity1}
+xmlOptional (is swept from) use Modifier 0
+

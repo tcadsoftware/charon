@@ -1,0 +1,114 @@
+Import State File si_diode.brk.pre.crowellsze.dd.exo at index -1
+
+start output parameters
+      Output State File si_diode.brk.crowellsze.dd.exo
+      Output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level, Total Recombination, Avalanche Generation"
+end output parameters
+
+Assembly Workset = 50
+lattice temperature = 300.0
+concentration scaling = 1.0e19
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is off
+      auger recombination is off
+      band gap narrowing is off
+      use Fermi Dirac
+      driving force is effective field
+      avalanche is on
+      optical generation is on
+end Physics Block Semiconductor
+
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      # p doping
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e18
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 0.5 to 1.1 in y	    
+      end uniform doping named Function1
+
+      # n doping
+      start uniform doping named Function2
+      	    type is donor
+            concentration = 2.5e16
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 0.0 to 0.5 in y	    
+      end uniform doping named Function2
+
+      start arora mobility
+        start electron parameters
+        end
+
+        start hole parameters
+        end
+      end
+
+      start Carrier Lifetime 
+            electron lifetime is concentration dependent
+            hole lifetime is concentration dependent
+      end Carrier Lifetime 
+
+      start intrinsic concentration
+      	    model is old slotboom
+      end intrinsic concentration
+
+      start avalanche generation
+        threshold behavior model is crowell-sze
+        driving force is effective field J
+        minimum field = 1.0e4
+        electron driving force reference density = 1e10
+        hole driving force reference density = 1e10
+        start crowell-sze parameters
+              electron lambda300 = 6.2e-7
+              hole lambda300 = 3.8e-7
+              optical phonon energy = 0.063
+              electron ionization energy = 1.1
+              hole ionization energy = 1.8    
+        end crowell-sze parameters
+      end avalanche generation
+
+      start optical generation named Function1
+            read optical generation from opto_generation.dat
+      	    spatial range is 0.0 to 100.0 in x
+      end optical generation named Function1
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon swept from -30.0 to 0.0
+BC is ohmic for cathode on silicon fixed at 0
+
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+
+start sweep options
+  continuation method is natural
+  initial step size = -0.01
+  maximum number of steps = 100000
+  step size aggressiveness = 0.5
+  minimum step size = 0.01
+  maximum step size = 0.5
+  min value = -34.6
+end sweep options
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-10
+      max nonlinear iterations = 30
+      line search method is full step
+      aztec max iterations = 700
+      aztec tolerance = 1e-5
+      aztec Krylov subspace size = 200
+      ifpack level of fill = 1
+      thyra function scaling is Row Sum
+end solver block

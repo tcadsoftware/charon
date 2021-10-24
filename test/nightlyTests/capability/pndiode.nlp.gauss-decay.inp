@@ -1,0 +1,50 @@
+
+Import State File pndiode.exo
+
+start output parameters
+      Output State File pndiode.nlp.gauss-decay.exo
+      Output nodal variables in silicon for "Doping"
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start uniform doping named Function1
+            type is acceptor
+            concentration = 1e18
+            spatial range is 0.0 to 0.5 in x 
+            gauss decay with start position at 0.4 and decay width at 0.05 in +x
+            gauss decay with start position at 0.05 and decay width at 0.02 in -y  
+            gauss decay with start position at 0.45 and decay width at 0.02 in +y
+      end
+ 
+      start file1d doping named Function2
+            file is test_dop.txt
+            type is donor
+            direction is y
+            buffer = 0 
+            spatial range is 0.5 to 1.0 in x
+            gauss decay with start position at 0.6 and decay width at 0.05 in -x
+            gauss decay with start position at 0.05 and decay width at 0.02 in -y
+            gauss decay with start position at 0.45 and decay width at 0.02 in +y         
+      end
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Equilibrium Potential
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

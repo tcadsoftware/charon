@@ -1,0 +1,8 @@
+
+interpreterBlock name TrapSRHParams
+
+interpreterBlock (start trap) {trapID}
+
+#interpreter shortHelp {trapID is an integer equal or greater than 0}
+#interpreter longHelp {trapID is an integer equal or greater than 0}
+

@@ -1,0 +1,11 @@
+interpreter name MGaussErfc
+
+interpreter inputLine (erfc) [(in x) [(in y) [(in z)]]]
+
+interpreter shortHelp {Use a complimentary error function in the specified direction.}
+
+interpreter longHelp {Instead of a gaussian in the given direction use a complimentary error function variation in the given direction.}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},X ERFC_ON,bool,true
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Y ERFC_ON,bool,true
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},X ERFC_ON,bool,true

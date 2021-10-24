@@ -1,0 +1,41 @@
+
+
+interpreter name 1DBJTBase
+
+interpreter inputLine (BC is 1dbjt for) {baseType} {sidesetID} on {geometryBlock}  [(fixed at) {potential}[ (swept from) {potential1} to {potential2}]]
+
+interpreter shortHelp {Specify the potential on a 1D BJT base contact}
+
+interpreter longHelp {Specify the potential on a 1D BJT base contact. <> baseType is the doping type in the base (Acceptor/Donor) <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> potential is the value in volts}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,BJT1D Base Contact
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Base Doping Type,string,{baseType}
+
+xmlOptional (fixed at) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Voltage,double,{potential}
+
+# Set the data parameter to a string
+xmlOptional (swept from) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Varying Voltage,string,Parameter
+
+# Modify the solver type from NOX to LOCA
+xmlOptional (swept from) Charon->Solution Control,Piro Solver,string,LOCA
+
+#LOCA Parameters
+xmlOptional (swept from) Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Initial Value,double,{potential1}
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Continuation Parameter,string,Varying Voltage
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Max Steps,int,1000
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Max Value,double,{potential2}
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Min Value,double,{potential1}
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Compute Eigenvalues,bool,0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,1.0
+
+# Set the parameters block
+xmlOptional (swept from) Charon->Active Parameters,Number of Parameter Vectors,int,1
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Number,int,1
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Varying Voltage
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,{potential1}
+xmlOptional (swept from) use Modifier 0

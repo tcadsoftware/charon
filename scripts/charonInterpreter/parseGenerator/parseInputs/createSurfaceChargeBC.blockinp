@@ -1,0 +1,12 @@
+
+interpreterBlock name SurfaceChargeBC
+
+interpreterBlock (start Surface Charge BC for) {sidesetID}
+
+
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Neumann
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Neumann Surface Charge
+

@@ -1,0 +1,15 @@
+
+
+interpreter name SRHRecombination
+
+interpreter inputLine (SRH Recombination) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on SRH recombination}
+
+interpreter longHelp {Turn on SRH recombination <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,SRH,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,SRH,string,Off
+
+

@@ -1,0 +1,9 @@
+interpreter name c300
+
+interpreter inputLine (c300) = {cval} 
+
+interpreter shortHelp {Set the specific heat at 300K}
+
+interpreter longHelp {Set the specific heat at 300}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Heat Capacity,c300,double,{cval}

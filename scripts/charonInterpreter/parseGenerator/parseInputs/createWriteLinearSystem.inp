@@ -1,0 +1,17 @@
+
+
+interpreter name WriteLinearSystem
+
+interpreter inputLine (write linear system) [(is on) [(is off)]]
+
+interpreter shortHelp {Set a flag to write out the linear system at each Newton iteration.}
+
+interpreter longHelp {Set a flag to write out the linear system at each Newton iteration.}
+
+xmlOptional (is on) Charon->Solver Factories->NOX Observers,Write Linear System,string,ON
+
+xmlOptional (is off) Charon->Solver Factories->NOX Observers,Write Linear System,string,OFF
+
+
+
+

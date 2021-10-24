@@ -1,0 +1,10 @@
+
+interpreter name OpticalFile
+
+interpreter inputLine (read optical generation from) {filename} 
+
+interpreter shortHelp {Read the optical generation from a tabulated file}
+
+interpreter longHelp {Read the optical generation from a tabulated file <> {filename} is the name of the file to be read}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},File Name,string,{filename}

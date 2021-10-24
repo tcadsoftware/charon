@@ -1,0 +1,12 @@
+
+
+interpreter name JunctionLocation
+
+interpreter inputLine (Junction Location) = {location}
+
+interpreter shortHelp {set the location of the step junction}
+
+interpreter longHelp {set the location of the step junction <> location is in microns}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping,Junction Location,double,{location}
+

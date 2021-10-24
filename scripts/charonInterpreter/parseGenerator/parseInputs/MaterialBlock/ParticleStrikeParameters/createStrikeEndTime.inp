@@ -1,0 +1,11 @@
+
+
+interpreter name StrikeEndTime
+
+interpreter inputLine (strike end time) = {time}
+
+interpreter shortHelp {set the end time of the strike}
+
+interpreter longHelp {set the end time of the strike}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,End Time,double,{time}

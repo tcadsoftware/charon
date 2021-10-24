@@ -1,0 +1,67 @@
+Import State File pndiode.fd.bgn.equ.exo at index 1
+
+start output parameters
+      Output State File pndiode.ddlattice.fd.bgn.exo
+      Output cell average Variables in silicon for scalar "Heat Generation,Thermal Conductivity,Conduction Band,Valence Band,Intrinsic Fermi Level,Electron Diffusion Coefficient,Hole Diffusion Coefficient"
+      unscale variables is off
+end output parameters
+
+concentration scaling = 1e16
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is ddlattice gfem
+      supg stabilization is on
+      material model is siliconParameter
+      srh recombination is off
+      band gap narrowing is on
+      use Fermi Dirac
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      reference material is Silicon
+      material name is Silicon
+      relative permittivity = 11.9
+      start intrinsic concentration
+      	    model is old slotboom
+      end intrinsic concentration
+
+      start step junction doping
+      	    acceptor concentration = 1e20
+	    donor concentration = 1e20
+	    junction location = 0.5
+	    dopant order is PN
+	    direction is x
+      end step junction doping
+      
+      start arora mobility
+        start electron parameters
+        end
+
+        start hole parameters
+        end
+      end
+      
+      start Carrier Lifetime block
+            hole lifetime is concentration dependent
+            electron lifetime is concentration dependent 
+      end Carrier Lifetime block
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0.5
+BC is ohmic for cathode on silicon fixed at 0.0
+BC is thermal contact for anode on silicon fixed at 300  
+BC is thermal contact for cathode on silicon fixed at 300  
+
+Initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+Initial conditions for LATTICE_TEMPERATURE in silicon is Exodus File
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1e-8
+      max nonlinear iterations = 30
+      line search method is backtrack
+      thyra function scaling is Row Sum
+end solver block

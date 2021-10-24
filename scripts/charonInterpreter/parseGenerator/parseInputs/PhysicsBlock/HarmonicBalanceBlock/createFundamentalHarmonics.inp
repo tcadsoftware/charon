@@ -1,0 +1,10 @@
+
+interpreter name FundamentalHarmonics
+
+interpreter inputLine (fundamental harmonics) = {fundamentalHarmonics}
+
+interpreter shortHelp {Set the fundamental harmonics for the harmonic balance method.}
+
+interpreter longHelp {Set the fundamental harmonics for the harmonic balance method. {fundamentalHarmonics} must be a list of frequencies separated by commas.}
+
+xmlRequired (fundamental harmonics) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Fundamental Harmonics,Array(double),{{fundamentalHarmonics}}

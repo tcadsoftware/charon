@@ -1,0 +1,9 @@
+interpreter name Delta
+
+interpreter inputLine (delta) = {deltaval}
+
+interpreter shortHelp {Farahmand model parameter delta}
+
+interpreter longHelp {Farahmand model parameter delta}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,delta,double,{deltaval}

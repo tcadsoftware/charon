@@ -1,0 +1,9 @@
+interpreter name WorkFunction
+
+interpreter inputLine (work function) = {wf}
+
+interpreter shortHelp {Sets work function for Schottky contact}
+
+interpreter longHelp {Sets work function for Schottky contact <> wf is the value of the work function}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Work Function,double,{wf}

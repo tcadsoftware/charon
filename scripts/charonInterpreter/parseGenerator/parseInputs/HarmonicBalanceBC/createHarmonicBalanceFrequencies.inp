@@ -1,0 +1,12 @@
+
+
+interpreter name HarmonicBalanceFrequencies
+
+interpreter inputLine (frequencies) {frequencyValues}
+
+interpreter shortHelp {Specify the frequency domain boundary condition's frequencies.}
+
+interpreter longHelp {Specify the frequency domain boundary condition's frequencies. <> frequencyValues is a list of frequency (Hz) values, formatted in double quotes with a space between each frequency. For example, the input line can read <> frequencies \"1e3  1.1e3  2.1e5\"}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Voltage,Frequencies,Array(double),{FREQUENCIES{frequencyValues}FREQUENCIES}
+xmlRequired use Modifier 0

@@ -1,0 +1,8 @@
+interpreter name TemperatureExponent
+
+interpreter inputLine (temperature exponent) = {texpval}
+
+interpreter shortHelp {Specify the temperature exponent}
+interpreter longHelp {Specify the temperature exponent}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Temperature Exponent,double,{texpval}

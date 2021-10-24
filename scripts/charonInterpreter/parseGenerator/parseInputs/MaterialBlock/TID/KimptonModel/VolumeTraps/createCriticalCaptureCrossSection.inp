@@ -1,0 +1,10 @@
+
+interpreter name CriticalCaptureCrossSection
+
+interpreter inputLine (critical capture cross section) = {sigma}
+
+interpreter shortHelp {Sets the volume trap critical capture cross section for the TID model}
+
+interpreter longHelp {Sets the volume trap critical capture cross section for the TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Volume Traps,Critical Capture Cross Section,double,{sigma}

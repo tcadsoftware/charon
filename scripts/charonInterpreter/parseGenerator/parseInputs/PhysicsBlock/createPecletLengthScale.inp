@@ -1,0 +1,15 @@
+
+interpreter name PecletLengthScale
+
+interpreter inputLine (supg length scale is) [(stream) [(shakib)]]
+
+interpreter shortHelp {Specify the length scale to be used in the supg stabilization}
+
+interpreter longHelp {Specify the length scale to be used in the supg stabilization <> Options are stream or shakib}
+
+xmlOptional (stream) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Length Scale,string,Stream
+
+xmlOptional (shakib) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Length Scale,string,Shakib
+
+
+

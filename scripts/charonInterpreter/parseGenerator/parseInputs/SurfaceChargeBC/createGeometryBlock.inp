@@ -1,0 +1,12 @@
+
+
+interpreter name GeometryBlock
+
+interpreter inputLine (geometry block is) {geometryBlock}
+
+interpreter shortHelp {Specify the geometry block name}
+
+interpreter longHelp {Specify the geometry block that the SurfaceChargeBC is applied to}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+

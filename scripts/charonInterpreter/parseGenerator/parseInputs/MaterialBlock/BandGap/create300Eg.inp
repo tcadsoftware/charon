@@ -1,0 +1,11 @@
+
+
+interpreter name 300Eg
+
+interpreter inputLine (300k gap) = {bandgap} 
+
+interpreter shortHelp {Set the band gap 300 k value}
+
+interpreter longHelp {Set the band gap 300 k value <> badgap is the gap in eV.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,Eg300,double,{bandgap}

@@ -1,0 +1,12 @@
+
+interpreter name TimeIntegratorFinalTime
+
+interpreter inputLine (time integrator final time) = {time}
+
+interpreter shortHelp {Specify the time integrator final time}
+
+interpreter longHelp {Specify the time integrator final time in seconds}
+
+xmlRequired Charon->Solution Control->Rythmos,Final Time,double,{time}
+
+

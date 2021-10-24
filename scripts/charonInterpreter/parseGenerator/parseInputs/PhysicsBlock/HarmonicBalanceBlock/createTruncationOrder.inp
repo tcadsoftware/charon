@@ -1,0 +1,10 @@
+
+interpreter name TruncationOrder
+
+interpreter inputLine (truncation order) = {truncationOrder}
+
+interpreter shortHelp {Set the truncation order of the harmonic balance method.}
+
+interpreter longHelp {Set the truncation order of the harmonic balance method. {truncationOrder} must be a positive integer.}
+
+xmlRequired (truncation order) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Truncation Order,int,{truncationOrder}

@@ -1,0 +1,14 @@
+interpreter name MmsBC
+
+interpreter inputLine (BC is mms) for {varname} on {sidesetID} in {geometryBlock} function {funcName}
+
+interpreter shortHelp {Specify a functional boundary condition for a mms problem}
+
+interpreter longHelp {Specify a functional boundary condition for a mms problem}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,{varname}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,MMS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,MMS Type,string,{funcName}

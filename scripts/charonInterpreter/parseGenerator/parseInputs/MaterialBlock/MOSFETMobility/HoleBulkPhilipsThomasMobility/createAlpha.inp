@@ -1,0 +1,10 @@
+interpreter name Alpha
+
+interpreter inputLine (alpha) = {alpha}
+
+interpreter shortHelp {Sets the alpha value for this mobility model}
+
+interpreter longHelp {Sets the alpha value for this mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,alpha,double,{alpha}
+

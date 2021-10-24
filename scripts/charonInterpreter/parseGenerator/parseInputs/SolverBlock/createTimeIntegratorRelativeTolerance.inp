@@ -1,0 +1,13 @@
+
+interpreter name TimeIntegratorRelativeTolerance
+
+interpreter inputLine (time integrator relative error) = {error}
+
+interpreter shortHelp {Specify the time integrator relative error tolerance}
+
+interpreter longHelp {Specify time integrator relative error tolerance <> {error = target value for the relative error requirement}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Relative Error Tolerance,double,{error}
+
+
+

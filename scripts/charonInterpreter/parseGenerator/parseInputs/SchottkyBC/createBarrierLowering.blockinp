@@ -1,0 +1,9 @@
+interpreterBlock name BarrierLowering
+
+interpreterBlock (start Barrier Lowering Parameters) 
+
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data->Barrier Lowering,alpha,double,1.0
+
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data->Barrier Lowering,beta,double,0.0
+
+xmlDefault Charon->Boundary Conditions->SchottkyNeumann{sidesetID}ANONYMOUS->Data->Barrier Lowering,gamma,double,1.0

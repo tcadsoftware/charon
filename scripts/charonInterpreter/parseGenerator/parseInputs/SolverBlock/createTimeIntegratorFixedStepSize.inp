@@ -1,0 +1,11 @@
+
+interpreter name TimeIntegratorFixedStepSize
+
+interpreter inputLine (time integrator fixed step size) = {dtime}
+
+interpreter shortHelp {Specify the fixed time step size the intergrator will take.}
+
+interpreter longHelp {Specify the fixed time step size the intergrator will take. <> dtime is the time step in seconds.}
+
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Integration Control,Fixed dt,double,{dtime}

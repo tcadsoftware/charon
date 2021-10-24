@@ -1,0 +1,6 @@
+
+interpreterBlock name StepDoping
+
+interpreterBlock (start step junction doping)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Doping,Value,string,Step Junction

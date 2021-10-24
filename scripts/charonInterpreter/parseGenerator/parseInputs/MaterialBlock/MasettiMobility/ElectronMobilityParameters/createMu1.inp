@@ -1,0 +1,9 @@
+interpreter name Mu1
+
+interpreter inputLine (mu1) = {mu1val}
+
+interpreter shortHelp {Masetti model parameter mu_1}
+
+interpreter longHelp {Masetti model parameter mu_1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,mu1,double,{mu1val}

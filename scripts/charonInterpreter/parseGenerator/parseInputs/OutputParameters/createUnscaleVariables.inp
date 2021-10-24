@@ -1,0 +1,12 @@
+
+interpreter name UnscaleVariables
+
+interpreter inputLine (Unscale Variables) [ (is on) [ (is off) ]]
+
+interpreter shortHelp {Unscale the variables.}
+
+interpreter longHelp {Equations and variables are scaled in the system to enable stable solutions.  Unscale them to physical values.}
+
+xmlOptional (is on) Charon->Output,Unscale Variables,bool,true
+xmlOptional (is off) Charon->Output,Unscale Variables,bool,false
+

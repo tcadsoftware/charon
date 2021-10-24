@@ -1,0 +1,10 @@
+interpreter name Discontinuity
+
+interpreter inputLine (discontinuity for hbt) with suffix {discSuffix}
+
+interpreter shortHelp {For heterojunction bipolar transistors enable support for the discontinuity at the emitter-base junction}
+
+interpreter longHelp {For heterojunction bipolar transistors enable support for the discontinuity at the emitter-base junction}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Discontinuous Fields,string,ELECTRON_DENSITY,HOLE_DENSITY,Doping,Electron Effective DOS,Hole Effective DOS
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Discontinuous Suffix,string,{discSuffix}

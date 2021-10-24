@@ -1,0 +1,12 @@
+
+interpreter name TimeIntegratorVariableStepSize
+
+interpreter inputLine (time integrator variable step size) [(with max step) = {dtMax}]
+
+interpreter shortHelp {Allow variable time stepping for the time intergrator.}
+
+interpreter longHelp {Allow variable time stepping for the time integrator. <> dtMax is optionally provided as the maximum allowed time step size in seconds.}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Integration Control,Take Variable Steps,bool,True
+
+xmlOptional (with max step) Charon->Solution Control->Rythmos->Rythmos Integration Control,Max dt,double,{dtMax}

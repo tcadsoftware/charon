@@ -1,0 +1,15 @@
+
+
+interpreter name BulkFixedCharge
+
+interpreter inputLine (Bulk fixed charge) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Toggle bulk fixed charge}
+
+interpreter longHelp {Toggle bulk fixed charge <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Fixed Charge,string,True
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Fixed Charge,string,False
+
+

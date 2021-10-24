@@ -1,0 +1,17 @@
+interpreter name MoleFractionRange
+
+interpreter inputLine (spatial range) is {locMin} to {locMax} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the coordinate range of the uniform doping in x, y or z}
+
+interpreter longHelp {Set the coordinate range of the uniform doping in x, y or z}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Xmin,double,{locMin}
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Xmax,double,{locMax}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Ymin,double,{locMin}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Ymax,double,{locMax}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Zmin,double,{locMin}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Zmax,double,{locMax}
+

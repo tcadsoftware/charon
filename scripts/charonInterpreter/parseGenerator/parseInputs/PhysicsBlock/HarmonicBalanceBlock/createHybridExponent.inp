@@ -1,0 +1,10 @@
+
+interpreter name HybridExponent
+
+interpreter inputLine (hybrid exponent) = {hybridExponent}
+
+interpreter shortHelp {Set the hybrid exponent of the harmonic balance method.}
+
+interpreter longHelp {Set the hybrid exponent of the harmonic balance method. {hybridExponent} must be a value between 0 and 1, interpolating between the box and diamond truncation schemes.}
+
+xmlRequired (hybrid exponent) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Hybrid Exponent,double,{hybridExponent}

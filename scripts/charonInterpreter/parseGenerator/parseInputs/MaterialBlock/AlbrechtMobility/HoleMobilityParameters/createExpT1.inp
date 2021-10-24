@@ -1,0 +1,10 @@
+
+interpreter name ExpT1
+
+interpreter inputLine (expT1) = {expT1val}
+
+interpreter shortHelp {model parameter expT1}
+
+interpreter longHelp {Albrecht model parameter expT1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,expT1,double,{expt1val}

@@ -1,0 +1,14 @@
+
+make sure cython and python 2.7.x are in use.
+
+In the refineModule directory,
+
+source buildProcess2.7
+
+This will build the refinement module that can be imported into a
+pyhton script.  Note that the pythonized cubit is built with Python
+2.7 and so must this code be cythonized.  The scripts will build the
+module and store it in a subdirectory called build.  Move the
+meshRefine.so to a location where it can be found by python or set the
+PYTHONPATH accordingly.
+

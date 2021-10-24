@@ -1,0 +1,8 @@
+interpreter name BandOffset
+
+interpreter inputLine (heterojunction band offset) = {value}
+
+interpreter shortHelp {Conduction band offset in eV for electron tunneling}
+interpreter longHelp {Conduction band offset in eV for electron tunneling}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Electron HJ Band Offset,double,{value}

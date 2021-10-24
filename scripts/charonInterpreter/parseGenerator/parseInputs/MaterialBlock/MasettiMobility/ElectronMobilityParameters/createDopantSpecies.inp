@@ -1,0 +1,9 @@
+interpreter name DopantSpecies
+
+interpreter inputLine (dopant species) is {species}
+
+interpreter shortHelp {The dopant species should be either Arsenic or Phosphorous}
+
+interpreter longHelp {The dopant species should be either Arsenic or Phosphorous}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Dopant Species,string,{species}

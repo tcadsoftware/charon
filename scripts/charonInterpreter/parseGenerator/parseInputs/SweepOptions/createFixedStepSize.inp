@@ -1,0 +1,13 @@
+
+
+interpreter name FixedStepSize
+
+interpreter inputLine (use Fixed Step Size) = {stepSize}
+
+interpreter shortHelp {Specify a fixed step size for parameter sweep}
+
+interpreter longHelp {Specify a fixed step size for parameter sweep <> {stepSize} = the step size}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Max Step Size,double,{stepSize} priority 5
+xmlRequired Charon->Solution Control->LOCA->Step Size,Min Step Size,double,{stepSize} priority 5
+

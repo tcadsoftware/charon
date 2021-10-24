@@ -1,0 +1,13 @@
+
+
+interpreter name InitialStepSize
+
+interpreter inputLine (Initial Step Size) = {stepSize}
+
+interpreter shortHelp {Specify initial step size for parameter sweep}
+
+interpreter longHelp {Specify initial step size for parameter sweep <> {stepSize} = the step size}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,{stepSize} priority 5
+
+

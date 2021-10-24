@@ -1,0 +1,9 @@
+interpreter name DopingBuffer
+
+interpreter inputLine (buffer) = {value}
+
+interpreter shortHelp {add a buffer value to the min/max coordinates read from file.}
+
+interpreter longHelp {add a buffer value to the min/max coordinates read from file.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Buffer,double,{value}

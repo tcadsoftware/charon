@@ -1,0 +1,12 @@
+interpreter name LocalTunneling
+
+interpreter inputLine (local tunneling) is [ (on) [ (off) ]]
+
+interpreter shortHelp {Set local tunneling on or off}
+interpreter longHelp {Set local tunneling on or off}
+
+xmlOptional (on) Charon->Boundary Conditions->elec1ANONYMOUS->Data,Local Tunneling,string,True
+xmlOptional (on) Charon->Boundary Conditions->elec2ANONYMOUS->Data,Local Tunneling,string,True
+
+xmlOptional (off) Charon->Boundary Conditions->elec1ANONYMOUS->Data,Local Tunneling,string,False
+xmlOptional (off) Charon->Boundary Conditions->elec2ANONYMOUS->Data,Local Tunneling,string,False

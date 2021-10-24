@@ -1,0 +1,14 @@
+interpreter name Center
+
+interpreter inputLine (gradient center) = {cent} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the location where the doping ramps from the minimum to maximum values in x, y or z}
+
+interpreter longHelp {Set the location where the doping ramps from the minimum to maximum values in x, y or z}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},X Bend Location,double,{cent}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Y Bend Location,double,{cent}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Z Bend Location,double,{cent}
+

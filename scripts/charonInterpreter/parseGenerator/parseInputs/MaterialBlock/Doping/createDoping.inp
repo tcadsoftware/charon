@@ -1,0 +1,14 @@
+
+
+interpreter name Doping
+
+interpreter inputLine (Doping) for {accdon} is {value}
+
+interpreter shortHelp {Set the doping value }
+
+interpreter longHelp {Set the doping value <> accdon is the carrier <> value is the value }
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->{accdon} Doping,Value,double,{value}
+
+
+

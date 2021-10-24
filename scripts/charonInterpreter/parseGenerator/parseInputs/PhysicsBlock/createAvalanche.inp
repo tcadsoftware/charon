@@ -1,0 +1,11 @@
+interpreter name AvalancheGen
+
+interpreter inputLine (Avalanche) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on avalanche generation}
+
+interpreter longHelp {Turn on avalanche generation <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Avalanche,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Avalanche,string,Off

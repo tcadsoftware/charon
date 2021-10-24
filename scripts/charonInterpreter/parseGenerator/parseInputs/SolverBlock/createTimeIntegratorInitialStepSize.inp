@@ -1,0 +1,11 @@
+
+interpreter name TimeIntegratorInitialStepSize
+
+interpreter inputLine (time integrator initial step size) = {dtime}
+
+interpreter shortHelp {Specify the initial time step size the intergrator is allowed to take.}
+
+interpreter longHelp {Specify the initial time step size the intergrator is allowed to take. <> dtime is the time step in seconds.}
+
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Initial Step Size,double,{dtime}

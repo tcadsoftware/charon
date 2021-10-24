@@ -1,0 +1,95 @@
+undo on
+graphics mode wireframe
+
+
+
+################################################
+# Geometry definition
+################################################
+
+# The depth isn't used so use a value that looks reasonable visually
+#{zsize = 0.5}
+
+# gate oxide
+#{goxDY = 0.050}
+#{goxDX = 1.00}
+
+# silicon body
+#{bodyDX = goxDX}
+#{bodyDY = 0.5}
+
+
+
+################################################
+# Geometry 
+################################################
+
+# substrate 
+create brick x {bodyDX} y {bodyDY} z {zsize}
+volume 1 rename "substrate"
+
+# gate oxide 
+create brick x {goxDX} y {goxDY} z {zsize}
+volume 2 rename "gox"
+move vertex 12 location vertex 3
+
+imprint all
+merge all
+
+# Move everything to positive coordinate values
+move vertex 4 location x 0 y 0 z 0 include_merged
+
+###############################################
+## Boundary conditions
+################################################
+
+sideset 1 curve 14 
+sideset 1 name "gate"
+
+sideset 2 curve 4 
+sideset 2 name "subs"
+
+sideset 3 curve 2
+sideset 3 name "inter_trap"
+
+################################################
+## Mesh
+################################################
+
+#{goxDY_fine = 0.005}
+#{goxDY_coarse = 0.005}
+#{goxDX_coarse = 0.1}
+
+#{bodyDY_fine = 0.005}
+#{bodyDY_coarse = 0.05}
+#{bodyDX_coarse = 0.1}
+
+# substrate
+curve 2 4 interval size {bodyDX_coarse}
+curve 1 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 2
+curve 3 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 3
+#surface 1 scheme tri
+surface 1 scheme map
+mesh surface 1
+
+# oxide 
+curve 2 14 interval size {goxDX_coarse}
+curve 13 scheme bias fine size {goxDY_fine} coarse size {goxDY_coarse} start vertex 2
+curve 15 scheme bias fine size {goxDY_fine} coarse size {goxDY_coarse} start vertex 3
+#surface 7 scheme tri
+surface 7 scheme map
+mesh surface 7
+
+################################################
+# Element blocks
+################################################
+
+block 1 surface 1 
+block 1 element type quad4
+block 1 name "silicon"
+
+block 2 surface 7 
+block 2 element type quad4
+block 2 name "sio2"
+
+export mesh 'nmosc_msh.gen' dimension 2 overwrite

@@ -1,0 +1,105 @@
+
+import state file nmosc.dd.FEM.exo at index -1
+
+start output parameters
+      output state file nmosc.dd.sweep.FEM.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+      output cell average variables in sio2 for scalar "Ins Generated Pairs Density,Ins Hole Trapped Charge"
+end output parameters
+
+assembly workset = 20
+lattice temperature = 300.0
+concentration scaling = 1.0e15
+
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      supg Stabilization is off
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is off
+      auger recombination is off
+end Physics block semiconductor
+
+start physics block insulator
+      geometry block is sio2
+      standard discretization type is laplace gfem
+      material model is sio2Parameter
+      tid is on
+end Physics Block semiconductor
+
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e15
+      	    spatial range is 0.0 to 2.0 in x
+    	    spatial range is 0.0 to 0.5 in y	    
+      end uniform doping named Function1
+
+      fixed mobility for electrons is 1000.0
+      fixed mobility for holes is 500.0
+
+      start carrier lifetime
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11 
+      end carrier lifetime
+end material block siliconParameter
+
+
+start material block sio2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+
+      start tid 
+        start kimpton model
+      	    dose = 3e3
+	    effective dose enhancement factor = 1.0
+	    electron-hole pair formation energy = 16.5
+	    electric field power dependency = 0.7
+            freeze traps at voltage = 0.0 on gate
+	    start interface traps
+	    	  sideset id is inter_trap
+		  total density = 1e10
+		  initial filling factor = 0.05
+		  capture cross section = 1e-15
+	    end interface traps
+            start volume traps
+		  total density = 1e15
+		  initial filling factor = 0.1
+		  capture cross section = 1e-13
+                  critical capture cross section = 0.7e-13
+	    end volume traps
+        end Kimpton model 
+      end tid
+end material block sio2Parameter
+
+
+initial conditions for ELECTRIC_POTENTIAL in sio2 is exodus file
+initial conditions for ELECTRIC_POTENTIAL in silicon is exodus file
+initial conditions for ELECTRON_DENSITY in silicon is exodus file
+initial conditions for HOLE_DENSITY in silicon is exodus file
+
+BC is ohmic for subs on silicon fixed at 0.0
+BC is contact on insulator for gate on sio2 with work function 4.1 swept from 0.0 to 0.5
+
+start sweep options
+  continuation method is natural
+  initial step size = 0.05
+  maximum number of steps = 10000
+  step size aggressiveness = 1.0
+  predictor method is constant
+  minimum step size = 0.05
+  maximum step size = 0.05
+end sweep options
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-10
+      max nonlinear iterations = 30
+      aztec max iterations = 200
+end solver block

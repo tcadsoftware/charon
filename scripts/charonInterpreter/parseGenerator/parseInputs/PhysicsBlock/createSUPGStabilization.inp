@@ -1,0 +1,12 @@
+
+interpreter name SUPGStabilizationToggle
+
+interpreter inputLine (SUPG Stabilization) is [(on) [ (off) ]]
+
+interpreter shortHelp {Toggle SUPG Stabilization 'On' or 'Off'.}
+
+interpreter longHelp {Toggle SUPG Stabilization 'On' or 'Off'.}
+
+xmlOptional (on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,SUPG Stabilization,string,On priority 5
+
+xmlOptional (Off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,SUPG Stabilization,string,Off priority 5

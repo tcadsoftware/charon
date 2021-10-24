@@ -1,0 +1,64 @@
+
+#ifndef CHARON_SUPG_TAU_LINEAR_DECL_HPP
+#define CHARON_SUPG_TAU_LINEAR_DECL_HPP
+
+#include "Panzer_Dimension.hpp"
+#include "Phalanx_Evaluator_Macros.hpp"
+#include "Phalanx_MDField.hpp"
+
+using panzer::Cell;
+using panzer::Point;
+using panzer::Dim;
+
+namespace charon {
+
+template<typename EvalT, typename Traits>
+class SUPG_Tau_Linear
+  :
+  public PHX::EvaluatorWithBaseImpl<Traits>,
+  public PHX::EvaluatorDerived<EvalT, Traits>
+{
+  public:
+
+    SUPG_Tau_Linear(
+      const Teuchos::ParameterList& p);
+
+    void
+    postRegistrationSetup(
+      typename Traits::SetupData d,
+      PHX::FieldManager<Traits>& fm);
+
+    void
+    evaluateFields(
+      typename Traits::EvalData d);
+
+  private:
+
+    using ScalarT = typename EvalT::ScalarT;
+
+  typedef typename PHX::MDField<ScalarT,Cell,Point>::size_type size_type;
+
+  // output
+  PHX::MDField<ScalarT,Cell,Point> tau;
+
+  // input
+  PHX::MDField<const ScalarT,Cell,Point> diffcoeff; // carrier diffusion coefficient
+  PHX::MDField<const ScalarT,Cell,Point,Dim> velocity; // carrier velocity
+  PHX::MDField<const ScalarT,Cell,Point> recomb_deriv;
+
+  int num_points;
+  int num_dims;
+  int ir_degree;
+  int ir_index;  // integration rule index to get gc
+
+  bool add_source_stab;
+  std::string carrType;
+
+  Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
+
+}; // end of class SUPG_Tau_Linear
+
+
+}
+
+#endif

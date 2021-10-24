@@ -1,0 +1,8 @@
+interpreter name HuangRhysFactor
+
+interpreter inputLine (huang-rhys factor) = {value}
+
+interpreter shortHelp {Huang-Rhys factor}
+interpreter longHelp {Huang-Rhys factor which is unitless}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Huang-Rhys Factor,double,{value}

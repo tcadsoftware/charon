@@ -1,0 +1,9 @@
+# Copy build scripts from last checkout. This means changes to the
+# build scripts will lag by a day but there is no easy way to just get
+# a single file from a git repo.
+00 05  *  *  *  cp /scratch/glhenni/Nightly/tcad-charon/src/cmake/ctest/machines/ctest_regression.cmake /scratch/glhenni/Nightly/scripts/
+01 05  *  *  *  cp /scratch/glhenni/Nightly/tcad-charon/src/cmake/ctest/machines/cee-farm/nightly_cron_driver.sh /scratch/glhenni/Nightly/scripts/
+
+# Run OPT and DBG builds and install them 
+00 03  *  *  *  /scratch/glhenni/Nightly/scripts/nightly_cron_driver.sh DBG DOINSTALL > /scratch/glhenni/Nightly/nightly-dbg.out 2>&1
+00 04  *  *  *  /scratch/glhenni/Nightly/scripts/nightly_cron_driver.sh OPT DOINSTALL > /scratch/glhenni/Nightly/nightly-opt.out 2>&1

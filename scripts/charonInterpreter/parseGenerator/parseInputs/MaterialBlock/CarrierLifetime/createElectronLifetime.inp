@@ -1,0 +1,12 @@
+
+
+interpreter name ElectronLifetime
+
+interpreter inputLine (electron lifetime is constant) = {lifetime} 
+
+interpreter shortHelp {Specify an explicit value for electron lifetime.}
+
+interpreter longHelp {Specify an explicit value for electron lifetime. <> {lifetime} is the lifetime in seconds.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Lifetime,Value,double,{lifetime}
+

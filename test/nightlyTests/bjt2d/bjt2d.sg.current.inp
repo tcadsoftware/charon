@@ -1,0 +1,74 @@
+
+Import State File bjt2d.dd.equ.exo
+
+start output parameters
+      Output State File bjt2d.sg.current.exo
+      Output cell average Variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      srh recombination is on
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start arora mobility
+        start electron parameters
+        end
+
+        start hole parameters
+        end
+      end
+
+      start erfc doping named Function1
+      	    type is donor
+	    concentration range is 1e15 to 1e18
+	    gradient width = 0.02 in y
+	    gradient center = 0.08 in y
+	    direction is Positive in y
+      end erfc doping named Function1
+
+      start mgauss doping named Function2
+         type is acceptor
+         concentration range is 0 to 1e17
+         spatial range is 0.38 to 100 in y
+         spatial range is -100 to 100 in x
+         gradient width = 100 in x
+         gradient width = 0.065 in y
+      end   mgauss doping
+
+      start mgauss doping named Function3
+         type is donor
+         concentration range is 0 to 1e19
+         spatial range is 0.5 to 0.5 in y
+         spatial range is 0 to 0.2 in x
+         gradient width = 0.1 in x
+         gradient width = 0.038 in y
+      end   mgauss doping
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-7
+	    hole lifetime is constant = 1e-7
+      end Carrier Lifetime Block
+
+end Material Block siliconParameter
+
+BC is ohmic for emitter on silicon fixed at -0.5
+BC is ohmic for base on silicon fixed at 0
+BC is ohmic for collector on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus file
+initial conditions for ELECTRON_DENSITY in silicon is Exodus File
+initial conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

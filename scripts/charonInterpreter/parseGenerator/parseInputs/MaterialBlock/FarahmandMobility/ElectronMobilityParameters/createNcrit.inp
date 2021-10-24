@@ -1,0 +1,9 @@
+interpreter name Ncrit
+
+interpreter inputLine (ncrit) = {ncritval}
+
+interpreter shortHelp {Farahmand model parameter ncrit}
+
+interpreter longHelp {Farahmand model parameter ncrit}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,ncrit,double,{ncritval}

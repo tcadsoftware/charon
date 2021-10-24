@@ -1,0 +1,6 @@
+
+interpreterBlock name IncompleteIonizationDonor
+
+interpreterBlock (start Incomplete Ionization Donor) 
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Incomplete Ionized Donor,Value,string,Model

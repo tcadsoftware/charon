@@ -1,0 +1,10 @@
+interpreter name Alpha
+
+interpreter inputLine (exponent for mobility) = {alpha}
+
+interpreter shortHelp {Sets the exponent for hole mobility}
+
+interpreter longHelp {Sets the exponent for hole mobility}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,alpha,double,{alpha}
+

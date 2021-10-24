@@ -1,0 +1,11 @@
+
+interpreter name SetMaterialModel
+
+interpreter inputLine (material model) is {materialModelName}
+
+interpreter shortHelp {Specifies the material model to be used with this physics block}
+
+interpreter longHelp {Specifies the material model to be used with this physics block <> materialModelName must be a name that corresponds to an equally named material model block in this input.}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS,Model ID,string,{materialModelName}
+

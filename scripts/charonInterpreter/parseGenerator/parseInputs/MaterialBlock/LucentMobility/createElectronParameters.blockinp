@@ -1,0 +1,7 @@
+
+interpreterBlock name ElectronParameters
+
+interpreterBlock (start electron parameters)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Value,string,Lucent
+

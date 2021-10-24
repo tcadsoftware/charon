@@ -1,0 +1,11 @@
+
+
+interpreter name IonizationEnergy
+
+interpreter inputLine (ionization energy) = {valueIonizationEnergy}
+
+interpreter shortHelp {Specify incomplete ionization energy for donor dopant type.}
+
+interpreter longHelp {Specify incomplete ionization energy for donor dopant type.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Incomplete Ionized Donor->Model,Ionization Energy,double,{valueIonizationEnergy}

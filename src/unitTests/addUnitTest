@@ -1,0 +1,77 @@
+#!/bin/bash -e
+
+###############################################################################
+#
+#  usage()
+#
+#  Display the usage information for this script.
+#
+###############################################################################
+usage()
+{
+  echo "
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Usage:  addUnitTest TestName                                                ┃
+┃                                                                             ┃
+┃ This script will create a new group of unit tests named TestName and then   ┃
+┃ add them into the CTest harness.  If you are creating the unit tests for a  ┃
+┃ particular class in Charon, the recommendation would be to use the class    ┃
+┃ name as TestName.                                                           ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+" > tmpUsageFile
+  cat tmpUsageFile
+  rm tmpUsageFile > /dev/null
+} # end of usage()
+
+# Ensure that this script is being run from the unitTests directory.
+currentDirectory=$PWD
+if [[ "${currentDirectory##*/}" != "unitTests" ]]; then
+  echo "This script must be run from the src/unitTests directory."
+  exit 1
+fi
+
+# Check that we have only one command line argument.
+if [[ $# -eq 0 ]]; then
+  usage
+  echo "You must supply a test name."
+  exit 2
+elif [[ $# -gt 1 ]]; then
+  usage
+  echo "The test name cannot include spaces."
+  exit 3
+fi
+
+# Ensure the first character in the test name is uppercase.
+testName="$1"
+testName="${testName^}"
+
+# Check to see that testName does not match the names of any existing unit
+# tests.
+exists=false
+for d in $(ls -1d */ | awk -F/ '{print $1}'); do
+  if [[ "$testName" == "$d" ]]; then
+    exists=true
+    break
+  fi
+done
+if $exists; then
+  echo "A unit test named $testName already exists.  Please choose a"         \
+    "different test name."
+  exit 4
+fi
+
+# Create the new unit test's directory and set its files up appropriately.
+cp -r UnitTestTemplate "$testName"
+cd "$testName"
+sed -i "s/UnitTestTemplate/$testName/g" *
+mv tUnitTestTemplate.cpp t${testName}.cpp
+
+# Add the new unit test to the CMakeLists.txt file.
+cd $currentDirectory
+echo "ADD_SUBDIRECTORY(${testName})" >> CMakeLists.txt
+sort CMakeLists.txt -o CMakeLists.txt
+
+# Finish up.
+echo "Your new $testName unit test group has been created."
+echo "Now edit the ${testName}/t${testName}.cpp file to add the particulars"  \
+  "of the tests."

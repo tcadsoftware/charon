@@ -1,0 +1,114 @@
+undo on
+graphics mode wireframe
+
+
+
+################################################
+# Geometry definition
+################################################
+
+# The depth isn't used so use a value that looks reasonable visually
+#{zsize = 0.5}
+
+#{pDY = 0.5}
+#{pDY_scr = 0.060}
+#{pDX = 1.0}
+#{nDY = 0.5}
+#{nDY_scr = 0.160}
+#{nDX = 1.0}
+
+
+################################################
+# Geometry creation
+################################################
+
+# p bulk region
+create brick x {pDX} y {pDY-pDY_scr} z {zsize}
+volume 1 rename "p_bulk"
+
+# p scr region
+create brick x {pDX} y {pDY_scr} z {zsize}
+volume 2 rename "p_scr"
+move vertex 11 location vertex 4
+imprint all 
+merge all
+
+# n scr region
+create brick x {nDX} y {nDY_scr} z {zsize}
+volume 3 rename "n_scr"
+move vertex 19 location vertex 12
+imprint all 
+merge all
+
+# n bulk region
+create brick x {nDX} y {nDY-nDY_scr} z {zsize}
+volume 4 rename "n_bulk"
+move vertex 27 location vertex 20
+imprint all 
+merge all
+
+
+# Move everything to positive coordinate values
+move vertex 28 location x 0 y 0 z 0 include_merged
+
+
+################################################
+## Boundary conditions
+################################################
+
+sideset 1 curve 2
+sideset 1 name "anode"
+
+sideset 2 curve 40
+sideset 2 name "cathode"
+
+
+################################################
+## Mesh definition and creation
+################################################
+
+#{pDY_fine = 0.006}
+#{pDY_coarse = 0.08}
+#{nDY_fine = 0.004}
+#{nDY_coarse = 0.08}
+#{pDX_refi = 0.1}
+#{nDX_refi = 0.1}
+
+# p bulk region
+curve 2 4 interval size {pDX_refi}
+curve 3 scheme bias fine size {pDY_fine} coarse size {pDY_coarse} start vertex 4
+curve 1 scheme bias fine size {pDY_fine} coarse size {pDY_coarse} start vertex 1
+surface 1 scheme map
+mesh surface 1
+
+# p scr region
+curve 4 16 interval size {pDX_refi}
+curve 13 15 interval size {pDY_fine}
+surface 7 scheme map
+mesh surface 7
+
+# n scr region
+curve 28 16 interval size {nDX_refi}
+curve 25 27 interval size {nDY_fine}
+surface 13 scheme map
+mesh surface 13
+
+# n bulk region
+curve 28 40 interval size {nDX_refi}
+curve 37 scheme bias fine size {nDY_fine} coarse size {nDY_coarse} start vertex 17
+curve 39 scheme bias fine size {nDY_fine} coarse size {nDY_coarse} start vertex 20
+surface 19 scheme map
+mesh surface 19
+
+
+
+################################################
+# Element block
+################################################
+
+block 1 surface 1 7 13 19
+block 1 elem type quad4
+block 1 name "silicon"
+
+
+export mesh 'si-diode01.gen' dimension 2 overwrite

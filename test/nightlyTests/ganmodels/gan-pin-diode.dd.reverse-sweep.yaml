@@ -1,0 +1,252 @@
+%YAML 1.1
+---
+ANONYMOUS:
+  Mesh: 
+    Source: Exodus File
+    Exodus File: 
+      Restart Index: -1
+      File Name: gan-diode.dd.reverse-sweep0.exo
+  Assembly: 
+    Workset Size: 50
+  Closure Models: 
+    Lattice Temperature: 3.00000000000000000e+02
+    Concentration Scaling: 1.00000000000000000e+19
+    Reference Material: GaN
+    ganParameter: 
+      Material Name: GaN
+      Effective DOS: 
+        Value: Simple
+        Nc300: 2.24500000000000000e+18
+        Nv300: 3.50783000000000000e+19
+        Nc_F: 1.50000000000000000e+00
+        Nv_F: 1.50000000000000000e+00
+      Doping: 
+        Value: Function
+        Function1: 
+          Function Type: Uniform
+          Doping Type: Donor
+          Doping Value: 5.00000000000000000e+15
+          Xmin: 0.00000000000000000e+00
+          Xmax: 1.00000000000000000e+01
+          Ymin: 0.00000000000000000e+00
+          Ymax: 1.00000000000000000e+02
+        Function2: 
+          Function Type: Uniform
+          Doping Type: Acceptor
+          Doping Value: 3.00000000000000000e+19
+          Xmin: 0.00000000000000000e+00
+          Xmax: 1.00000000000000000e+01
+          Ymin: 3.20000000000000000e+01
+          Ymax: 3.25000000000000000e+01
+        Function3: 
+          Function Type: Uniform
+          Doping Type: Donor
+          Doping Value: 2.00000000000000000e+18
+          Xmin: 0.00000000000000000e+00
+          Xmax: 1.00000000000000000e+01
+          Ymin: 0.00000000000000000e+00
+          Ymax: 1.00000000000000000e+00
+      Incomplete Ionized Acceptor: 
+        Value: Model
+        Model: 
+          Critical Doping Value: 1.00000000000000000e+20
+          Degeneracy Factor: 4.00000000000000000e+00
+          Ionization Energy: 1.79999999999999993e-01
+          Approximation: I
+      Incomplete Ionized Donor: 
+        Value: Model
+        Model: 
+          Critical Doping Value: 1.00000000000000000e+19
+          Degeneracy Factor: 1.00000000000000000e+00
+          Ionization Energy: 1.20000000000000002e-02
+          Approximation: I
+      Electron Mobility: 
+        Value: Farahmand
+        High Field: On
+        Driving Force: ElectricField
+      Avalanche Generation: 
+        Critical Field: Fixed
+        Value: Selberherr
+        Driving Force: EffectiveFieldParallelJ
+        Minimum Field: 5.00000000000000000e+04
+        a0_e: 3.10000000000000000e+07
+        a1_e: 0.00000000000000000e+00
+        a2_e: 0.00000000000000000e+00
+        a0_h: 3.10000000000000000e+07
+        a1_h: 0.00000000000000000e+00
+        a2_h: 0.00000000000000000e+00
+        delta_e: 1.00000000000000000e+00
+        delta_h: 1.00000000000000000e+00
+        E0_e: 3.50000000000000000e+07
+        E0_h: 3.50000000000000000e+07
+      Optical Generation: 
+        Value: Function
+        Function1: 
+          Function Type: File
+          File Name: opto_generation.dat
+          X Min: 0.00000000000000000e+00
+          X Max: 1.00000000000000000e+02
+      Relative Permittivity: 
+        Value: 9.69999999999999929e+00
+      Band Gap: 
+        Value: 3.43699999999999983e+00
+      Electron Affinity: 
+        Value: 4.00000000000000000e+00
+      Hole Mobility: 
+        Value: 1.10000000000000000e+01
+      Electron Lifetime: 
+        Value: 5.00000000000000031e-10
+      Hole Lifetime: 
+        Value: 5.00000000000000031e-10
+      Radiative Recombination: 
+        Coefficient: 1.09999999999999992e-08
+      Auger Recombination: 
+        Electron Auger Coefficient: 1.49999999999999995e-30
+        Hole Auger Coefficient: 1.49999999999999995e-30
+  Solution Control: 
+    Piro Solver: LOCA
+    Compute Sensitivities: false
+    Jacobian Operator: Have Jacobian
+    LOCA: 
+      Stepper: 
+        Continuation Method: Natural
+        Initial Value: -1.00000000000000000e+02
+        Continuation Parameter: Varying Voltage
+        Max Steps: 10000
+        Max Value: -1.00000000000000000e+02
+        Min Value: -7.16000000000000000e+03
+        Compute Eigenvalues: false
+      Predictor: 
+        Method: Secant
+      Step Size: 
+        Initial Step Size: -5.00000000000000000e+00
+        Aggressiveness: 2.00000000000000011e-01
+    NOX: 
+      Nonlinear Solver: Line Search Based
+      Direction: 
+        Method: Newton
+        Newton: 
+          Forcing Term Method: Constant
+          Rescue Bad Newton Solve: true
+          Stratimikos Linear Solver: 
+            Stratimikos: 
+              Linear Solver Type: AztecOO
+              Preconditioner Type: Ifpack
+              Linear Solver Types: 
+                AztecOO: 
+                  Forward Solve: 
+                    Max Iterations: 500
+                    Tolerance: 9.99999999999999980e-13
+                    AztecOO Settings: 
+                      Aztec Solver: GMRES
+                      Convergence Test: r0
+                      Size of Krylov Subspace: 200
+                      Output Frequency: 10
+                Belos: 
+                  Solver Type: Block GMRES
+                  Solver Types: 
+                    Block GMRES: 
+                      Convergence Tolerance: 1.00000000000000002e-08
+                      Output Frequency: 10
+                      Output Style: 1
+                      Verbosity: 33
+                      Maximum Iterations: 200
+                      Block Size: 1
+                      Num Blocks: 50
+                      Flexible Gmres: false
+              Preconditioner Types: 
+                Ifpack: 
+                  Overlap: 1
+                  Prec Type: ILU
+                  Ifpack Settings: 
+                    'fact: drop tolerance': 0.00000000000000000e+00
+                    'fact: ilut level-of-fill': 1.00000000000000000e+00
+                    'fact: level-of-fill': 1
+      Line Search: 
+        Method: Full Step
+        Full Step: 
+          Full Step: 1.00000000000000000e+00
+      Printing: 
+        Output Precision: 3
+        Output Processor: 0
+        Output Information: 
+          Error: true
+          Warning: true
+          Outer Iteration: true
+          Parameters: true
+          Details: true
+          Linear Solver Details: true
+          Stepper Iteration: true
+          Stepper Details: true
+          Stepper Parameters: true
+      Solver Options: 
+        Status Test Check Type: Minimal
+      Status Tests: 
+        Test Type: Combo
+        Combo Type: OR
+        Number of Tests: 2
+        Test 0: 
+          Test Type: NormF
+          Tolerance: 1.00000000000000004e-10
+        Test 1: 
+          Test Type: MaxIters
+          Maximum Iterations: 30
+  Output: 
+    File Name: gan-diode.dd.reverse-sweep.exo
+    Cell Average Quantities: 
+      gan: 'Doping,Acceptor Concentration,Donor Concentration,Intrinsic Concentration,Doping_Raw,Acceptor_Raw Concentration,Donor_Raw Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level, SRH Recombination,Optical Generation,Avalanche Generation,Total Recombination'
+  Block ID to Physics ID Mapping: 
+    gan: Semiconductor
+  Physics Blocks: 
+    Semiconductor: 
+      child0: 
+        Type: SGCVFEM Drift Diffusion
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 2
+        Model ID: ganParameter
+        Options: 
+          Solve Electron: 'True'
+          Solve Hole: 'True'
+          SRH: On
+          Radiative: On
+          Auger: On
+          Band Gap Narrowing: Off
+          Optical Generation: On
+          Acceptor Incomplete Ionization: On
+          Donor Incomplete Ionization: On
+          Fermi Dirac: 'True'
+          Driving Force: EffectiveField
+          Avalanche: On
+  Boundary Conditions: 
+    child0: 
+      Type: Dirichlet
+      Sideset ID: anode
+      Element Block ID: gan
+      Equation Set Name: ALL_DOFS
+      Strategy: Ohmic Contact
+      Data: 
+        Varying Voltage: Parameter
+    child1: 
+      Type: Dirichlet
+      Sideset ID: cathode
+      Element Block ID: gan
+      Equation Set Name: ALL_DOFS
+      Strategy: Ohmic Contact
+      Data: 
+        Voltage: 0.00000000000000000e+00
+  Active Parameters: 
+    Number of Parameter Vectors: 1
+    Parameter Vector 0: 
+      Number: 1
+      Parameter 0: Varying Voltage
+      Initial Value 0: -1.00000000000000000e+02
+  Initial Conditions: 
+    gan: 
+      ELECTRIC_POTENTIAL: 
+        Value: Exodus File
+      ELECTRON_DENSITY: 
+        Value: Exodus File
+      HOLE_DENSITY: 
+        Value: Exodus File
+...

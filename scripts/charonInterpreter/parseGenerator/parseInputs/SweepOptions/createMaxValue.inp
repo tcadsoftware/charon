@@ -1,0 +1,9 @@
+interpreter name MaxValue
+
+interpreter inputLine (max value) = {maxval}
+
+interpreter shortHelp {Specify maximum value for continuation window}
+
+interpreter longHelp {Specify maximum value for continuation window}
+
+xmlRequired Charon->Solution Control->LOCA->Stepper,Max Value,double,{maxval} priority 5

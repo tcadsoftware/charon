@@ -1,0 +1,5 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+ELEMENT VARIABLES relative 1.0e-12
+NODAL VARIABLES relative 1.0e-12
+	ELECTRIC_POTENTIAL relative 1.0e-12 floor 1.0e-10

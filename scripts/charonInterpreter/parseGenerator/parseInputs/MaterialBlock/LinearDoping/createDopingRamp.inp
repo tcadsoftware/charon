@@ -1,0 +1,13 @@
+
+
+interpreter name DopingRamp
+
+interpreter inputLine (Doping ramps from) {startConcentration} to {stopConcentration}
+
+interpreter shortHelp {set the ramp of the doping over the linear range specified.}
+
+interpreter longHelp {set the ramp of the doping over the linear range specified. <> startConcentration is the concentraiton at the start range specified in 1/cm^3 <> stopConcentration is the concentration at the end of the ramp in 1/cm^3}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Start Value,double,{startConcentration}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping End Value,double,{stopConcentration}

@@ -1,0 +1,4 @@
+# Shared libs don't seem to work on the Mac when using the GNU
+# compilers so only enable them for Linux
+
+BUILD_SHARED_LIBS:BOOL=ON

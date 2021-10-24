@@ -1,0 +1,55 @@
+Import State File mms-dd-rdh-2_diode.gen
+
+start output parameters
+      Output State File mms-dd-rdh-2_solution.exo
+      Output cell average variables in silicon for scalar "Doping"
+      Output nodal variables in silicon for "ELECTRIC_POTENTIAL, ELECTRON_DENSITY, HOLE_DENSITY"
+      unscale variables is on
+end output parameters
+
+assembly workset = 2000
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+      supg stabilization is off
+end Physics Block Semiconductor
+
+lattice temperature = 300
+concentration scaling = 1e17
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.8
+
+      mms doping named MMS_RDH_2
+
+      start global mms parameters
+        analytic solution function is MMS_DD_RDH_2
+        error statistics for "ELECTRIC_POTENTIAL,ELECTRON_DENSITY,HOLE_DENSITY"
+      end
+
+      start arora mobility
+        start electron parameters
+        end
+
+        start hole parameters
+        end
+      end
+
+end Material Block siliconParameter
+
+BC is mms for ALL_DOFS on anode   in silicon function MMS_RDH_2
+BC is mms for ALL_DOFS on cathode in silicon function MMS_RDH_2
+
+initial conditions for ELECTRIC_POTENTIAL in Default is Exodus File
+initial conditions for ELECTRON_DENSITY in Default is constant = 0.0
+initial conditions for HOLE_DENSITY in Default is constant = 0.0
+
+start solver block
+      use solver pack 5
+      nonlinear solver tolerance = 1.0e-5
+      max nonlinear iterations = 30
+end solver block
+

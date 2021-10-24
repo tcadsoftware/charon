@@ -1,0 +1,12 @@
+interpreter name DiscretizationMethod
+
+interpreter inputLine (discretization method) is [ (fem) [ (cvfem) ]]
+
+interpreter shortHelp {Which method to use for current density calculations}
+interpreter longHelp {Which method to use for current density calculations}
+
+xmlOptional (fem) Charon->Boundary Conditions->hole1ANONYMOUS->Data,Discretization Method,string,FEM-SUPG
+xmlOptional (fem) Charon->Boundary Conditions->hole2ANONYMOUS->Data,Discretization Method,string,FEM-SUPG
+
+xmlOptional (cvfem) Charon->Boundary Conditions->hole1ANONYMOUS->Data,Discretization Method,string,CVFEM-SG
+xmlOptional (cvfem) Charon->Boundary Conditions->hole2ANONYMOUS->Data,Discretization Method,string,CVFEM-SG

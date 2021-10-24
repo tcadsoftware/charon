@@ -1,0 +1,8 @@
+interpreter name Electron_hbaromega
+
+interpreter inputLine (electron h bar omega) = {hbaromega_e}
+
+interpreter shortHelp {Parameter for Selberherr model}
+interpreter longHelp {Parameter hbarOmega_e for Selberherr model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,hbarOmega_e,double,{hbaromega_e}

@@ -1,0 +1,11 @@
+interpreter name TrapSRH
+
+interpreter inputLine (trap srh) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on the trap srh model}
+
+interpreter longHelp {Turn on trap srh model <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Trap SRH,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Trap SRH,string,Off

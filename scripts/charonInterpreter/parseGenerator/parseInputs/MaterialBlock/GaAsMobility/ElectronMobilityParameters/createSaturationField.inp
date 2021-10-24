@@ -1,0 +1,8 @@
+interpreter name SaturationField
+
+interpreter inputLine (saturation field) = {satval}
+
+interpreter shortHelp {Specify the saturation field}
+interpreter longHelp {Specify the saturation field}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Saturation Field,double,{satval}

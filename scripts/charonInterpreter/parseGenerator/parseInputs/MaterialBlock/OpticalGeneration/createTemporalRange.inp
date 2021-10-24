@@ -1,0 +1,10 @@
+interpreter name TemporalRange
+
+interpreter inputLine (temporal range is) {timeStart} to {timeEnd}
+
+interpreter shortHelp {set the start and end time for an analytical pulse}
+
+interpreter longHelp {set the start and end time for an analytical pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Time Min,double,{timeStart}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Time Max,double,{timeEnd}

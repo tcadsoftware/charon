@@ -1,0 +1,77 @@
+Import State File result_pndiode_equ.exo at index 1
+
+start output parameters
+      Output State File result_pndiode_sg_hfmob.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      Radiative Recombination is on
+      Auger Recombination is on
+      SRH Recombination is on
+      band gap narrowing is on
+end Physics Block Semiconductor
+
+lattice temperature = 300.0
+assembly workset = 50
+concentration scaling = 1.0e16
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start intrinsic concentration
+      	    model is old slotboom
+      end intrinsic concentration
+      reference material is Silicon
+
+      start Carrier Lifetime block
+	    electron lifetime is constant at 1.0e-11
+      	    hole lifetime is constant at 1.0e-11
+      end Carrier lifetime block
+
+      start step junction doping
+      	    acceptor concentration = 1.0e16
+	    donor concentration = 1.0e16
+	    junction location = 0.5
+	    dopant order is PN
+      end step junction doping
+
+      start band gap 
+        temperature dependence is on
+        300K gap = 1.08
+        chi300 = 4.17
+        alpha = 5.0e-4
+        beta = 700.0
+      end band gap 
+
+      start Lucent Mobility
+        start electron parameters
+          enable high field mobility
+          driving force is electric field
+        end electron mobility
+      end
+
+      start Philips-Thomas Mobility
+        start hole parameters
+          high field component is on
+          driving force is electric field
+        end hole
+      end Masetti
+      
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0.5
+BC is ohmic for cathode on silicon fixed at 0.0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+      use solver pack 1
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

@@ -1,0 +1,11 @@
+
+
+interpreter name StrikeStartTime
+
+interpreter inputLine (strike start time) = {time}
+
+interpreter shortHelp {set the start time of the strike}
+
+interpreter longHelp {set the start time of the strike}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Particle Strike,Start Time,double,{time}

@@ -1,0 +1,9 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+ELEMENT VARIABLES 
+NODAL VARIABLES 
+	ELECTRIC_POTENTIAL               relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH0.000000_ relative 5e-4 floor 1e-8
+	ELECTRIC_POTENTIAL_CosH1.000000_ relative 5e-4 floor 1e-8
+	ELECTRIC_POTENTIAL_SinH0.000000_ relative 5e-4 floor 1e-8
+	ELECTRIC_POTENTIAL_SinH1.000000_ relative 5e-4 floor 1e-8

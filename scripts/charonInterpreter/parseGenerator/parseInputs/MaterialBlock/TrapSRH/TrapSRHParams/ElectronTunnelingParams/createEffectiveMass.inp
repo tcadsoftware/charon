@@ -1,0 +1,8 @@
+interpreter name EffectiveMass
+
+interpreter inputLine (effective mass) = {value}
+
+interpreter shortHelp {electron effective mass in unit of m0}
+interpreter longHelp {electron effective mass in unit of m0}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Electron Effective Mass,double,{value}

@@ -1,0 +1,10 @@
+
+interpreter name SidesetID
+
+interpreter inputLine (sideset id) is {sideset_id}
+
+interpreter shortHelp {Set the sideset ID for interface traps in TID model}
+
+interpreter longHelp {Set the sideset ID for interface traps in TID model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Sideset ID,string,{sideset_id}

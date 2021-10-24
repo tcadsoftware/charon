@@ -1,0 +1,10 @@
+
+interpreter name NumberOfTimeCollocationPoints
+
+interpreter inputLine (number of time collocation points) = {numPoints}
+
+interpreter shortHelp {Set the number of time collocation points for the harmonic balance method.}
+
+interpreter longHelp {Set the number of time collocation points for the harmonic balance method. {numPoints} must be a positive integer.}
+
+xmlRequired (number of time collocation points) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Number of Time Collocation Points,int,{numPoints}

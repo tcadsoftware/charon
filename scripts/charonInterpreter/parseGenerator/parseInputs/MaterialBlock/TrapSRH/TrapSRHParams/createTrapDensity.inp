@@ -1,0 +1,8 @@
+interpreter name TrapDensity
+
+interpreter inputLine (trap density) = {value}
+
+interpreter shortHelp {The trap density in unit of cm^{-3}}
+interpreter longHelp {The trap density in unit of cm^{-3}}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Trap SRH Recombination->Trap {trapID},Trap Density,double,{value}

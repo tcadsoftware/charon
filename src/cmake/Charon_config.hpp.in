@@ -1,0 +1,15 @@
+
+#cmakedefine HAVE_MPI
+
+#cmakedefine CHARON_DEBUG
+
+#cmakedefine HAVE_CHARON_EXPLICIT_INSTANTIATION
+
+//The following are for Xyce coupling
+
+#cmakedefine ENABLE_XYCE_CLUSTER
+#cmakedefine Xyce_NOX_SIZETYPE
+#cmakedefine DINT
+#cmakedefine Xyce_PARALLEL_MPI
+
+

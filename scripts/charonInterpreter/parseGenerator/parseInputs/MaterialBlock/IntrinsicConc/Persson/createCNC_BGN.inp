@@ -1,0 +1,9 @@
+interpreter name CNC_BGN
+
+interpreter inputLine (CNC_BGN) = {CNC_BGN_val}
+
+interpreter shortHelp {Specify a value for the CNC_BGN parameter}
+
+interpreter longHelp {Specify a value for the CNC_BGN parameter}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,CNC_BGN,double,{CNC_BGN_val}

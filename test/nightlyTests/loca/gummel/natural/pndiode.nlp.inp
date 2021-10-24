@@ -1,0 +1,38 @@
+Import State File pndiode.gen
+
+start output parameters
+      Output State File pndiode.nlp-result.exo
+end output parameters
+
+assembly workset = 2000
+lattice temperature = 300
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is nlp
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start step junction doping
+            acceptor concentration = 1e16
+            donor concentration = 1e16
+            junction location = 0.5
+            dopant order is PN
+      end step junction doping
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in Default is constant = 0.0
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block

@@ -1,0 +1,9 @@
+interpreter name HighFieldMobility
+
+interpreter inputLine (enable high field mobility)
+
+interpreter shortHelp {Use a high field mobility model for electrons}
+
+interpreter longHelp {Use a high field mobility model for electrons}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,High Field,string,On

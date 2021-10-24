@@ -1,0 +1,6 @@
+
+interpreterBlock name BulkFixedChargeParameters
+
+interpreterBlock (start bulk fixed charge) parameters 
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Fixed Charge,Value,string,Function

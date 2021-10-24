@@ -1,0 +1,10 @@
+interpreter name NREF_A
+
+interpreter inputLine (nref_a) = {nref_a}
+
+interpreter shortHelp {Sets the nref_a value for this mobility model}
+
+interpreter longHelp {Sets the nref_a value for this mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,nref_a,double,{nref_a}
+

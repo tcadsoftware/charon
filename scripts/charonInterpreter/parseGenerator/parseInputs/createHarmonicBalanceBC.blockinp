@@ -1,0 +1,11 @@
+
+interpreterBlock name HarmonicBalanceBC
+
+interpreterBlock (start Harmonic Balance BC for) {sidesetID} on {geometryBlock}
+
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Frequency Domain
+

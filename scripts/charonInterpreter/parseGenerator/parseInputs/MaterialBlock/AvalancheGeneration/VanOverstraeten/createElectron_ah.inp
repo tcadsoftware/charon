@@ -1,0 +1,8 @@
+interpreter name Electron_ah
+
+interpreter inputLine (electron a(high)) = {ah_e}
+
+interpreter shortHelp {Parameter for van Overstraeten model}
+interpreter longHelp {Parameter for van Overstraeten model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Avalanche Generation,ah_e,double,{ah_e}

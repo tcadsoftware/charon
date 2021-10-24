@@ -1,0 +1,15 @@
+
+
+interpreter name ParticleStrike
+
+interpreter inputLine (particle strike) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on particle strike}
+
+interpreter longHelp {Turn on particle strike <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Particle Strike,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Particle Strike,string,Off
+
+

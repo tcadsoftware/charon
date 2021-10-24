@@ -1,0 +1,9 @@
+interpreter name An
+
+interpreter inputLine (an) = {anval}
+
+interpreter shortHelp {Farahmand model parameter an}
+
+interpreter longHelp {Farahmand model parameter an}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,an,double,{an}

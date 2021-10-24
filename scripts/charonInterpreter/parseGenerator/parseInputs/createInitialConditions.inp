@@ -1,0 +1,21 @@
+
+
+interpreter name InitialConditions
+
+interpreter inputLine (Initial Conditions for) {DOF} in {geometryBlock} is [ (Exodus File)[ (equilibrium density) [ (equilibrium potential) [(constant) = {constValue} [(uninitialized) ]]]]]
+
+interpreter shortHelp {Specify the source of the initial condition for the degrees of freedom}
+
+interpreter longHelp {Specify the source of the initial condition for the degrees of freedom <> Degrees of freedoms are <> ELECTRIC_POTENTIAL <> ELECTRON_DENSITY <> HOLE_DENSITY <> initial conditions are: <> Exodus File <> Equilibrium Density}
+
+xmlOptional (Exodus File) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,string,Exodus File
+xmlOptional (Exodus File) use Modifier 1
+
+xmlOptional (equilibrium density) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,string,Equilibrium Density
+
+xmlOptional (equilibrium potential) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,string,Equilibrium Potential
+
+xmlOptional (constant) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,double,{constValue}
+xmlOptional (constant) use Modifier 0
+
+xmlOptional (uninitialized) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,double,0.0

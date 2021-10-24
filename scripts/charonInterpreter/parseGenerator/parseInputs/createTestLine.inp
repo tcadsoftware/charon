@@ -1,0 +1,30 @@
+
+interpreter name TestLine
+
+interpreter inputLine (this is a line)
+
+
+#xmlRequired Charon->Test 0,name,type,value
+#xmlRequired Charon->Test 1,name,type,value
+#xmlRequired Charon->Test 0->Test 0,name,type,value
+
+xmlDefault Charon->Solution Control->NOX->Status Tests,Test Type,string,Combo
+xmlDefault Charon->Solution Control->NOX->Status Tests,Combo Type,string,OR
+xmlDefault Charon->Solution Control->NOX->Status Tests,Number of Tests,int,2
+
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Test Type,string,Combo
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Combo Type,string,AND
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Number of Tests,int,2
+
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 0,Test Type,string,NormF
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 0,Tolerance,double,1.0e-5
+
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Test Type,string,NormWRMS
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Tolerance,double,1.0
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Relative Tolerance,double,1.0e-10
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Absolute Tolerance,double,1.0e-16
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,alpha,double,1.0
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,beta,double,0.5
+
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 1,Test Type,string,MaxIters
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 1,Maximum Iterations,int,30

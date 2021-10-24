@@ -1,0 +1,20 @@
+
+
+interpreter name DopingFile
+
+interpreter inputLine (read doping from) {filename} for [(acceptor) [(donor) [ (in 2d) [ (in 3d) [ (with buffer) {bufferValue}]]]]]
+
+interpreter shortHelp {Read the doping from a tabulated file of doping concentrations}
+
+interpreter longHelp {Read the doping from a tabulated file of doping concentrations <> {filename} is the name of the file to be read <> Specify acceptor or donor <> Optionally add a buffer of {bufferValue} around the max and min spatial extents of the doping specifications.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping,Value,string,Function
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->Function {filename},File Name,string,{filename}
+
+xmlOptional (acceptor) Charon->Closure Models->{MaterialBlockName}->Doping->Function {filename},Doping Type,string,Acceptor
+xmlOptional (donor) Charon->Closure Models->{MaterialBlockName}->Doping->Function {filename},Doping Type,string,Donor
+
+xmlOptional (in 2d) Charon->Closure Models->{MaterialBlockName}->Doping->Function {filename},Function Type,string,File2D
+xmlOptional (in 3d) Charon->Closure Models->{MaterialBlockName}->Doping->Function {filename},Function Type,string,File3D
+
+xmlOptional (with buffer) Charon->Closure Models->{MaterialBlockName}->Doping->Function {filename},Buffer,double,{bufferValue}

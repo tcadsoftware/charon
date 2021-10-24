@@ -1,0 +1,11 @@
+
+interpreter name BlockPhysicsMap
+
+interpreter inputLine (blockPhysicsMap) geometryBlock={geometryBlockName} physicsBlockName={physicsbBlockName}
+
+interpreter shortHelp { Create a map between geometry blocks and the physics they contain}
+
+interpreter longHelp {  Create a map between geometry blocks and the physics they contain <> geometryBlockName is the geometry block as named in the mesh <> physicsBlockName is the physics information defined in the Charon interpreter file}
+
+xmlRequired Charon->Block ID to Physics ID Mapping,{geometryBlockName},string,{physicsBlockName}
+

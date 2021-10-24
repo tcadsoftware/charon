@@ -1,0 +1,10 @@
+interpreter name Alpha
+
+interpreter inputLine (exponent for mobility) = {alpha}
+
+interpreter shortHelp {Sets the exponent for electron mobility}
+
+interpreter longHelp {Sets the exponent for electron mobility}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,alpha,double,{alpha}
+

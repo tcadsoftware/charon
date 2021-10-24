@@ -1,0 +1,12 @@
+
+
+interpreter name ElectronTau
+
+interpreter inputLine (electron tau0) = {tau} 
+
+interpreter shortHelp {Specify a value for tau_0 in the electron lifetime formula.}
+
+interpreter longHelp {Specify a value for tau_0 in the electron lifetime formula. <> {tau} is the value.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Lifetime,Tau0,double,{tau}
+

@@ -1,0 +1,13 @@
+
+
+interpreter name FailedStepReductionFac
+
+interpreter inputLine (failed step reduction factor) = {factor}
+
+interpreter shortHelp {Specify failed step reduction factor in modifying step size during parameter sweep}
+
+interpreter longHelp {Specify failed step reduction factor in modifying step size during parameter sweep}
+
+xmlRequired Charon->Solution Control->LOCA->Step Size,Failed Step Reduction Factor,double,{factor}
+
+
