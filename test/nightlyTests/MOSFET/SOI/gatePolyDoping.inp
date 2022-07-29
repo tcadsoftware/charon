@@ -1,0 +1,15 @@
+#############################
+#gatePoly doping
+#############################
+      start uniform doping named Function40
+          Concentration = 2e20
+          spatial range is -0.1 to 0.1 in x
+          spatial range is 0.0001 to 0.05 in y
+          Type is donor
+      end uniform doping named Function40
+#      start uniform doping named Function41
+#         Concentration = 1e0
+#         spatial range is -0.02 to 0.02 in x
+#         spatial range is 0.0001 to 0.05 in y
+#         Type is acceptor
+ # end uniform doping named Function41

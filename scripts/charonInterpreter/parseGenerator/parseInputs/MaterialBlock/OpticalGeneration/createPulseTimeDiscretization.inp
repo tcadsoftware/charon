@@ -1,0 +1,11 @@
+interpreter name PulseMaximumTimeStep
+
+interpreter inputLine (Pulse maximum time step size =) {timestep}
+
+interpreter shortHelp {Ensure that a maximum time steps size is honored during a radiation pulse}
+
+interpreter longHelp {Ensure that a maximum time steps size is honored during a radiation pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Pulse Maximum Time Step,double,{timestep}
+
+

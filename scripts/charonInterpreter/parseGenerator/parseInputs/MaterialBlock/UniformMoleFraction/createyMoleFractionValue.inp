@@ -1,0 +1,10 @@
+interpreter name yMoleFracValue
+
+interpreter inputLine (ymole value) = {mval}
+
+interpreter shortHelp {set the ymole fraction value for the material}
+
+interpreter longHelp {set the ymole fraction value for the material}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},yMoleFrac Value,double,{mval}
+

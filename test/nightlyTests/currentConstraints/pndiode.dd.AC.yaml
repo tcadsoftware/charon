@@ -11,7 +11,7 @@ ANONYMOUS:
     silicon: Semiconductor
   Assembly: 
     Workset Size: 50
-    Use DOFManager FEI: true
+    Use Tpetra: true
   Physics Blocks: 
     Semiconductor: 
       child0: 
@@ -81,7 +81,7 @@ ANONYMOUS:
   Output: 
     File Name: result.pndiode.dd.AC.exo
   Options: 
-    Write Volume Assembly Graphs: true
+    Write Volume Assembly Graphs: false
     Volume Assembly Graph Prefix: charon_
   Solver Factories: 
     NOX Observers: 
@@ -151,34 +151,37 @@ ANONYMOUS:
                   VerboseObject: 
                     Verbosity Level: medium
               Preconditioner Type: Teko
-              Preconditioner Types: 
-                Ifpack: 
-                  Overlap: 1
-                  Prec Type: ILU
-                  Ifpack Settings: 
-                    'fact: drop tolerance': 0.00000000000000000e+00
-                    'fact: ilut level-of-fill': 1.00000000000000000e+00
-                    'fact: level-of-fill': 1
+              Preconditioner Types:
                 Teko: 
                   Inverse Type: GS
                   Write Block Operator: false
                   Test Block Operator: false
                   Inverse Factory Library: 
-                    GS: 
+
+                    GS:
                       Type: Block Gauss-Seidel
                       Use Upper Triangle: true
-                      Inverse Type 1: ILU
+                      Inverse Type 1: ILU_tpetra
                       Inverse Type 2: Id
-                    ILU: 
+                      
+                    ILU_epetra: 
                       Type: Ifpack
                       Overlap: 1
-                      Prec Type: ILU
                       Ifpack Settings: 
-                        'fact: drop tolerance': 0.00000000000000000e+00
-                        'fact: ilut level-of-fill': 1.00000000000000000e+00
+                        'fact: drop tolerance': 0.0
+                        'fact: ilut level-of-fill': 1.0
                         'fact: level-of-fill': 1
+
+                    ILU_tpetra: 
+                      Type: Ifpack2
+                      Overlap: 1
+                      Ifpack2 Settings: 
+                        'fact: drop tolerance': 0.0
+                        'fact: ilut level-of-fill': 1.0
+                        
                     Id: 
                       Type: Identity
+		      
       Line Search: 
         Full Step: 
           Full Step: 1.00000000000000000e+00

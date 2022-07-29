@@ -1,0 +1,9 @@
+interpreter name TransientFinalTime
+
+interpreter shortHelp {Set the value of time to run the simulation to.}
+interpreter longHelp {Set the value of time to run the simulation to.}
+
+interpreter inputLine (time integrator final time) = {finTime}
+
+xmlRequired Charon->Solution Control->Rythmos,Final Time,double,{finTime}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Final Time,double,{finTime}

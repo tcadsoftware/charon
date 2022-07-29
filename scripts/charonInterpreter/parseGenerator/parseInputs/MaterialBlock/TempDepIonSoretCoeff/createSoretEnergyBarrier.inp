@@ -1,0 +1,9 @@
+interpreter name SoretEnergyBarrier 
+
+interpreter inputLine (soret energy barrier) = {barrier}
+
+interpreter shortHelp {The soret energy barrier in eV for the TempDep ion soret coefficient model}
+
+interpreter longHelp {The soret energy barrier in eV for the TempDep ion soret coefficient model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Soret Coefficient,Soret Energy Barrier,double,{barrier}

@@ -14,6 +14,7 @@ public:
   int meshDimension;
   int sizeMeasure;  //0-average, 1-minimum, 2-maximum, 3-average of max 2 sides
   int numSurfs;
+  int semiType; //0-undetermined, 1-n type, 2-p type
   std::vector<surfaceInfo> surfs;
   //double **cellNodeCoords;
   std::vector< std::vector<double> > cellNodeCoords;
@@ -24,6 +25,7 @@ public:
   double refinementDistanceP;
   double refinementDistanceIL;
   double refinementFactor;
+  bool autoRefine;
 
   double BBxmin,BBxmax;
   double BBymin,BBymax;
@@ -145,6 +147,7 @@ public:
   }
   int getTetNum(){return tetNum;}
 
+  void setAutoRefine(){autoRefine = true;}
 
   void listFunctions();
 

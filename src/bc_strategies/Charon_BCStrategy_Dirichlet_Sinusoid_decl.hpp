@@ -36,6 +36,8 @@ namespace charon {
     bool isIonDof;
     bool isFermiPin;
 
+    double ionDens; 
+
   };
 
 }

@@ -1,6 +1,8 @@
 
 Import State File pndiode.dd.exo at index 1
 
+tpetra is on
+
 start output parameters
       Output State File result.pndiode.dd.ACCR.exo
 end output parameters
@@ -28,7 +30,7 @@ start Material Block siliconParameter
       end step junction doping
 end Material Block Silicon Parameter
 
-BC is current for anode on silicon fixed at -4e-6 with initial voltage 0.5
+BC is current for anode on silicon fixed at -4e-6 and initial voltage 0.5
 BC is resistor for cathode on silicon with resistor 1e3 fixed at -4e-3 and initial voltage 0.1
 
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
@@ -36,7 +38,8 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 Initial Conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use solver pack 3
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is constrained steady state
+    verbosity level is high
+  end
 end solver block

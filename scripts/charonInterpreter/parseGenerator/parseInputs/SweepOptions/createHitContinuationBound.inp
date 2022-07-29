@@ -1,0 +1,9 @@
+interpreter name HitContinuationBound
+
+interpreter inputLine (hit continuation bound) = {hit_continuation_bound_val}
+
+interpreter shortHelp {If set to true, LOCA will attempt a final solve at the maximum value of the continuation parameter.}
+
+interpreter longHelp {If set to true, LOCA will attempt a final solve at the maximum value of the continuation parameter.}
+
+xmlRequired Charon->Solution Control->LOCA->Stepper,Hit Continuation Bound,bool,{hit_continuation_bound_val} priority 5

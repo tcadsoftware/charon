@@ -1,0 +1,31 @@
+environment
+  tabular_data
+    tabular_data_file = 'lhs.dat'
+
+method
+  sampling 
+    sample_type lhs 
+    samples = 10
+    seed = 1337
+ 
+variables
+  normal_uncertain = 2
+    means          = 4e18  4e17
+    std_deviations = 1e18  1e17
+    descriptors    'dh'  'ah'
+
+interface
+  analysis_drivers = '<pathToCharon>/Dakota/driver/driver.py'
+    fork
+    asynchronous
+    evaluation_concurrency 2
+    work_directory = directory_tag
+#    copy_files = 'template_dir/*'
+    link_files = 'template_dir/*'
+#    evaluation_scheduling peer dynamic
+
+responses
+  response_functions = 4
+    descriptors      = 'thresholdVoltage' 'currentAtVoltage1.0' 'currentAtVoltage1.5' 'gain'
+  no_gradients
+  no_hessians

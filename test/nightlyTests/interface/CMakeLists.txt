@@ -5,6 +5,7 @@ INCLUDE(TribitsAddAdvancedTest)
 SET(testName charon_mp_interface)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -17,6 +18,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_1 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=interface.yaml --current --current-ho
+    NUM_MPI_PROCS 4         
     PASS_REGULAR_EXPRESSION "Charon run completed."
     OUTPUT_FILE interface.output
 

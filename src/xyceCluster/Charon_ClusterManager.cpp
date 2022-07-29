@@ -242,8 +242,12 @@ void charon::ClusterManager::obtainClusterParametersAndDistribute()
   if(me==0)
     obtainClusterParameters();
 
+  std::cout<<" OBTAIND.   DISTRIBUTING "<<std::endl;
+
   //distribute the parameter objects--and thus clusters--across procs
   distributeClusters();
+
+  std::cout<<" DISTRIBUTED "<<std::endl;
 
 }
 
@@ -735,7 +739,6 @@ void charon::ClusterManager::distributeClusters()
   clusterDonor.resize(numClusters);
   clusterFound.resize(numClusters);
 
-
   if(me==0)
     {
       for(size_t i=0 ; i<numClusters ; ++i)
@@ -798,7 +801,6 @@ void charon::ClusterManager::distributeClusters()
   else
     numReqs = 1;
 
-
   boost::mpi::request *req;
   req = new boost::mpi::request[numReqs];
   //And now the leftovers with point-to-point comms
@@ -807,6 +809,7 @@ void charon::ClusterManager::distributeClusters()
     if((size_t)me==i)
           req[0] = world.irecv(0,i,cP[*mycount-1]);
 
+  
   MPI_Barrier(MPI_COMM_WORLD);
 
   //do the sends
@@ -814,8 +817,8 @@ void charon::ClusterManager::distributeClusters()
     for (size_t i=0 ; i<leftoverClusters ; ++i)
       req[i+1] = world.isend(i,i,cPMaster[nprocs*numClustersPerProc+i]);
 
-  boost::mpi::wait_all(req, req+numReqs);
-
+  //  boost::mpi::wait_all(req, req+numReqs);
+  
   delete [] sendcounts;
   delete [] recvcounts;
   delete [] req;

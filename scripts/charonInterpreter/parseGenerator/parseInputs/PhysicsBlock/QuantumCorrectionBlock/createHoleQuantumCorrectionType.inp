@@ -1,0 +1,16 @@
+
+interpreter name HoleQuantumCorrectionType
+
+#interpreter inputLine (quantum potential correction type is) {qpType}
+interpreter inputline (hole simplified formulation) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Change quantum potential correction type from the default full formulation to the simplified formaultion for hole}
+interpreter longHelp  {Change quantum potential correction type from the default full formulation to the simplified formaultion for hole <> {State} is On/Off}
+
+#
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Model Type,string,Simplified
+#
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Model Type,string,Simplified
+                                                                                                                                
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Model Type,string,Full
+

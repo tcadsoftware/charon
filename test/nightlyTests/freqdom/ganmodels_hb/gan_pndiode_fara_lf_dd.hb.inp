@@ -1,0 +1,77 @@
+
+Import State File gan_pndiode_dd.gen at index 1
+
+start output parameters
+      Output State File gan_pndiode_fara_lf_dd.exo
+      Output cell average variables in gan for scalar "Electron Mobility_TP0_,Hole Mobility_TP0_,Doping_TP0_,Intrinsic Concentration_TP0_,Band Gap_TP0_,Effective Band Gap_TP0_,Electron Affinity_TP0_,Effective Electron Affinity_TP0_,Conduction Band_TP0_,Valence Band_TP0_,Intrinsic Fermi Level_TP0_"
+end output parameters
+
+Assembly Workset = 1
+tpetra is on
+
+start Physics Block Semiconductor
+      geometry block is gan
+      standard discretization type is drift diffusion gfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = "1e0"
+          remapped fundamental harmonics = "1e0"
+      end harmonic balance parameters 
+      SUPG Stabilization is off
+      material model is ganParameter
+      srh recombination is off
+      radiative recombination is off
+      auger recombination is off
+end Physics Block Semiconductor
+
+start Material Block ganParameter
+      reference material is GaN
+      material name is GaN
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x 
+      end step junction doping
+
+      start Farahmand Mobility
+           start electron parameters
+           end electron mobility
+      end Farahmand
+
+end Material Block ganParameter
+
+#BC is ohmic for anode on gan fixed at 0.5
+#BC is ohmic for cathode on gan fixed at 0.0
+
+start Harmonic Balance BC for anode on gan
+  type is ohmic
+  frequencies  "0.0"
+  amplitudes   "0.5"
+  phase shifts "0.0"
+end Harmonic Balance BC for anode on gan
+start Harmonic Balance BC for cathode on gan
+  type is ohmic
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for cathode on gan
+
+#initial conditions for ELECTRIC_POTENTIAL in gan is Exodus File
+#Initial Conditions for ELECTRON_DENSITY in gan is Exodus File
+#Initial Conditions for HOLE_DENSITY in gan is Exodus File
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in gan is uninitialized for higher harmonics
+Harmonic Balance initial conditions for ELECTRON_DENSITY in gan is uninitialized for higher harmonics
+Harmonic Balance initial conditions for HOLE_DENSITY in gan is uninitialized for higher harmonics
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block

@@ -28,6 +28,8 @@
 #include "Panzer_ParameterLibraryUtilities.hpp"
 #include "Panzer_STK_SetupUtilities.hpp"
 
+// Intrepid
+#include "Intrepid2_HGRAD_LINE_C1_FEM.hpp"
 
 #include "Teuchos_DefaultComm.hpp"
 
@@ -225,6 +227,12 @@ KimptonTID(
     RCP<const panzer::CellTopologyInfo> cellTopoInfo = basis->getCellTopologyInfo();
     RCP<DataLayout> edge_scalar = cellTopoInfo->edge_scalar;
     num_edges = edge_scalar->dimension(1);
+
+    // Get reference edge length
+    Intrepid2::Basis_HGRAD_LINE_C1_FEM<PHX::Device> lineBasis;
+    Kokkos::DynRankView<double,PHX::Device> dofCoords("dofCoords",2,1);
+    lineBasis.getDofCoords(dofCoords);
+    refEdgeLen = dofCoords(1,0)-dofCoords(0,0);
   } 
   // Get the primary cell topology
   cellType = basis->getCellTopologyInfo()->getCellTopology();
@@ -274,7 +282,7 @@ KimptonTID(
     string msg = "A strictly positive Electric Field Power Dependency in TID model must be specified.\n";
     TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
   }
-
+  
   // interface traps
   WithInterfaceTraps = false;
   if(p.isParameter("WithInterfaceTraps"))
@@ -289,12 +297,19 @@ KimptonTID(
     }
     // interface trap density
     Nti = -1.0; // [cm^-2]
-    if(p.isParameter("Interface Trap Density"))
-      Nti = p.get<double>("Interface Trap Density");
-    if(Nti < 0.0) {
-      std::string msg = "A positive Interface Trap Density in TID model must be specified.\n";
-      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
-    }
+    bool trapDensitySweep = false;
+    if (p.isParameter("Interface Trap Total Density Sweep is On"))
+      trapDensitySweep = p.get<bool>("Interface Trap Total Density Sweep is On");
+
+    if (not trapDensitySweep)
+      {
+	if(p.isParameter("Interface Trap Density"))
+	  Nti = p.get<double>("Interface Trap Density");
+	if(Nti < 0.0) {
+	  std::string msg = "A positive Interface Trap Density in TID model must be specified.\n";
+	  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
+	}
+      }
     // interface initial filling factor
     fill_facti = -1.0;
     if(p.isParameter("Interface Initial Filling Factor")) 
@@ -305,13 +320,20 @@ KimptonTID(
     }
     // interface trap capture cross section
     sigma_i = 0.0; // [cm^2]
-    if(p.isParameter("Interface Trap Capture Cross Section"))
-      sigma_i = p.get<double>("Interface Trap Capture Cross Section");
-    if(sigma_i <= 0.0) {
-      std::string msg = 
-	"A strictly positive Interface Trap Capture Cross Section in TID model must be specified.\n";
-      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
-    }
+    bool crossSectionSweep = false;
+    if (p.isParameter("Interface Trap Capture Cross Section Sweep is On"))
+      crossSectionSweep = p.get<bool>("Interface Trap Capture Cross Section Sweep is On");
+
+    if (not crossSectionSweep)
+      {
+	if(p.isParameter("Interface Trap Capture Cross Section"))
+	  sigma_i = p.get<double>("Interface Trap Capture Cross Section");
+	if(sigma_i <= 0.0) {
+	  std::string msg = 
+	    "A strictly positive Interface Trap Capture Cross Section in TID model must be specified.\n";
+	  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
+	}
+      }
   }
 
   // volume traps
@@ -328,8 +350,15 @@ KimptonTID(
       std::string msg = "A positive Volume Trap Density in TID model must be specified.\n";
       TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
     }
- 
-   // volume trap capture cross section
+    // volume initial filling factor
+    fill_factv = -1.0;
+    if(p.isParameter("Volume Initial Filling Factor")) 
+      fill_factv = p.get<double>("Volume Initial Filling Factor");
+    if(fill_factv < 0.0) {
+      std::string msg = "A positive Volume Initial Filling Factor in TID model must be specified.\n";
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg);
+    }
+    // volume trap capture cross section
     sigma_v = 0.0; // [cm^2]
     if(p.isParameter("Volume Trap Capture Cross Section"))
       sigma_v = p.get<double>("Volume Trap Capture Cross Section");
@@ -357,10 +386,44 @@ KimptonTID(
   V_freeze = 0.0;
   user_value = rcp(new panzer::ScalarParameterEntry<EvalT>);
   if(p.isParameter("ParamLib")) {
-    withVaryingV = true;
-    user_value = panzer::createAndRegisterScalarParameter<EvalT>(std::string("Varying Voltage"),
+    if (p.isParameter("Interface Trap Capture Cross Section Sweep is On"))
+      {
+	if (p.get<bool>("Interface Trap Capture Cross Section Sweep is On"))
+	  {
+	    user_value = panzer::createAndRegisterScalarParameter<EvalT>(std::string("Interface Trap Capture Cross Section Sweep"),
+									 *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+	    interfaceTrapSweep = p.get<bool>("Interface Trap Capture Cross Section Sweep is On");
+	    initialInterfaceTrapCrossSection = p.get<double>("Interface Trap Initial Capture Cross Section");
+	    finalInterfaceTrapCrossSection = p.get<double>("Interface Trap Final Capture Cross Section");
+	    user_value->setRealValue(0.0);
+	  }
+      }
+
+
+    if (p.isParameter("Interface Trap Total Density Sweep is On"))
+      {
+	if (p.get<bool>("Interface Trap Total Density Sweep is On"))
+	  {
+	    user_value = panzer::createAndRegisterScalarParameter<EvalT>(std::string("Interface Trap Total Density Sweep"),
+									 *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+	    interfaceDensitySweep = p.get<bool>("Interface Trap Total Density Sweep is On");
+	    initialInterfaceTotalDensity = p.get<double>("Interface Trap Initial Total Density");
+	    finalInterfaceTotalDensity = p.get<double>("Interface Trap Final Total Density");
+	    user_value->setRealValue(0.0);
+	  }
+      }
+
+
+    if (p.isParameter("Voltage Sweep"))
+      {
+	if (p.get<bool>("Voltage Sweep"))
+	  {
+	    withVaryingV = true;
+	    user_value = panzer::createAndRegisterScalarParameter<EvalT>(std::string("Varying Voltage"),
                                           *p.get<RCP<panzer::ParamLib> >("ParamLib"));
-    V_freeze = p.get<double>("Freeze Voltage");
+	    V_freeze = p.get<double>("Freeze Voltage");
+	  }
+      }
   }
 
   // factor pre-computation
@@ -407,6 +470,7 @@ postRegistrationSetup(
   // compute geo/top info 
   comp_geo_info(dev_mesh);
 
+  /*
   if (WithVolumeTraps) {
     // compute insulator volume
     double local_vol = 0.0;
@@ -428,8 +492,8 @@ postRegistrationSetup(
     }
     Teuchos::reduceAll(*comm, Teuchos::REDUCE_SUM, static_cast<int>(1), 
 			 &local_vol, &ins_vol);    
-    //std::cout << "ins_volume = " << ins_vol << std::endl << std::endl; 
   }
+  */
 
 }
 
@@ -489,6 +553,11 @@ evaluateFields(
       ScalarT cell_inter_area = area_map[elem]; // [um^2]
       ScalarT vol_fac = cell_inter_area/cell_vol; // [um^-1] 
       vol_fac *= 1e4; // [cm^-1]
+      if (interfaceDensitySweep)
+	{
+	  double fraction = user_value->getRealValue();
+	  Nti = initialInterfaceTotalDensity*(1-fraction) + finalInterfaceTotalDensity*fraction;
+	}
       Ntib = Nti;
       Ntib *= vol_fac; // [cm^-3]
       // interface normal
@@ -553,6 +622,11 @@ evaluateFields(
 	if (isFieldPositive) {
 	  // interface trap TID is defined 
 	  // only for positive fields
+	  if (interfaceTrapSweep)
+	    {
+	      double fraction = user_value->getRealValue();
+	      sigma_i = initialInterfaceTrapCrossSection*(1-fraction) + finalInterfaceTrapCrossSection*fraction;
+	    }
 	  ScalarT sigma_eff = sigma_i * std::pow(Emag,-pow_dep);
 
 	  // correct for electron-hole pairs being generated 
@@ -604,7 +678,7 @@ evaluateFields(
 	// for Emag -> 0, eff_trap_vol would become infinite; 
         // physically the total trap capture volume V_capt = ins_vol*Ntv*eff_trap_vol
 	// is limited to ins_val/2 since at zero field the holes have a equal
-        // change of diffusing to gate or interface
+        // chance of diffusing to gate or interface
 	if (eff_trap_vol > 0.5/Ntv) eff_trap_vol = 0.5/Ntv;
 
 	// volume hole capture probability; the assumption is that
@@ -808,10 +882,16 @@ KimptonTID<EvalT, Traits>::computeCentroidField(
     // evaluate driving force at the subcv centroids
     // note: number of subcv centroids is equal to the number of primary
     // nodes for quad, tri, hex, and tet mesh elements.
+    //
+    // In this stabilized formulation edge values are mapped to the interior
+    // of the element using HCurl basis functions. In order for the values
+    // to scale properly with the definitions of the HCurl and HGrad basis
+    // functions in Intrepid2 as of 11/2020 we must divide by the reference
+    // edge length. 
     for(int ip = 0; ip < num_ips; ++ip) {
       for(int dim = 0; dim < num_dims; ++dim) {
 	E[ip*num_dims + dim] += val_edge
-	  * (workset.bases[hcurl_basis_index])->basis_vector(cell,iedge,ip,dim)*edgeLen;
+	  * (workset.bases[hcurl_basis_index])->basis_vector(cell,iedge,ip,dim)*edgeLen/refEdgeLen;
       }
     }
   } // end of loop over primary edges
@@ -872,6 +952,16 @@ KimptonTID<EvalT, Traits>::getValidParameters() const
   p->set<double>("Volume Trap Capture Cross Section",0.0);
   p->set<double>("Volume Trap Critical Capture Cross Section",0.0);
 
+  p->set<bool>("Interface Trap Capture Cross Section Sweep is On",false);
+  p->set<double>("Interface Trap Initial Capture Cross Section",0.0);
+  p->set<double>("Interface Trap Final Capture Cross Section",0.0);
+  p->set<std::string>("Interface Trap Capture Cross Section Sweep","Parameter");
+
+  p->set<bool>("Interface Trap Total Density Sweep is On",false);
+  p->set<double>("Interface Trap Initial Total Density",0.0);
+  p->set<double>("Interface Trap Final Total Density",0.0);
+  p->set<std::string>("Interface Trap Total Density Sweep","Parameter");
+
   p->set<Teuchos::RCP<Teuchos::Comm<int> const> >("Comm",
        Teuchos::DefaultComm<int>::getComm());
  
@@ -879,6 +969,8 @@ KimptonTID<EvalT, Traits>::getValidParameters() const
        Teuchos::rcp(new panzer::ParamLib));
   p->set<double>("Freeze Voltage",0.0);
   
+  p->set<bool>("Voltage Sweep",false);
+
   return p;
 }
 

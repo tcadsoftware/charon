@@ -1,0 +1,9 @@
+interpreter name mumax
+
+interpreter inputLine (mumax) = {mumaxval}
+
+interpreter shortHelp {Set the mumax value for the Arora mobility model}
+
+interpreter longHelp {Set the mumax value for the Arora mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,mumax,double,{mumaxval}

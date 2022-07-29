@@ -1,0 +1,10 @@
+Input FEM file                   = moscap.dd.equ.exo
+LB file                          = moscap.dd.equ.exo.nem
+Parallel Results File Base Name  = moscap.dd.equ
+File Extension for Spread Files  = .exo
+Number of Processors             = 4 
+------------------------------------------------------------
+                Parallel I/O section
+------------------------------------------------------------
+Parallel Disk Info= number=1, offset=1, zeros, nosubdirectory
+Parallel file location = root=/ascldap/users/ahuang/TCAD/tcad-charon/test/nightlyTests/freqdom/loca_moscap_cv/, subdir=.

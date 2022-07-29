@@ -1,0 +1,9 @@
+interpreter name FixedCharge
+
+interpreter inputLine (fixed charge) = {value}
+
+interpreter shortHelp {Set the interface fixed charge}
+interpreter longHelp {Set the interface fixed charge}
+
+xmlRequired Charon->Boundary Conditions->pot1ANONYMOUS->Data,Fixed Charge,double,{value}
+xmlRequired Charon->Boundary Conditions->pot2ANONYMOUS->Data,Fixed Charge,double,{value}

@@ -1,0 +1,98 @@
+Import State File moscap.dd.equ.exo
+tpetra is on
+assembly workset = 100
+
+start output parameters
+      Output State File moscap.hb.locaSubstrate.1e6Hz.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = 1e6
+          remapped fundamental harmonics = 1e0
+      end harmonic balance parameters 
+      material model is siliconParameter
+      SRH Recombination is on
+end Physics Block Semiconductor
+
+start Physics Block Insulator
+      geometry block is oxide
+      standard discretization type is laplace gfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = 1e6
+          remapped fundamental harmonics = 1e0
+      end harmonic balance parameters 
+      material model is oxideParameter
+end Physics Block Insulator
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      electron affinity = 4.05
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-9
+	    hole lifetime is constant = 1e-9
+      end Carrier Lifetime Block
+      start uniform doping named Function1
+      	    type is acceptor
+	    concentration = 2e16
+      end uniform doping named Function1
+      start arora mobility
+        start electron parameters
+        end
+        start hole parameters
+        end
+      end
+end Material Block siliconParameter
+
+start Material Block oxideParameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block oxideParameter
+
+start Harmonic Balance BC for substrate on silicon
+  type is ohmic
+  small signal sweep from -0.29 to -0.38 with amplitude 1e-4
+end Harmonic Balance BC for substrate on silicon
+start Harmonic Balance BC for gate on oxide
+  type is contact on insulator with work function 4.05
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for gate on oxide
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in silicon is DC remapped
+Harmonic Balance Initial Conditions for ELECTRON_DENSITY in silicon is DC remapped
+Harmonic Balance Initial Conditions for HOLE_DENSITY in silicon is DC remapped
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in oxide is DC remapped
+
+start sweep options
+  initial step size = 0.0905
+  minimum step size  = 0.0905
+  maximum step size  = 0.0905
+  step size aggressiveness = 1.0
+  predictor method is secant
+end sweep options
+
+start solver block
+  start tpetra block
+    problem type is parameter sweep
+    preconditioner is RILUK
+    linear solver tolerance = 1e-5
+    verbosity level is high
+    nonlinear solver residual tolerance = 1e-6
+    start nonlinear solver wrms block
+      absolute tolerance = 1e-8
+      relative tolerance = 1e-6
+    end
+  end
+end solver block

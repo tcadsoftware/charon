@@ -1,0 +1,9 @@
+
+interpreter name HoleFitParameter
+
+interpreter inputLine (hole fit parameter =) {fitParam}
+
+interpreter shortHelp {Specify different hole fit parameter from default ??}
+interpreter longHelp  {Specify different hole fit parameter from default ??}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Fit Parameter,double,{fitParam}

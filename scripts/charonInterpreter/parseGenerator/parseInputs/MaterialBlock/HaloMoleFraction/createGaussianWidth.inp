@@ -1,0 +1,14 @@
+
+
+interpreter name GaussianWidth
+
+interpreter inputLine (width) = {width}
+
+interpreter shortHelp {Set the width of the Gaussian in the mole fraction}
+
+interpreter longHelp {Set the width of the Gaussian in the mole fraction}
+
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Width,double,{width}
+
+

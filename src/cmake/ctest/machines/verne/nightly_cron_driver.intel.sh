@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 #
 # Typical cron entries:
 #
@@ -13,12 +13,34 @@ echo " "
 echo "Starting nightly Charon testing on `hostname`: `date`"
 echo " "
 
+VERS=0
+TESTDIR=TEST.INTEL.OPT
+COMPIDSTRING="IntelMPI_19.x"
+while getopts "on" opt; do
+    case ${opt} in
+        o )
+            VERS=0
+            TESTDIR=TEST.INTEL.OPT
+            COMPIDSTRING="IntelMPI_19.x"
+            shift $((OPTIND -1))
+            ;;
+        n )
+            VERS=1
+            TESTDIR=TEST.INTELONE.OPT
+            COMPIDSTRING="IntelMPI_2021.x"
+            shift $((OPTIND -1))
+            ;;
+        \? )
+            echo "Usage: $0 [-o] [-n]"
+            ;;
+    esac
+done
+
 export TRIBITS_BASE_DIR=${HOME}/Projects/Charon2/TriBITS
 
 BASETESTDIR=/home/glhenni/Nightly-Testing/Charon2
-TESTDIR=TEST.INTEL.OPT
 
-PATH=${PATH}:${HOME}/Software/bin
+PATH=${PATH}:/snap/bin:${HOME}/Software/bin
 
 BTYPE="$*"
 
@@ -33,13 +55,29 @@ fi
 ## won't work
 unset http_proxy
 unset https_proxy
+unset LD_LIBRARY_PATH
 
 # Intel environment
-BASEDIR=/opt/intel/2019
-ARCH=intel64
-unset LD_LIBRARY_PATH
-# Serial compilers
-source ${BASEDIR}/bin/compilervars.sh -arch ${ARCH} -platform linux
+if [ ${VERS} -eq 0 ]; then
+  BASEDIR=/opt/intel/2019
+  ARCH=intel64
+
+  # Serial compilers
+  source ${BASEDIR}/bin/compilervars.sh -arch ${ARCH} -platform linux
+  # intel mpi
+  source ${BASEDIR}/impi/2019.2.187/intel64/bin/mpivars.sh
+  # Math libraries
+  source ${BASEDIR}/mkl/bin/mklvars.sh ${ARCH}
+else
+  BASEDIR=/opt/intel/oneapi
+
+  # base compilers
+  source ${BASEDIR}/compiler/latest/env/vars.sh
+  # intel MPI
+  source ${BASEDIR}/mpi/latest/env/vars.sh
+  # math library
+  source ${BASEDIR}/mkl/latest/env/vars.sh
+fi
 
 # Compilers for MPI
 I_MPI_CC=icc
@@ -48,8 +86,6 @@ I_MPI_F77=ifort
 I_MPI_F90=ifort
 export I_MPI_CC I_MPI_CXX I_MPI_F77 I_MPI_F90
 
-# Math libraries
-source ${BASEDIR}/mkl/bin/mklvars.sh ${ARCH}
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/Software/lib
 
 # Clean out the test directory. The ctest_empty_binary_directory()
@@ -73,8 +109,10 @@ then
   fi
 
   mkdir -p ${BASETESTDIR}/${TESTDIR}
-  cd ${BASETESTDIR}
+else
+  mkdir -p ${BASETESTDIR}/${TESTDIR}
 fi
+cd ${BASETESTDIR}
 
 # This has to be set for some Charon tests to pass
 export I_MPI_SHM_LMT=shm
@@ -88,19 +126,22 @@ then
   EXTRAOPTS="-LE debugexclude"
 fi
 
+# Tests to exclude on verne
+EXCLTESTS="-LE ddionlatt\.symeffpg"
+
 PROC_COUNT="20"
 export MAKEFLAGS="-j${PROC_COUNT}"
 
 EXTRAOPTS="-L nightly ${EXTRAOPTS}"
 
-ctest ${EXTRAOPTS} -j${PROC_COUNT} -S ${BASETESTDIR}/scripts/ctest_regression.cmake \
+ctest -VV ${EXCLTESTS} ${EXTRAOPTS} -j${PROC_COUNT} -S ${BASETESTDIR}/scripts/ctest_regression.cmake \
       -DTYPE:STRING=${BTYPE} \
       -DPROCESSORCOUNT:INT=${PROC_COUNT} \
-      -DDISTRIB:STRING="Ubuntu_18.04" \
-      -DCOMPILER:STRING="IntelMPI_19.x" \
+      -DDISTRIB:STRING="Ubuntu_20.04" \
+      -DCOMPILER:STRING="${COMPIDSTRING}" \
       -DBASETESTDIR:STRING="${BASETESTDIR}" \
       -DTRIBRANCH:STRING="develop" \
-      -DTBLDDIR:STRING="TEST.INTEL.OPT" \
+      -DTBLDDIR:STRING="${TESTDIR}" \
       -DBSCRIPTARGS="-f linux-intel-mpi.opts"
 
 CTEST_STAT=$?

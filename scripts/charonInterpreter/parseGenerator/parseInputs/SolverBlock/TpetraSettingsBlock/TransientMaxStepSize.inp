@@ -1,0 +1,9 @@
+interpreter name TransientMazStepSize
+
+interpreter shortHelp {Set the largest value of time step the integrator can take.}
+interpreter longHelp {Set the largest value of time step the integrator can take.}
+
+interpreter inputLine (time integrator maximum step size) = {maxStepSize}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Max Step Size,double,{maxStepSize}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Maximum Time Step,double,{maxStepSize}

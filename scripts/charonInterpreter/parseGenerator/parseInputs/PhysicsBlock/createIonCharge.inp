@@ -1,0 +1,9 @@
+
+interpreter name IonCharge
+
+interpreter inputLine (ion charge =) {ionCharge}
+
+interpreter shortHelp {Specify different ion charge from default 1}
+interpreter longHelp  {Specify different ion charge from default 1 in terms of an elemental charge, which can be either a positive or negative integer, representing a positive or negative charge.}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Ion Charge,int,{ionCharge}

@@ -1,0 +1,31 @@
+environment
+  tabular_data
+    tabular_data_file = 'lhs.dat'
+
+method
+  sampling 
+    sample_type lhs 
+    samples = 1
+    seed = 1337
+ 
+variables
+  normal_uncertain = 1
+    means          = 9.0
+    std_deviations = 1e-8
+    descriptors    'GC'
+
+interface
+  analysis_drivers = '../../../../../src/charonDriver.py'
+    fork
+    asynchronous
+    link_files = 'template_dir/*'
+    work_directory named 'workingDir'
+    directory_save
+
+responses
+  response_functions = 3
+    scalar_responses = 3
+    descriptors      = 'betagain' 'betagainUnweighted' 'betagainWeighted'
+  no_gradients
+  no_hessians
+

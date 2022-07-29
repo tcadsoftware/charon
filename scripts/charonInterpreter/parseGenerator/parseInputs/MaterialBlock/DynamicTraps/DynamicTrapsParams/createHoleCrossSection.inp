@@ -1,0 +1,8 @@
+interpreter name HoleCrossSection
+
+interpreter inputLine (hole cross section) = {value}
+
+interpreter shortHelp {The trap hole cross section in unit of cm^2}
+interpreter longHelp {The trap hole cross section in unit of cm^2}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Hole Cross Section,double,{value}

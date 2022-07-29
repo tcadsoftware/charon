@@ -13,6 +13,9 @@
 #include "Panzer_PureBasis.hpp"
 #include "Charon_Names.hpp"
 #include "Charon_Scaling_Parameters.hpp"
+#include "Panzer_ScalarParameterEntry.hpp"
+#include "Panzer_ParameterLibraryUtilities.hpp"
+#include "Panzer_GlobalData.hpp"
 
 // Evaluators
 #include "Charon_BC_LinearRamp.hpp"
@@ -33,6 +36,7 @@ void charon::BCStrategy_Dirichlet_LinearRamp<EvalT>::
 setup(const panzer::PhysicsBlock& side_pb,
       const Teuchos::ParameterList& /* user_data */)
 {
+  using Teuchos::rcp;
   using Teuchos::RCP;
   using std::vector;
   using std::string;
@@ -169,6 +173,10 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set("Scaling Parameters", scaleParams);
     p.set<bool>("Fermi Dirac", bUseFD);
     p.sublist("Incomplete Ionization") = incmpl_ioniz;
+    p.set("Sideset ID",this->m_bc.sidesetID());
+ 
+    //Insert the paramaeter library
+    p.set<RCP<panzer::ParamLib> >("ParamLib", this->getGlobalData()->pl);
 
     p.set("Initial Time", this->m_bc.params()->template get<double>("Initial Time"));
     p.set("Initial Voltage", this->m_bc.params()->template get<double>("Initial Voltage"));

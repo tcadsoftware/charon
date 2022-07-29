@@ -100,6 +100,7 @@ private:
     std::vector<std::vector<double> > cos_quadrature_weights_for_harmonic_number;
     std::vector<std::vector<double> > sin_quadrature_weights_for_harmonic_number;
 
+    bool printDebug = false;
 };
 
 #endif

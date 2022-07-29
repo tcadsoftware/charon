@@ -15,6 +15,7 @@
 #include "cells.hpp"
 #include "lusolve.hpp"  
 #include "surfaceFinder.hpp"
+#include "depletionWidth.hpp"
 
 //Constructor
 
@@ -29,7 +30,9 @@ meshRefine::meshRefine() :
   BBymax(0),
   BBzmax(0),
   numSurfs(0),
-  refinementFactor(3)
+  refinementFactor(3),
+  semiType(0),
+  autoRefine(false)
 {}
 
 
@@ -741,6 +744,26 @@ bool meshRefine::doIrefine3D()
       return false;
     }
 
+  //Determine if this is a p cell or an n cell
+  std::vector<double> centroidX(3,0.0);
+  for (size_t i=0 ; i<cellNodeCoords.size() ; ++i)
+    {
+      centroidX[0] += cellNodeCoords[i][0];
+      centroidX[1] += cellNodeCoords[i][1];
+      centroidX[2] += cellNodeCoords[i][2];
+    }
+  centroidX[0] /= (double)cellNodeCoords.size();
+  centroidX[1] /= (double)cellNodeCoords.size();
+  centroidX[2] /= (double)cellNodeCoords.size();
+
+  double centroidDoping = function.evaluateFunction(centroidX);
+
+  if(centroidDoping >= 0) //ntype
+    semiType = 1;
+  if(centroidDoping < 0) // ptype
+    semiType = 2;
+
+  //Set up data structures
   point.resize(3);
   localCoords.resize(3);
   distanceFunctions dFun;
@@ -770,6 +793,17 @@ bool meshRefine::doIrefine3D()
 	{
 	  //intersection 
 	  return true;
+	}
+
+      //Set the junction refinement distance
+      double junctionRefinement=0.0;
+      junctionRefinement = refinementDistance;
+      if (autoRefine)
+	{
+	  if (semiType == 1)
+	    junctionRefinement = localSurf.nThick;
+	  if (semiType == 2)
+	    junctionRefinement = localSurf.pThick;
 	}
 
       double xnew,ynew,znew;
@@ -810,17 +844,17 @@ bool meshRefine::doIrefine3D()
 	      bool localReturn=false;
 
 
-	      if(distance <= refinementDistance)
+	      if(distance <= junctionRefinement)
 		{
 		  localReturn = true;
 		}
 
-	      if(distance <= 2*refinementDistance and cellSize > refinementFactor*cellMinSize)
+	      if(distance <= 2*junctionRefinement and cellSize > refinementFactor*cellMinSize)
 		{
 		  localReturn = true;
 		}
 
-	      if(distance <= 3*refinementDistance and cellSize > refinementFactor*refinementFactor*cellMinSize)
+	      if(distance <= 3*junctionRefinement and cellSize > refinementFactor*refinementFactor*cellMinSize)
 		{
 		  localReturn = true;
 		}
@@ -1127,6 +1161,23 @@ bool meshRefine::doIrefine2D()
   double aveSide = getAveSide(true);
   double norm[3];
 
+  //Determine if this is a p cell or an n cell
+  std::vector<double> centroidX(3,0.0);
+  for (size_t i=0 ; i<cellNodeCoords.size() ; ++i)
+    {
+      centroidX[0] += cellNodeCoords[i][0];
+      centroidX[1] += cellNodeCoords[i][1];
+    }
+  centroidX[0] /= (double)cellNodeCoords.size();
+  centroidX[1] /= (double)cellNodeCoords.size();
+
+  double centroidDoping = function.evaluateFunction(centroidX);
+
+  if(centroidDoping >= 0) //ntype
+    semiType = 1;
+  if(centroidDoping < 0) // ptype
+    semiType = 2;
+
   //If this cell has hit mimimum size threshold, return false
   bool hitMinimumSize=false;
   //if(aveSide < cellMinSize)
@@ -1213,6 +1264,17 @@ bool meshRefine::doIrefine2D()
 	    }
 	}
       
+      //Set the junction refinement distance
+      double junctionRefinement=0.0;
+      junctionRefinement = refinementDistance;
+      if (autoRefine)
+	{
+	  if (semiType == 1)
+	    junctionRefinement = localSurf.nThick;
+	  if (semiType == 2)
+	    junctionRefinement = localSurf.pThick;
+	}
+
       double xnew,ynew;
       std::vector<double> surfXCoords=localSurf.X;
       std::vector<double> surfYCoords=localSurf.Y;
@@ -1232,17 +1294,17 @@ bool meshRefine::doIrefine2D()
 					     xnew,ynew,localSurf.X,localSurf.Y);
 
 	      //Check for refinement--grade away to 3x distance increasing minimum distance by 10x each time
-	      if(distance <= refinementDistance)
+	      if(distance <= junctionRefinement and maxSide > cellMinSizeN)
 		{
 		  return true;
 		}
 
-	      if(distance <= 2*refinementDistance and maxSide > refinementFactor*cellMinSize)
+	      if(distance <= 2*junctionRefinement and maxSide > refinementFactor*cellMinSizeN)
 		{
 		  return true;
 		}
 
-	      if(distance <= 3*refinementDistance and maxSide > refinementFactor*refinementFactor*cellMinSize)
+	      if(distance <= 3*junctionRefinement and maxSide > refinementFactor*refinementFactor*cellMinSizeN)
 		{
 		  return true;
 		}
@@ -1254,17 +1316,17 @@ bool meshRefine::doIrefine2D()
 	      //Get a true normal distance for this one
 	      distance = dFun.normalDistanceToLine(localCoords[0],localCoords[1],
 						   xnew,ynew,localSurf.X,localSurf.Y);
-	      if(distance <= localSurf.refinementDistance)
+	      if(distance <= localSurf.refinementDistance and maxSide > cellMinSizeIL)
 		{
 		  return true;
 		}
 
-	      if(distance <= 2*localSurf.refinementDistance and maxSide > refinementFactor*cellMinSize)
+	      if(distance <= 2*localSurf.refinementDistance and maxSide > refinementFactor*cellMinSizeIL)
 		{
 		  return true;
 		}
 
-	      if(distance <= 3*localSurf.refinementDistance and maxSide > refinementFactor*refinementFactor*cellMinSize)
+	      if(distance <= 3*localSurf.refinementDistance and maxSide > refinementFactor*refinementFactor*cellMinSizeIL)
 		{
 		  return true;
 		}
@@ -2458,10 +2520,42 @@ void meshRefine::createSurfaces2D()
 
   if(journalSurfaces)
     {
-      surfaceJournalFile<<"export acis \"junctionSurfaces.sat\" overwrite"<<std::endl;
+      surfaceJournalFile<<"export acis \"jS.sat\" overwrite"<<std::endl;
       surfaceJournalFile<<"exit"<<std::endl;
       surfaceJournalFile.close();
     }
+
+  depletionWidth dW;
+  double stepOff = 1e-2;
+  double nDoping,pDoping;
+  std::vector<double> xOff(3,0.0),norm(3,0.0);
+
+  for (size_t surf=0 ; surf<surfs.size() ; ++surf)
+    {
+      xOff[0] = surfs[surf].xc + stepOff*surfs[surf].normx;
+      xOff[1] = surfs[surf].yc + stepOff*surfs[surf].normy;
+      double dope = function.evaluateFunction(xOff);
+      if (dope >= 0)
+	nDoping = dope;
+      if (dope < 0)
+	pDoping = -dope;
+
+      xOff[0] = surfs[surf].xc - stepOff*surfs[surf].normx;
+      xOff[1] = surfs[surf].yc - stepOff*surfs[surf].normy;
+      dope = function.evaluateFunction(xOff);
+      if (dope >= 0)
+	nDoping = dope;
+      if (dope < 0)
+	pDoping = -dope;
+
+      double thick,nThick,pThick;
+
+      dW.calculateDepletionWidths(pDoping,nDoping,thick,pThick,nThick);
+
+      surfs[surf].nThick = 1.0e4*nThick;  //convert from cm to um
+      surfs[surf].pThick = 1.0e4*pThick;  //convert from cm to um
+    }
+  
 
 }
 
@@ -2759,21 +2853,6 @@ void meshRefine::createSurfaces3D()
 
 	}
 
-      //quick check of normals
-      for(int i=0 ;  i< *total_tris-1 ; ++i)
-	{
-	  double normx1,normx2,normy1,normy2,normz1,normz2;
-	  normx1 = surfs[surfs.size()-1-i].normx;
-	  normy1 = surfs[surfs.size()-1-i].normy;
-	  normz1 = surfs[surfs.size()-1-i].normz;
-	  normx2 = surfs[surfs.size()-2-i].normx;
-	  normy2 = surfs[surfs.size()-2-i].normy;
-	  normz2 = surfs[surfs.size()-2-i].normz;
-
-	  double check = normx1*normx2 +  normy1*normy2 +  normz1*normz2;
-
-	}
-
     }
 
   if(journalSurfaces)
@@ -2785,6 +2864,39 @@ void meshRefine::createSurfaces3D()
       surfaceJournalFile.close();
     }
 
+  depletionWidth dW;
+  double stepOff = 1e-2;
+  double nDoping,pDoping;
+  std::vector<double> xOff(3,0.0),norm(3,0.0);
+
+  for (size_t surf=0 ; surf<surfs.size() ; ++surf)
+    {
+      xOff[0] = surfs[surf].xc + stepOff*surfs[surf].normx;
+      xOff[1] = surfs[surf].yc + stepOff*surfs[surf].normy;
+      xOff[2] = surfs[surf].zc + stepOff*surfs[surf].normz;
+      double dope = function.evaluateFunction(xOff);
+      if (dope >= 0)
+	nDoping = dope;
+      if (dope < 0)
+	pDoping = -dope;
+
+      xOff[0] = surfs[surf].xc - stepOff*surfs[surf].normx;
+      xOff[1] = surfs[surf].yc - stepOff*surfs[surf].normy;
+      xOff[2] = surfs[surf].zc + stepOff*surfs[surf].normz;
+      dope = function.evaluateFunction(xOff);
+      if (dope >= 0)
+	nDoping = dope;
+      if (dope < 0)
+	pDoping = -dope;
+
+      double thick,nThick,pThick;
+
+      dW.calculateDepletionWidths(pDoping,nDoping,thick,pThick,nThick);
+
+      surfs[surf].nThick = 1.0e4*nThick;  //convert from cm to um
+      surfs[surf].pThick = 1.0e4*pThick;  //convert from cm to um
+    }
+  
   numSurfs = surfs.size();
   std::cout<<" I created "<<surfs.size()<<" surfaces to refine to."<<std::endl;
 

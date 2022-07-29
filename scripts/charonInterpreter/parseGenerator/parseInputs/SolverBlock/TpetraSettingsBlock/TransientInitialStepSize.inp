@@ -1,0 +1,9 @@
+interpreter name TransientInitialStepSize
+
+interpreter shortHelp {Set the value of the initial step size.}
+interpreter longHelp {Set the value of the initial step size.}
+
+interpreter inputLine (time integrator initial step size) = {initStepSize}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Initial Step Size,double,{initStepSize}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Initial Time Step,double,{initStepSize}

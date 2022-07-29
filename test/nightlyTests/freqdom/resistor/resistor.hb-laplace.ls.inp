@@ -1,0 +1,51 @@
+Import State File resistor.exo
+tpetra is on
+
+start output parameters
+      Output State File resistor.hb-laplace.ls.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is laplace gfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = 1e0
+          remapped fundamental harmonics = 1e0
+      end harmonic balance parameters 
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start uniform doping named Function1
+      	    type is donor
+	    concentration = 1e16
+      end uniform doping named Function1
+end Material Block siliconParameter
+
+start Harmonic Balance BC for anode on silicon
+  type is ohmic
+  frequencies  "0.0,1.0"
+  amplitudes   "0.5,0.5"
+  phase shifts "0.0,0.0"
+end Harmonic Balance BC for anode on silicon
+start Harmonic Balance BC for cathode on silicon
+  type is ohmic
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for cathode on silicon
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized for higher harmonics 
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    nonlinear solver residual tolerance = 1e-6
+  end
+end solver block

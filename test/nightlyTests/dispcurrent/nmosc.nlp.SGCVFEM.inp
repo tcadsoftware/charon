@@ -1,0 +1,55 @@
+import state file "nmosc_msh.gen"
+
+start output parameters
+      output state file nmosc.nlp.SGCVFEM.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+      output cell average variables in sio2 for scalar "Negative Potential Gradient Y"
+end output parameters
+
+assembly workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling=1e15
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is nlp cvfem 
+      material model is siliconParameter
+end Physics block semiconductor
+
+start physics block insulator
+      geometry block is sio2
+      standard discretization type is laplace cvfem
+      material model is sio2Parameter
+end Physics Block semiconductor
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e15
+      	    spatial range is 0.0 to 2.0 in x
+    	    spatial range is 0.0 to 0.5 in y	    
+      end uniform doping named Function1
+end material block siliconParameter
+
+
+start material block sio2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end material block sio2Parameter
+
+initial conditions for ELECTRIC_POTENTIAL in sio2 is uninitialized
+initial conditions for ELECTRIC_POTENTIAL in silicon is equilibrium potential
+
+BC is ohmic for subs on silicon fixed at 0.0
+BC is contact on insulator for gate on sio2 with work function 4.1 fixed at 0.0
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block

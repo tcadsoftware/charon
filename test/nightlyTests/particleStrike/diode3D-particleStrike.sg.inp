@@ -2,7 +2,7 @@
 Import State File diode3D.exo at index 1
 
 start output parameters
-      Output State File diode3D-particleStrike.sg.exo
+      Output State File diode3D-particleStrike.exo
       Output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration, Ionization Particle Strike Rate"
       output tabulated transient currents to currents.dat
 end output parameters
@@ -16,6 +16,8 @@ start Physics Block Semiconductor
       auger recombination is off
       particle strike is on
 end Physics Block Semiconductor
+
+tpetra is on
 
 start Material Block siliconParameter
       material name is Silicon
@@ -62,12 +64,13 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 Initial Conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use transient solver pack 1
-      time integrator final time = 5.5e-4
-      time integrator minimum step size = 1e-7
-      time integrator maximum step size = 1e-4
-      time integrator initial step size = 1e-5
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 10
+  start tpetra block
+    problem type is tempus
+    time step size is variable
+    verbosity level is high
+    time integrator initial step size = 1.0e-06
+    time integrator minimum step size = 1.0e-07
+    time integrator maximum step size = 1.0e-04
+    time integrator final time = 5.5e-4
+  end
 end solver block
-

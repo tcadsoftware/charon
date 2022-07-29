@@ -1,0 +1,56 @@
+
+Import State File pndiode.exo
+
+start output parameters
+      Output State File pndiode.nlp.multi-files.exo
+      Output nodal variables in silicon for "Doping"
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is nlp gfem
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+tpetra is on
+concentration scaling = 1e18
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start file1d doping named Function1
+            file is test1_dop1d.txt
+            type is acceptor
+            direction is x
+            buffer = 0.0 
+            spatial range is 0.0 to 0.5 in x
+            spatial range is 0.0 to 0.5 in y
+      end
+
+      start file1d doping named Function2
+            file is test2_dop1d.txt
+            type is donor
+            direction is y
+            buffer = 0.0 
+            spatial range is 0.5 to 1.0 in x
+      end
+
+      read doping from test3_dop2d.txt for acceptor in 2d with buffer 0.0
+      read doping from test4_dop2d.txt for donor in 2d with buffer 0.1
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Equilibrium Potential
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    maximum number nonlinear iterations = 15
+  end
+end solver block
+

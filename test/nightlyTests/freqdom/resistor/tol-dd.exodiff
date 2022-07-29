@@ -1,0 +1,12 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+NODAL VARIABLES 
+	ELECTRIC_POTENTIAL_CosH0.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_CosH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRIC_POTENTIAL_SinH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH0.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_CosH1.000000_  relative 5e-4 floor 1e-8 
+	ELECTRON_DENSITY_SinH1.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH0.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_CosH1.000000_  relative 5e-4 floor 1e-8 
+	HOLE_DENSITY_SinH1.000000_  relative 5e-4 floor 1e-8 

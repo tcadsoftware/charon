@@ -1,6 +1,6 @@
 interpreter name ThreshBehavior
 
-interpreter inputLine (threshold behavior model) [ (van overstraeten) [ (okuto) [ (lackner) [ (university bologna) [ (new university bologna) [ (selberherr) [ (crowell-sze) ]]]]]]]
+interpreter inputLine (threshold behavior model is) [ (van overstraeten) [ (okuto) [ (lackner) [ (university bologna) [ (new university bologna) [ (selberherr) [ (crowell-sze) ]]]]]]]
 
 interpreter shortHelp {Set the threshold behavior of the ionization coefficients}
 

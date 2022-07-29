@@ -10,6 +10,7 @@ ANONYMOUS:
     silicon: Semiconductor
   Assembly: 
     Workset Size: 50
+    Use Tpetra: true
   Physics Blocks: 
     Semiconductor: 
       child0: 
@@ -69,8 +70,6 @@ ANONYMOUS:
         Value: Arora
       Hole Mobility: 
         Value: Arora
-  User Data: 
-    function data one: { }
   Boundary Conditions: 
     child0: 
       Type: Dirichlet
@@ -115,7 +114,7 @@ ANONYMOUS:
     Cell Average Quantities: 
       silicon: 'Doping,Electron Mobility,Hole Mobility'
   Options: 
-    Write Volume Assembly Graphs: true
+    Write Volume Assembly Graphs: false
     Volume Assembly Graph Prefix: charon_
   Solution Control: 
     Piro Solver: NOX
@@ -148,100 +147,75 @@ ANONYMOUS:
     NOX: 
       Direction: 
         Method: Newton
-        Newton: 
+        Newton:
+          Linear Solver:
+          
+            # This tolerance overrides the value of "Convergence
+            # Tolerance" in "Block GMRES" below, and likely overrides
+            # the same parameter in ANY linear solver. Internally if
+            # you don't specify this then it will override the value
+            # with the default of 1.0e-10
+            
+            Tolerance: 1.0e-08
+            
           Forcing Term Method: Constant
           Rescue Bad Newton Solve: true
-          Linear Solver: 
-            Tolerance: 9.99999999999999955e-07
           Stratimikos Linear Solver: 
             NOX Stratimikos Options: { }
             Stratimikos: 
               Linear Solver Type: Belos
               Linear Solver Types: 
-                AztecOO: 
-                  Forward Solve: 
-                    AztecOO Settings: 
-                      Aztec Solver: GMRES
-                      Convergence Test: r0
-                      Size of Krylov Subspace: 200
-                      Output Frequency: 20
-                    Max Iterations: 300
                 Belos: 
                   Solver Type: Block GMRES
                   Solver Types: 
                     Block GMRES: 
-                      Convergence Tolerance: 1.00000000000000008e-05
+                      Convergence Tolerance: 1.0e-06
                       Output Frequency: 10
                       Output Style: 1
                       Verbosity: 33
-                      Maximum Iterations: 100
+                      Maximum Iterations: 200
                       Block Size: 1
-                      Num Blocks: 20
+                      Num Blocks: 60
                       Flexible Gmres: false
+                  VerboseObject: 
+                    Verbosity Level: medium
               Preconditioner Type: Teko
-              Preconditioner Types: 
-                Ifpack: 
-                  Overlap: 1
-                  Prec Type: ILU
-                  Ifpack Settings: 
-                    'fact: drop tolerance': 0.00000000000000000e+00
-                    'fact: ilut level-of-fill': 1.00000000000000000e+00
-                    'fact: level-of-fill': 1
+              Preconditioner Types:
                 Teko: 
-                  Inverse Type: Schur2x2
+                  Inverse Type: GS
                   Write Block Operator: false
                   Test Block Operator: false
                   Inverse Factory Library: 
-                    Schur2x2: 
-                      Type: Schur2x2
-                      Inverse Type: ML-DD
-                      Inverse Type for SC: PrecIterative-Belos
-                    PrecIterative-Belos: 
-                      Type: Belos
-                      Use Preconditioner: ML-DD
-                      Solver Types: 
-                        Block GMRES: 
-                          Convergence Tolerance: 1.00000000000000002e-03
-                          Output Frequency: 10
-                          Output Style: 1
-                          Verbosity: 33
-                          Maximum Iterations: 100
-                          Block Size: 1
-                          Num Blocks: 20
-                          Flexible Gmres: false
-                      VerboseObject: 
-                        Verbosity Level: medium
-                    ML-DD: 
-                      Type: ML
-                      Base Method Defaults: SA
-                      ML Settings: 
-                        ML output: 10
-                        ML label: Velocity
-                        prec type: MGV
-                        print unused: 0
-                        PDE equations: 3
-                        max levels: 10
-                        cycle applications: 2
-                        'aggregation: threshold': 0.00000000000000000e+00
-                        'aggregation: type': Uncoupled
-                        'smoother: type': IFPACK
-                        'smoother: ifpack type': Amesos
-                        'smoother: ifpack overlap': 1
-                        'smoother: ifpack list': 
-                          'fact: level-of-fill': 1
-                          'schwarz: reordering type': rcm
-                          reuse numeric factorization: 1
-                        'smoother: pre or post': both
-                        'smoother: sweeps': 2
-                        'coarse: max size': 500
-                        'coarse: type': Amesos-KLU
+
+                    GS:
+                      Type: Block Gauss-Seidel
+                      Use Upper Triangle: true
+                      Inverse Type 1: ILU_tpetra
+                      Inverse Type 2: Id
+                      
+                    ILU_epetra: 
+                      Type: Ifpack
+                      Overlap: 1
+                      Ifpack Settings: 
+                        'fact: drop tolerance': 0.0
+                        'fact: ilut level-of-fill': 1.0
+                        'fact: level-of-fill': 1
+
+                    ILU_tpetra: 
+                      Type: Ifpack2
+                      Overlap: 1
+                      Ifpack2 Settings: 
+                        'fact: drop tolerance': 0.0
+                        'fact: ilut level-of-fill': 2.0
+
+                        
+                    Id: 
+                      Type: Identity
+		      
       Line Search: 
-        Method: Backtrack
-        Polynomial: 
-          Maximum Iterations: 10
-          Recovery Step Type: Last Computed Step
         Full Step: 
-          Full Step: 1.00000000000000000e+00
+          Full Step: 1.0
+        Method: Full Step
       Nonlinear Solver: Line Search Based
       Printing: 
         Output Precision: 3
@@ -269,34 +243,22 @@ ANONYMOUS:
         Number of Tests: 3
         Test 0: 
           Test Type: Combo
-          Combo Type: OR
+          Combo Type: AND
           Number of Tests: 2
           Test 0: 
             Test Type: NormF
-            Tolerance: 1.00000000000000002e-08
+            Tolerance: 1.0e-08
           Test 1: 
             Test Type: NormWRMS
-            Tolerance: 1.00000000000000000e+00
-            Relative Tolerance: 1.00000000000000005e-04
-            Absolute Tolerance: 1.00000000000000002e-08
-            alpha: 0.00000000000000000e+00
-            beta: 1.00000000000000000e+00
+            Tolerance: 1.0
+            Relative Tolerance: 1.0e-06
+            Absolute Tolerance: 1.0e-12
+            alpha: 0.0
+            beta: 1.0
         Test 1: 
           Test Type: MaxIters
           Maximum Iterations: 30
         Test 2: 
           Test Type: FiniteValue
           Vector Type: F Vector
-    Rythmos: 
-      Num Time Steps: 10
-      Final Time: 1.00000000000000006e-01
-      Stepper Type: Backward Euler
-      Rythmos Stepper: 
-        VerboseObject: 
-          Verbosity Level: medium
-      Stratimikos: { }
-      Rythmos Integration Control: { }
-      Rythmos Integrator: 
-        VerboseObject: 
-          Verbosity Level: medium
 ...

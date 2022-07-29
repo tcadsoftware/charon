@@ -1,0 +1,13 @@
+
+
+interpreter name MoleFractionValueRange
+
+interpreter inputLine (mole fraction range) is {minMoleFraction} to {maxMoleFraction}
+
+interpreter shortHelp {set the range of the magnitude of the mole fraction}
+
+interpreter longHelp {set the range of the magnitude of the mole fraction <> minMoleFraction is the minimum numerical value <> maxMoleFraction is the maximum numerical value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Mole Min Value,double,{minMoleFraction}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Mole Max Value,double,{maxMoleFraction}

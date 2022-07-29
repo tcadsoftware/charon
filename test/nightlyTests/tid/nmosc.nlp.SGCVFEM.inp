@@ -8,6 +8,7 @@ start output parameters
 end output parameters
 
 assembly workset = 50
+tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e15
 
@@ -68,8 +69,8 @@ BC is ohmic for subs on silicon fixed at 0.0
 BC is contact on insulator for gate on sio2 with work function 4.1 fixed at 0.0
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-10
-      max nonlinear iterations = 30
-      aztec max iterations = 200
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

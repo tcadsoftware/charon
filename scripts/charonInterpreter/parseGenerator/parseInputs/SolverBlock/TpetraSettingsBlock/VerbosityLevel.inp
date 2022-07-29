@@ -1,0 +1,36 @@
+interpreter name VerbosityLevel
+
+interpreter inputLine (verbosity level is) [ (low) [ (medium) [ (high) [ (extreme) ]]]]
+
+interpreter shortHelp {How much output to produce to show the progress of the solvers.}
+interpreter longHelp {How much output to produce to show the progress of the solvers.}
+
+xmlOptional (low) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->VerboseObject,Verbosity Level,string,low
+xmlOptional (medium) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->VerboseObject,Verbosity Level,string,medium
+xmlOptional (high) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->VerboseObject,Verbosity Level,string,high
+xmlOptional (extreme) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->VerboseObject,Verbosity Level,string,extreme
+
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Error,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Warning,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Inner Iteration,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration StatusTest,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Parameters,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Details,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Linear Solver Details,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Stepper Iteration,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Stepper Details,bool,false
+xmlOptional (low) Charon->Solution Control->NOX->Printing->Output Information,Stepper Parameters,bool,false
+
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Error,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Warning,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Inner Iteration,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration,bool,true
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration StatusTest,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Parameters,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Details,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Linear Solver Details,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Stepper Iteration,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Stepper Details,bool,false
+xmlOptional (medium) Charon->Solution Control->NOX->Printing->Output Information,Stepper Parameters,bool,false
+

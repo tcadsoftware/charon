@@ -1,0 +1,9 @@
+interpreter name MaxIonDens 
+
+interpreter inputLine (max ion density) = {density}
+
+interpreter shortHelp {The maximum ion density in 1/cm^3 for the IonDep diffusion coefficient model}
+
+interpreter longHelp {The maximum ion density in 1/cm^3 for the IonDep diffusion coefficient  model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Diffusion Coefficient,Maximum Ion Density,double,{density}

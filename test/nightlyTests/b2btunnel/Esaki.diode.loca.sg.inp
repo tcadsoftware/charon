@@ -1,0 +1,103 @@
+
+Import State File Esaki.diode.equ.fd.exo at index 1
+
+start output parameters
+      Output State File Esaki.diode.loca.sg.exo
+      Output tabulated parameter currents to currents-loca-sg.dat
+end output parameters
+
+start Physics Block Silicon
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      auger recombination is on
+      use fermi dirac
+      band gap narrowing is on
+      band2band tunneling is on
+      driving force is effective field
+end Physics Block Semiconductor
+
+tpetra is on
+concentration scaling = 5e19
+lattice temperature = 300
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      electron affinity = 4.05
+      constant bandgap = 1.08
+
+      start step junction doping
+      	    acceptor concentration = 5e19
+	    donor concentration = 5e19
+	    junction location = 0.25
+	    dopant order is PN
+	    direction is x
+      end step junction doping
+
+      start intrinsic concentration
+            model is old slotboom
+      end
+
+      start arora mobility
+            start electron parameters
+            end
+            start hole parameters
+            end
+      end
+
+      start carrier lifetime block
+            electron lifetime is constant = 1e-7
+            hole lifetime is constant = 1e-7
+      end
+
+      start band2band tunneling
+            behavior model is Hurkx
+            driving force is effective field
+            min field = 1.0
+            Hurkx A = 4.0e14
+            Hurkx B = 1.9e7
+            Hurkx gamma = 2.5
+            Hurkx alpha = 0.0
+     end band2band tunneling
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon swept from 0.0 to 0.5 
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+initial conditions for ELECTRON_DENSITY in silicon is Exodus File
+initial conditions for HOLE_DENSITY in silicon is Exodus File
+
+start sweep options
+  continuation method is natural
+  predictor method is constant
+  maximum number of steps = 300
+  max value = 0.5
+  min value = 0.0
+  initial step size = 0.02
+  minimum step size = 1e-5
+  maximum step size = 0.04
+  step size aggressiveness = 0.0
+  return failed on reaching max steps = false
+  hit continuation bound = false
+end sweep options
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    maximum number nonlinear iterations = 15
+    nonlinear solver residual tolerance = 1e-8
+
+    start nonlinear solver wrms block
+          absolute tolerance = 1e-8
+          relative tolerance = 1e-5
+          alpha = 1.0
+          beta = 0.5
+    end
+  end
+end solver block
+

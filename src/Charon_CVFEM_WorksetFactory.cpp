@@ -191,12 +191,14 @@ void CVFEM_WorksetFactory::addCVPointsAndBasis(std::size_t num_cells,
      Teuchos::RCP<panzer::IntegrationValues2<double> > cvfem_iv_vol =
                Teuchos::rcp(new panzer::IntegrationValues2<double>("",true));;
      cvfem_iv_vol->setupArrays(cvfem_vol_rule);
-     cvfem_iv_vol->evaluateValues(details.cell_vertex_coordinates);
+     if (!empty_wkst)
+       cvfem_iv_vol->evaluateValues(details.cell_vertex_coordinates);
 
      Teuchos::RCP<panzer::IntegrationValues2<double> > cvfem_iv_side =
                Teuchos::rcp(new panzer::IntegrationValues2<double>("",true));;
      cvfem_iv_side->setupArrays(cvfem_side_rule);
-     cvfem_iv_side->evaluateValues(details.cell_vertex_coordinates);
+     if (!empty_wkst)
+       cvfem_iv_side->evaluateValues(details.cell_vertex_coordinates);
 
      details.int_rules.push_back(cvfem_iv_vol);
      details.int_rules.push_back(cvfem_iv_side);

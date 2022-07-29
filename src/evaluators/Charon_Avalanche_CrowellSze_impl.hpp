@@ -366,7 +366,7 @@ evaluateFields(
       }
       if (Fh > minField) {
 	r = E_opt_ph / Ei_h;     // [1]
-	x = Ei_h / lambdae / Fh; // [1]
+	x = Ei_h / lambdah / Fh; // [1]
 	ScalarT C0 = C00 + C01*r + C02*r*r;
 	ScalarT C1 = C10 + C11*r + C12*r*r; 
 	ScalarT C2 = C20 + C21*r + C22*r*r;

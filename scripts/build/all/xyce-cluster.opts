@@ -10,8 +10,5 @@ TPL_ENABLE_XyceCharonLib:BOOL=ON
 
 # Set to the location where the Xyce libraries and include files were
 # installed.
-XyceCharonLib_INCLUDE_DIRS:PATH="${HOME}/Software/Xyce-Install/gnu.dbg/include"
-XyceCharonLib_LIBRARY_DIRS:PATH="${HOME}/Software/Xyce-Install/gnu.dbg/lib"
-
-BoostCharonLib_INCLUDE_DIRS:PATH="${HOME}/Software/include"
-BoostCharonLib_LIBRARY_DIRS:PATH="${HOME}/Software/lib"
+XyceCharonLib_INCLUDE_DIRS:PATH="${WORKSPACE}/install/include"
+XyceCharonLib_LIBRARY_DIRS:PATH="${WORKSPACE}/install/lib"

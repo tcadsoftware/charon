@@ -2,6 +2,7 @@
 #ifndef __Charon_ResponseEvaluatorFactory_Current_impl_hpp__
 #define __Charon_ResponseEvaluatorFactory_Current_impl_hpp__
 
+#include <string>
 #include "Panzer_Normals.hpp"
 #include "Panzer_Sum.hpp"
 #include "Panzer_DotProduct.hpp"
@@ -23,6 +24,7 @@ buildAndRegisterEvaluators(const std::string & responseName,
 {
   using Teuchos::RCP;
   using Teuchos::rcp;
+  using std::string; 
   using Teuchos::ParameterList;
 
   const panzer::CellData & cd = physicsBlock.cellData();
@@ -32,23 +34,47 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
   // get the physics block parameter list
   RCP<const ParameterList> pbParamList = physicsBlock.getParameterList();
+  
   // get the equation set parameter list
   const ParameterList& eqSetPList = pbParamList->sublist("child0");
+  const ParameterList& options = eqSetPList.sublist("Options");
+
   // get any prefix or suffix parameters
   std::string prefix = eqSetPList.isParameter("Prefix") ? eqSetPList.get<std::string>("Prefix") : "";
   std::string discfields = eqSetPList.isParameter("Discontinuous Fields") ? eqSetPList.get<std::string>("Discontinuous Fields") : "";
   std::string discsuffix = eqSetPList.isParameter("Discontinuous Suffix") ? eqSetPList.get<std::string>("Discontinuous Suffix") : "";
+  
   // append suffix
   names->applySuffixes(discfields, discsuffix);
+
+  // determine if the electron and/or hole equations are solved
+  bool solveElectron = false;
+  bool solveHole = false;
+
+  // "Solve Electron" and "Solve Hole" do not exist for the "Lattice" equation set.
+  // So options.get<string>("Solve Electron") directly will produce an error.
+  if (options.isParameter("Solve Electron"))
+    if (options.get<string>("Solve Electron") == "True") solveElectron = true;
+  if (options.isParameter("Solve Hole"))
+    if (options.get<string>("Solve Hole") == "True") solveHole = true;
+
+  // push in the fields
+  std::vector<std::string> currents_;
+  if(solveHole)
+    currents_.push_back(names->field.hole_contact_currdens);
+  if(solveElectron)
+    currents_.push_back(names->field.elec_contact_currdens);
+
+  TEUCHOS_TEST_FOR_EXCEPTION(currents_.size()==0,std::logic_error,
+        "Charon Error!: Current calculation requires either holes or electrons to be specified.");
 
   // create ir
   RCP<panzer::IntegrationRule> ir = rcp(new panzer::IntegrationRule(this->getCubatureDegree(),physicsBlock.cellData()));
 
   // create basis
   RCP<const panzer::FieldLibrary> fieldLib = physicsBlock.getFieldLibrary();
-  Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(1, prefix, discfields, discsuffix, "_CosH0.000000_"));
+  Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(1, prefix, discfields, discsuffix, "_CosH"+std::to_string(0.0)+"_"));
   RCP<const panzer::PureBasis> pureBasis = fieldLib->lookupBasis(isFreqDom_ ? fd_names->dof.phi : names->dof.phi);
-
   RCP<panzer::BasisIRLayout> basis = rcp(new panzer::BasisIRLayout(pureBasis, *ir));
 
   // Get scaling parameters
@@ -63,13 +89,12 @@ buildAndRegisterEvaluators(const std::string & responseName,
     p.set<bool>("Normalize",true);
 
     RCP< PHX::Evaluator<panzer::Traits> > op = rcp(new panzer::Normals<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
 
   // Computing FEM electron electric field: Fn = grad(Ei/V0-0.5*dEg/V0) at contact IPs,
   // Ei = intrinsic Fermi energy, valid for BGN = On and Off (dEg=0 when BGN = Off).
-  if (enableElectrons_)
+  if (solveElectron)
   {
     ParameterList p("Electron Electric Field");
     p.set("Carrier Type", "Electron");
@@ -80,12 +105,11 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::FEM_ElectricField<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
 
   // Computing electron current density: Jn = n*mun*Fn + Dn*grad(n) at IPs of Ohmic contact
-  if (enableElectrons_)
+  if (solveElectron)
   {
     ParameterList p("Electron Current Density");
     p.set("Carrier Type", "Electron");
@@ -95,13 +119,12 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::FEM_CurrentDensity<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
 
   // Computing hole electric field: Fp = grad(Ei/V0 + 0.5*dEg/V0) at contact IPs,
   // Ei = intrinsic Fermi energy, valid for BGN = On and Off (dEg=0 when BGN = Off).
-  if (enableHoles_)
+  if (solveHole)
   {
     ParameterList p("Hole Electric Field");
     p.set("Carrier Type", "Hole");
@@ -112,12 +135,11 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::FEM_ElectricField<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
 
   // Computing hole current density: Jp = p*mup*Fp - Dp*grad(p) at IPs of Ohmic contact
-  if (enableHoles_)
+  if (solveHole)
   {
     ParameterList p("Hole Current Density");
     p.set("Carrier Type", "Hole");
@@ -127,13 +149,12 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::FEM_CurrentDensity<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
 
   // force a sum over all fields containing the current vector
   std::string currentVectorName = "CurrentVector_" + responseName;
-  if(currents_.size()>1)
+  if(currents_.size() > 1)
   {
     Teuchos::ParameterList p("MultiCurrentSum");;
     p.set("Sum Name", currentVectorName);
@@ -142,7 +163,6 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new panzer::Sum<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
   else
@@ -158,7 +178,6 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new panzer::DotProduct<EvalT,panzer::Traits>(p));
-
     fm.template registerEvaluator<EvalT>(op);
   }
 

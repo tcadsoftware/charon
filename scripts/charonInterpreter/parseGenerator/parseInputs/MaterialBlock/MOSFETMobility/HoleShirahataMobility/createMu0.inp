@@ -8,5 +8,5 @@ interpreter shortHelp {Set the Mu0 value for Shirahata hole model}
 
 interpreter longHelp {Set the Mu0 value for Shirahata hole model}
 
-xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,Mu0,double,{Mu0}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Perpendicular Field Model,muo,double,{Mu0}
 

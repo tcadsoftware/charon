@@ -1,0 +1,11 @@
+
+
+interpreter name Chi300x1
+
+interpreter inputLine (Chi300 for x at 1 is) {val} 
+
+interpreter shortHelp {Set Chi300 for mole fraction x=1}
+
+interpreter longHelp {Set Chi300 for mole fraction x=1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap->Mole Fraction Parameters,Chi300(x=1),double,{val}

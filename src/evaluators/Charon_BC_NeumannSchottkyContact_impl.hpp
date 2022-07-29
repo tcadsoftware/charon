@@ -173,13 +173,13 @@ BC_NeumannSchottkyContact(
   
   // dependent fields 
   {
-    edensity = MDField<ScalarT,Cell,Point>(names.dof.edensity,scalar);
-    hdensity = MDField<ScalarT,Cell,Point>(names.dof.hdensity,scalar);
-    elec_effdos = MDField<ScalarT,Cell,Point>(names.field.elec_eff_dos,scalar);
-    hole_effdos = MDField<ScalarT,Cell,Point>(names.field.hole_eff_dos,scalar);
-    eff_bandgap = MDField<ScalarT,Cell,Point>(names.field.eff_band_gap,scalar);
-    latt_temp = MDField<ScalarT,Cell,Point>(names.field.latt_temp,scalar);
-    effChi = MDField<ScalarT,Cell,Point>(names.field.eff_affinity,scalar);
+    edensity = MDField<const ScalarT,Cell,Point>(names.dof.edensity,scalar);
+    hdensity = MDField<const ScalarT,Cell,Point>(names.dof.hdensity,scalar);
+    elec_effdos = MDField<const ScalarT,Cell,Point>(names.field.elec_eff_dos,scalar);
+    hole_effdos = MDField<const ScalarT,Cell,Point>(names.field.hole_eff_dos,scalar);
+    eff_bandgap = MDField<const ScalarT,Cell,Point>(names.field.eff_band_gap,scalar);
+    latt_temp = MDField<const ScalarT,Cell,Point>(names.field.latt_temp,scalar);
+    effChi = MDField<const ScalarT,Cell,Point>(names.field.eff_affinity,scalar);
 
     this->addDependentField(edensity);
     this->addDependentField(hdensity);

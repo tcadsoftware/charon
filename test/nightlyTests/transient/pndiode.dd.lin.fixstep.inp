@@ -12,6 +12,8 @@ start Physics Block Semiconductor
       material model is siliconParameter
 end Physics Block Semiconductor
 
+tpetra is on
+
 start Material Block siliconParameter
       material name is Silicon
       relative permittivity = 11.9
@@ -42,7 +44,10 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
 Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 
 start solver block
-      use transient solver pack 2 to 2.0
-      time integrator fixed step size = .2
+  start tpetra block
+    problem type is tempus
+    verbosity level is high
+    time integrator final time = 2.0
+    time step size is fixed at 0.2
+  end
 end solver block
-

@@ -11,9 +11,7 @@
 #include "Panzer_CommonArrayFactories.hpp"
 
 #include "Shards_CellTopology.hpp"
-#include "Intrepid2_FunctionSpaceTools.hpp"
-#include "Intrepid2_Basis.hpp"
-#include "Intrepid2_HCURL_QUAD_I1_FEM.hpp"
+#include "Intrepid2_HGRAD_LINE_C1_FEM.hpp"
 
 #include "Charon_Names.hpp"
 
@@ -69,6 +67,12 @@ EFFPG_CurrentDensity(
 
   // Get the primary cell topology
   cellType = cellTopoInfo->getCellTopology();
+
+  // Get reference edge length
+  Intrepid2::Basis_HGRAD_LINE_C1_FEM<PHX::Device> lineBasis;
+  Kokkos::DynRankView<double,PHX::Device> dofCoords("dofCoords",2,1);
+  lineBasis.getDofCoords(dofCoords);
+  refEdgeLen = dofCoords(1,0)-dofCoords(0,0);
 
   // obtain carrier type
   carrType = p.get<string>("Carrier Type");
@@ -217,13 +221,19 @@ evaluateFields(
       }
 
       // loop over integration points and set current density
+      //
+      // In this stabilized formulation edge values are mapped to the interior
+      // of the element using HCurl basis functions. In order for the values
+      // to scale properly with the definitions of the HCurl and HGrad basis
+      // functions in Intrepid2 as of 11/2020 we must divide by the reference
+      // edge length. 
       for (int ip = 0; ip < num_ips; ++ip)
       {
         for (int dim = 0; dim < num_dims; ++dim)
         {
           current_density(cell, ip, dim) += ( carrier_density(cell,node1)*edgeCoef1
             - carrier_density(cell,node0)*edgeCoef0 )
-            * (workset.bases[hcurl_basis_index])->basis_vector(cell, edge, ip, dim);
+            * (workset.bases[hcurl_basis_index])->basis_vector(cell, edge, ip, dim)/refEdgeLen;
         }
       }
 

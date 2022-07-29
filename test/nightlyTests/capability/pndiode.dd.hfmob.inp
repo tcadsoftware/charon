@@ -17,6 +17,7 @@ end Physics Block Semiconductor
 
 lattice temperature = 300.0
 assembly workset = 50
+tpetra is on
 concentration scaling = 1.0e16
 
 start Material Block siliconParameter
@@ -27,8 +28,8 @@ start Material Block siliconParameter
       end intrinsic concentration
 
       start Carrier Lifetime block
-	    electron lifetime is constant at 1.0e-11
-      	    hole lifetime is constant at 1.0e-11
+	    electron lifetime is constant = 1.0e-11
+      	    hole lifetime is constant = 1.0e-11
       end Carrier lifetime block
 
       start step junction doping
@@ -36,6 +37,7 @@ start Material Block siliconParameter
 	    donor concentration = 1.0e16
 	    junction location = 0.5
 	    dopant order is PN
+            direction is x
       end step junction doping
 
       start band gap
@@ -70,8 +72,9 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 Initial Conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

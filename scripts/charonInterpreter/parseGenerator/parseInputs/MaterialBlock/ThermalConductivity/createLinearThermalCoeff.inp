@@ -1,0 +1,9 @@
+interpreter name LinearThermalCoeff 
+
+interpreter inputLine (linear thermal coeff) = {coeff} 
+
+interpreter shortHelp {Set the linear thermal coefficient in 1/K for the LinearTempDep thermal conductivity model}
+
+interpreter longHelp {Set the linear thermal coefficient in 1/K for the LinearTempDep thermal conductivity model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Linear Thermal Coefficient,double,{coeff}

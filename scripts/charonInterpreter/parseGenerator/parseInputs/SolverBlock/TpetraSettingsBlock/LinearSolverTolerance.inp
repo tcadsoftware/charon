@@ -1,0 +1,8 @@
+interpreter name LinearSolverTolerance
+
+interpreter shortHelp {Set the linear solver tolerance.}
+interpreter longHelp {Set the linear solver tolerance.}
+
+interpreter inputLine (linear solver tolerance) = {linSolTol}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Linear Solver,Tolerance,double,{linSolTol}

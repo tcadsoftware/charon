@@ -1,0 +1,11 @@
+# netcdf in cde/v2 was built with HDF5
+TPL_ENABLE_HDF5:BOOL=ON
+
+# This should be reset on the command line if needed.
+CMAKE_INSTALL_PREFIX:PATH=""
+
+CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+
+# Just define it. Must be reset via the build script to a valid
+# location
+CMAKE_INSTALL_PREFIX:PATH=""

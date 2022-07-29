@@ -477,11 +477,14 @@ void FreqDomParameters::calc_TimeDomainDOF_InterwovenCoefficients(){
                                           * (this->time_collocation_points)[time] );
       }
 
-      //std::cout << "At time " << std::to_string((this->time_collocation_points)[time]) << " and harmonic " << std::to_string(harmonic);
-      //std::cout << ", cos(2 pi h time) equals " << std::to_string(coeffs[2*harmonic]);
-      //std::cout << " and sin(2 pi h time) equals " << std::to_string(coeffs[2*harmonic+1]) << std::endl;
-
+      if(this->printDebug){
+        std::cout << "At time " << std::to_string((this->time_collocation_points)[time]) << " and harmonic " << std::to_string(harmonic);
+        std::cout << ", cos(2 pi h time) equals " << std::to_string(coeffs[2*harmonic]);
+        std::cout << " and sin(2 pi h time) equals " << std::to_string(coeffs[2*harmonic+1]) << std::endl;
+      }
     }
+    // discard the sin(h0) term
+    coeffs.erase(coeffs.begin()+1);
     cos_sin_coeffs[time] = coeffs;
   }
 
@@ -514,7 +517,7 @@ void FreqDomParameters::calc_CosQuadratureWeightsForHarmonicNumber(){
                                * (this->time_collocation_points)[time] );
         if(harmonic == 0)
           coefficients[time] = (1.0/(double)(this->num_time_collocation_points - 1)) 
-                               * std::cos( 2 * pi * (*(this->remapped_harmonics))[harmonic] 
+	                       * std::cos( 2 * pi * (*(this->remapped_harmonics))[harmonic] 
                                * (this->time_collocation_points)[time] );
       }
     }
@@ -526,6 +529,16 @@ void FreqDomParameters::calc_CosQuadratureWeightsForHarmonicNumber(){
     }
 
     weights[harmonic] = coefficients;
+  }
+
+  if(this->printDebug){
+    std::cout << "Temporal cos quad weights for Fourier transform are: " << std::endl;
+    for(auto wh : weights){
+      for(auto w : wh)
+        std::cout << w << " ";
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
   }
 
   this->cos_quadrature_weights_for_harmonic_number = weights;
@@ -566,6 +579,16 @@ void FreqDomParameters::calc_SinQuadratureWeightsForHarmonicNumber(){
     }
 
     weights[harmonic] = coefficients;
+  }
+
+  if(this->printDebug){
+    std::cout << "Temporal sin quad weights for Fourier transform are: " << std::endl;
+    for(auto wh : weights){
+      for(auto w : wh)
+        std::cout << w << " ";
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
   }
 
   this->sin_quadrature_weights_for_harmonic_number = weights;

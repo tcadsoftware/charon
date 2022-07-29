@@ -1,0 +1,50 @@
+import state file "si-diode_msh.exo"
+
+start output parameters
+      output state file si-diode.nlp.exo
+      output cell average variables in silicon for scalar "Doping,Conduction Band,Valence Band"
+end output parameters
+
+assembly workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling=1.0e19
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is nlp cvfem 
+      material model is siliconParameter
+end Physics block semiconductor
+
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e18
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 1.0 to 2.1 in y	    
+      end uniform doping named Function1
+
+      start uniform doping named Function2
+      	    type is donor
+            concentration = 2.5e16
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 0.0 to 1.0 in y	    
+      end uniform doping named Function2
+end material block siliconParameter
+
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is equilibrium potential
+
+BC is ohmic for anode on silicon fixed at 0.0
+BC is ohmic for cathode on silicon fixed at 0.0
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block

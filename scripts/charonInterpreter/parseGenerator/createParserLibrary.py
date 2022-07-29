@@ -104,11 +104,14 @@ class createParserLibrary:
         #Create a method that will loop through the line parsers and look for keyword match
         fileContents += self.nextLine+self.nextLine
         fileContents += self.indent+"def isThisMyLine(self,tokenizer,line):"+self.nextLine
+        fileContents += self.indent2+"suggestedSyntax = []"+self.nextLine
         fileContents += self.indent2+"for lP in self.lineParsers:"+self.nextLine
-        fileContents += self.indent3+"self.isThisMe = lP.isThisMe(tokenizer,line)"+self.nextLine
+        fileContents += self.indent3+"(self.isThisMe,suggestedSyntaxItem) = lP.isThisMe(tokenizer,line)"+self.nextLine
+        fileContents += self.indent3+"if suggestedSyntaxItem is not \"\":"+self.nextLine
+        fileContents += self.indent4+"suggestedSyntax.append(suggestedSyntaxItem)"+self.nextLine
         fileContents += self.indent3+"if self.isThisMe == True:"+self.nextLine
-        fileContents += self.indent4+"return (True,lP)"+self.nextLine
-        fileContents += self.indent2+"return (False,None)"+self.nextLine
+        fileContents += self.indent4+"return (True,lP,suggestedSyntax)"+self.nextLine
+        fileContents += self.indent2+"return (False,None,suggestedSyntax)"+self.nextLine
 
 
         #Create a method that will loop through the block parsers and look for keyword match

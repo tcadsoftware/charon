@@ -1,0 +1,9 @@
+interpreter name exp4
+
+interpreter inputLine (exp4) = {exp4val}
+
+interpreter shortHelp {The fourth exponent of the temperature ratio for the Arora mobility model.}
+
+interpreter longHelp {The fourth exponent of the temperature ratio for the Arora mobility model.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,exp4,double,{exp4val}

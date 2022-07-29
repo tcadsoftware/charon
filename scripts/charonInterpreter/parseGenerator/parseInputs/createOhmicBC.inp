@@ -1,12 +1,11 @@
 
-
 interpreter name OhmicBC
 
-interpreter inputLine (BC is ohmic for) {sidesetID} on {geometryBlock} [(fixed at) {potential}[ (swept from) {potential1} to {potential2}]]
+interpreter inputLine (BC is ohmic for) {sidesetID} on {geometryBlock} [(fixed at) {potential} [ (swept from) {potential1} to {potential2} [ (with fermi pinning and contact ion density) = {ionDensity} [(with initial voltage) = {initialVoltage} ] ] ] ]
 
-interpreter shortHelp {Specify the potential on a contact}
+interpreter shortHelp {Specify the voltage on an Ohmic contact}
 
-interpreter longHelp {Specify the potential on a contact. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> potential is the value in volts}
+interpreter longHelp {Specify the potential on a contact. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> potential is the value in volts <> potential1 is the beginning voltage in a LOCA sweep <> potential2 is the ending voltage in a LOCA sweep <> initialVoltage is an additional voltage added to a LOCA sweep <> ionDensity is the ion density in cm^(-3) used to pin the Fermi level in ddion or ddionlatt simulations.}  
 
 xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
 xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
@@ -14,10 +13,15 @@ xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,s
 xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
 xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Ohmic Contact
 
+# Add the BC parameters for the ION_DENSITY
+xmlOptional (with fermi pinning and contact ion density) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Fermi Level Pinning,bool,true
+xmlOptional (with fermi pinning and contact ion density) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Contact Ion Density,double,{ionDensity}
+
 xmlOptional (fixed at) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Voltage,double,{potential}
 
 # Set the data parameter to a string
 xmlOptional (swept from) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Varying Voltage,string,Parameter
+xmlOptional (with initial voltage) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Voltage,double,{initialVoltage}
 
 # Modify the solver type from NOX to LOCA
 xmlOptional (swept from) Charon->Solution Control,Piro Solver,string,LOCA
@@ -38,4 +42,6 @@ xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Number,in
 xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Varying Voltage
 xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,{potential1}
 xmlOptional (swept from) use Modifier 0
+
+
 

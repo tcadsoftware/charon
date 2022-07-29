@@ -1,0 +1,14 @@
+
+interpreter name B2BTunneling
+
+interpreter inputLine (Band2Band Tunneling) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on Band2Band Tunneling}
+
+interpreter longHelp {Turn on Band2Band Tunneling <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Band2Band Tunneling,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Band2Band Tunneling,string,Off
+
+

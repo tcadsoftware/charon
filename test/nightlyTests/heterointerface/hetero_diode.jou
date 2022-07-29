@@ -1,0 +1,122 @@
+graphics mode wireframe
+
+################################################
+# Geometry definition
+################################################
+
+# The depth isn't used so use a value that looks reasonable visually
+#{zsize = 0.5}
+
+#{nDX = 1.0}
+#{nDX_scr = 0.3}
+#{nDY = 1.0}
+#{pDX = 1.0}
+#{pDX_scr = 0.1}
+#{pDY = 1.0}
+
+
+################################################
+# Geometry creation
+################################################
+
+# n bulk region
+create brick x {nDX-nDX_scr} y {nDY} z {zsize}
+volume 1 rename "n_bulk"
+
+# n scr region
+create brick x {nDX_scr} y {nDY} z {zsize}
+volume 2 rename "n_scr"
+move vertex 12 location vertex 1
+
+# p scr region
+create brick x {pDX_scr} y {pDY} z {zsize}
+volume 3 rename "p_scr"
+move vertex 20 location vertex 9
+
+# p bulk region
+create brick x {pDX-pDX_scr} y {pDY} z {zsize}
+volume 4 rename "p_bulk"
+move vertex 28 location vertex 17
+
+imprint all 
+merge all
+
+# Move everything to positive coordinate values
+move vertex 4 location x 0 y 0 z 0 include_merged
+
+
+#######################################
+# Contacts and heterojunction
+#######################################
+
+sideset 1 curve 3
+sideset 1 name "cathode"
+
+sideset 2 curve 37
+sideset 2 name "anode"
+
+# Panzer requires a one-sided sideset for a heterojunction interface
+#sideset 3 curve 13
+#sideset 3 name "ebjunction"
+
+sideset 3 curve 13 wrt surface 7
+sideset 3 name "ebjunction"
+
+sideset 4 curve 13 wrt surface 7
+sideset 4 name "ebjunction_dup"
+
+
+################################################
+## Mesh definition and creation
+################################################
+
+#{nDX_fine = 0.002}
+#{nDX_coarse = 0.1}
+#{nDY_coarse = 1.0}
+#{pDX_fine = 0.002}
+#{pDX_coarse = 0.1}
+#{pDY_coarse = 1.0}
+
+
+# n bulk region
+curve 1 3 interval size {nDY_coarse}
+curve 2 scheme bias fine size {nDX_fine} coarse size {nDX_coarse} start vertex 2
+curve 4 scheme bias fine size {nDX_fine} coarse size {nDX_coarse} start vertex 1
+surface 1 scheme map
+mesh surface 1
+
+# n scr region
+curve 14 16 interval size {nDX_fine}
+curve 13 1 interval size {nDY_coarse}
+surface 7 scheme map
+mesh surface 7
+
+# p scr region
+curve 13 25 interval size {pDY_coarse}
+curve 26 28 interval size {pDX_fine}
+surface 13 scheme map
+mesh surface 13
+
+# p bulk region
+curve 25 37 interval size {pDY_coarse}
+curve 38 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 18
+curve 40 scheme bias fine size {pDX_fine} coarse size {pDX_coarse} start vertex 17
+surface 19 scheme map
+mesh surface 19
+
+
+
+
+################################################
+# Element blocks
+################################################
+
+block 1 surface 1 7
+block 1 name "n-ingap"
+block 1 elem type quad4
+
+block 2 surface 19 13
+block 2 name "p-gaas"
+block 2 elem type quad4
+
+export mesh "hetero_diode.exo" dimension 2 overwrite

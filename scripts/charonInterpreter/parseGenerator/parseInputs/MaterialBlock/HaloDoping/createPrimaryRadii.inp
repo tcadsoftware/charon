@@ -1,0 +1,16 @@
+
+
+interpreter name PrimaryHaloRadii
+
+interpreter inputLine (Halo radius ) [ (R1) = {radius} [ (R2) = {radius} ]]
+
+interpreter shortHelp {Set the length of the primary radii of the halo in the r1 and r2 directions}
+
+interpreter longHelp {Set the length of the primary radii of the halo in the r1 and r2 directions <> {radius} is the length of the halo radius in the identified direction}
+
+xmlOptional (R1) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},R1,double,{radius}
+
+xmlOptional (R2) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},R2,double,{radius}
+
+
+

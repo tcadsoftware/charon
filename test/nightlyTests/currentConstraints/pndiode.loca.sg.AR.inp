@@ -1,0 +1,57 @@
+
+Import State File pndiode.sg.exo at index 1
+
+tpetra is on
+
+start output parameters
+      Output State File result.pndiode.loca.sg.AR.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      Radiative Recombination is off
+      Auger Recombination is off
+      SRH Recombination is on
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start arora mobility
+        start electron parameters
+        end
+
+        start hole parameters
+        end
+      end
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+      start Carrier Lifetime block
+            electron lifetime is concentration dependent
+            hole lifetime is concentration dependent
+      end Carrier Lifetime block
+end Material Block Silicon Parameter
+
+BC is resistor for anode on silicon with resistor 10 fixed at 0.6 and initial voltage 0.1
+BC is ohmic for cathode on silicon fixed at 0.0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+  start tpetra block
+    problem type is householder constrained steady state
+    verbosity level is high
+  end
+end solver block
+
+lattice temperature = 300
+assembly workset = 50

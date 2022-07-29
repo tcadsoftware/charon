@@ -3,5 +3,5 @@ TIME STEPS absolute 1.0e-14
 ELEMENT VARIABLES relative 1.0e-12
 NODAL VARIABLES relative 1.0e-11
 	ELECTRIC_POTENTIAL
-	ELECTRON_DENSITY relative 5.0e-7 floor 1.1e-13
-	HOLE_DENSITY relative 5.0e-7 floor 1.0e-13
+	ELECTRON_DENSITY relative 1.0e-4 floor 1.5e-13
+	HOLE_DENSITY relative 1.0e-4 floor 1.5e-13

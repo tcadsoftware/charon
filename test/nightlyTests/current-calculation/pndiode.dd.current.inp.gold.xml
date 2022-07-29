@@ -6,14 +6,18 @@
       <Parameter name="File Name" type="string" value="result_pndiode_equ.exo" />
     </ParameterList>
   </ParameterList>
+  <ParameterList name="Assembly" >
+    <Parameter name="Workset Size" type="int" value="50" />
+  </ParameterList>
   <ParameterList name="Closure Models" >
-    <Parameter name="Concentration Scaling" type="double" value="1e16" />
+    <Parameter name="Lattice Temperature" type="double" value="300.0" />
+    <Parameter name="Concentration Scaling" type="double" value="1.0e16" />
     <ParameterList name="siliconParameter" >
       <Parameter name="Material Name" type="string" value="Silicon" />
       <ParameterList name="Doping" >
         <Parameter name="Value" type="string" value="Step Junction" />
-        <Parameter name="Acceptor Value" type="double" value="1.0e16" />
-        <Parameter name="Donor Value" type="double" value="1.0e16" />
+        <Parameter name="Acceptor Value" type="double" value="1e16" />
+        <Parameter name="Donor Value" type="double" value="1e16" />
         <Parameter name="Junction Location" type="double" value="0.5" />
         <Parameter name="Configuration" type="string" value="PN" />
         <Parameter name="Direction" type="string" value="X" />
@@ -22,10 +26,10 @@
         <Parameter name="Value" type="double" value="11.9" />
       </ParameterList>
       <ParameterList name="Electron Mobility" >
-        <Parameter name="Value" type="double" value="1000.0" />
+        <Parameter name="Value" type="double" value="1000" />
       </ParameterList>
       <ParameterList name="Hole Mobility" >
-        <Parameter name="Value" type="double" value="500.0" />
+        <Parameter name="Value" type="double" value="500" />
       </ParameterList>
     </ParameterList>
   </ParameterList>
@@ -112,6 +116,9 @@
       </ParameterList>
     </ParameterList>
   </ParameterList>
+  <ParameterList name="Output" >
+    <Parameter name="File Name" type="string" value="result_pndiode_dd_hocurr.exo" />
+  </ParameterList>
   <ParameterList name="Block ID to Physics ID Mapping" >
     <Parameter name="silicon" type="string" value="Semiconductor" />
   </ParameterList>
@@ -137,19 +144,6 @@
       </ParameterList>
     </ParameterList>
   </ParameterList>
-  <ParameterList name="Initial Conditions" >
-    <ParameterList name="silicon" >
-      <ParameterList name="ELECTRIC_POTENTIAL" >
-        <Parameter name="Value" type="string" value="Exodus File" />
-      </ParameterList>
-      <ParameterList name="ELECTRON_DENSITY" >
-        <Parameter name="Value" type="string" value="Exodus File" />
-      </ParameterList>
-      <ParameterList name="HOLE_DENSITY" >
-        <Parameter name="Value" type="string" value="Exodus File" />
-      </ParameterList>
-    </ParameterList>
-  </ParameterList>
   <ParameterList name="Boundary Conditions" >
     <ParameterList>
       <Parameter name="Type" type="string" value="Dirichlet" />
@@ -158,7 +152,7 @@
       <Parameter name="Equation Set Name" type="string" value="ALL_DOFS" />
       <Parameter name="Strategy" type="string" value="Ohmic Contact" />
       <ParameterList name="Data" >
-        <Parameter name="Voltage" type="double" value="0.6" />
+        <Parameter name="Voltage" type="double" value="0.7" />
       </ParameterList>
     </ParameterList>
     <ParameterList>
@@ -172,7 +166,17 @@
       </ParameterList>
     </ParameterList>
   </ParameterList>
-  <ParameterList name="Output" >
-    <Parameter name="File Name" type="string" value="result_pndiode_dd_current.exo" />
+  <ParameterList name="Initial Conditions" >
+    <ParameterList name="silicon" >
+      <ParameterList name="ELECTRIC_POTENTIAL" >
+        <Parameter name="Value" type="string" value="Exodus File" />
+      </ParameterList>
+      <ParameterList name="ELECTRON_DENSITY" >
+        <Parameter name="Value" type="string" value="Exodus File" />
+      </ParameterList>
+      <ParameterList name="HOLE_DENSITY" >
+        <Parameter name="Value" type="string" value="Exodus File" />
+      </ParameterList>
+    </ParameterList>
   </ParameterList>
 </ParameterList>

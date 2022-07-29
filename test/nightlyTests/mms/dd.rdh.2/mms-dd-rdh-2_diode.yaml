@@ -1,105 +1,106 @@
 %YAML 1.1
 ---
 ANONYMOUS:
-  Mesh: 
+  Mesh:
     Source: Exodus File
-    Exodus File: 
+    Exodus File:
       File Name: mms-dd-rdh-2_diode.gen
       Restart Index: 1
-  Block ID to Physics ID Mapping: 
+  Block ID to Physics ID Mapping:
     silicon: Semiconductor
-  Assembly: 
+  Assembly:
     Workset Size: 50
-  Physics Blocks: 
-    Semiconductor: 
-      child0: 
+    Use Tpetra: true
+  Physics Blocks:
+    Semiconductor:
+      child0:
         Type: Drift Diffusion
         Basis Type: HGrad
         Basis Order: 1
         Integration Order: 2
         Model ID: Silicon Parameter
         Prefix: ''
-        Options: 
+        Options:
           Solve Electron: 'True'
           Solve Hole: 'True'
-  Closure Models: 
+  Closure Models:
     Lattice Temperature: 3.00000000000000000e+02
     Concentration Scaling: 1.00000000000000000e+17
-    Silicon Parameter: 
+    Silicon Parameter:
       Material Name: Silicon
-      Relative Permittivity: 
+      Relative Permittivity:
         Value: 1.18000000000000007e+01
-      Electron Mobility: 
+      Electron Mobility:
         Value: Arora
-      Hole Mobility: 
+      Hole Mobility:
         Value: Arora
-      Doping: 
+      Doping:
         Value: Function
-        Function1: 
+        Function1:
           Function Type: MMS_RDH_2
-    Global MMS Parameters: 
-      Global Statistics: 
+    Global MMS Parameters:
+      Global Statistics:
         Value: 'ELECTRIC_POTENTIAL,ELECTRON_DENSITY,HOLE_DENSITY'
-      Analytic Solution: 
+      Analytic Solution:
         Value: MMS_DD_RDH_2
-      Analytic Comparison: 
+      Analytic Comparison:
         Value: 'ELECTRIC_POTENTIAL,ELECTRON_DENSITY,HOLE_DENSITY'
-      'Analytic Comparison: Relative Error': 
+      'Analytic Comparison: Relative Error':
         Value: 'ELECTRIC_POTENTIAL,ELECTRON_DENSITY,HOLE_DENSITY'
         Use Absolute: true
-      'Analytic Comparison: L2 Error': 
+      'Analytic Comparison: L2 Error':
         Value: 'ELECTRIC_POTENTIAL,ELECTRON_DENSITY,HOLE_DENSITY'
-    Electron Mobility: 
+    Electron Mobility:
       Value: Arora
-    Hole Mobility: 
+    Hole Mobility:
       Value: Arora
-  User Data: 
+  User Data:
     function data one: { }
-  Boundary Conditions: 
-    child0: 
+  Boundary Conditions:
+    child0:
       Type: Dirichlet
       Sideset ID: anode
       Element Block ID: silicon
       Equation Set Name: ALL_DOF
       Strategy: MMS
-      Data: 
+      Data:
         MMS Type: MMS_RDH_2
-    child1: 
+    child1:
       Type: Dirichlet
       Sideset ID: cathode
       Element Block ID: silicon
       Equation Set Name: ALL_DOF
       Strategy: MMS
-      Data: 
+      Data:
         MMS Type: MMS_RDH_2
-  Initial Conditions: 
-    Default: 
-      ELECTRIC_POTENTIAL: 
+  Initial Conditions:
+    Default:
+      ELECTRIC_POTENTIAL:
         Value: Exodus File
-      ELECTRON_DENSITY: 
+      ELECTRON_DENSITY:
         Value: 0.00000000000000000e+00
-      HOLE_DENSITY: 
+      HOLE_DENSITY:
         Value: 0.00000000000000000e+00
-  Output: 
+  Output:
     Unscale Variables: true
     File Name: mms-dd-rdh-2_solution.exo
-    Cell Average Quantities: 
+    Cell Average Quantities:
       silicon: Doping
-    Nodal Quantities: 
+    Nodal Quantities:
       silicon: 'ELECTRIC_POTENTIAL, ELECTRON_DENSITY, HOLE_DENSITY'
-  Options: 
+  Options:
     Write Volume Assembly Graphs: false
     Volume Assembly Graph Prefix: charon_
-  Solution Control: 
+  Solution Control:
     Piro Solver: NOX
     Compute Sensitivities: false
     Jacobian Operator: Have Jacobian
-    LOCA: 
+    LOCA:
       Bifurcation: { }
       Constraints: { }
-      Predictor: 
+      Predictor:
         Method: Constant
-      Stepper: 
+      Stepper:
         Continuation Method: Natural
         Initial Value: 1.00000000000000000e+00
         Continuation Parameter: Parameter 0
@@ -107,7 +108,7 @@ ANONYMOUS:
         Max Value: 1.22500000000000000e+01
         Min Value: 5.00000000000000000e-01
         Compute Eigenvalues: true
-        Eigensolver: 
+        Eigensolver:
           Method: Anasazi
           Operator: Shift-Invert
           Num Blocks: 3
@@ -115,33 +116,33 @@ ANONYMOUS:
           Block Size: 1
           Maximum Restarts: 0
           Shift: 1.00000000000000000e+00
-      Step Size: 
+      Step Size:
         Initial Step Size: 5.00000000000000000e-01
         Aggressiveness: 2.00000000000000000e+00
-    NOX: 
-      Direction: 
+    NOX:
+      Direction:
         Method: Newton
-        Newton: 
+        Newton:
           Forcing Term Method: Constant
           Rescue Bad Newton Solve: true
-          Stratimikos Linear Solver: 
+          Stratimikos Linear Solver:
             NOX Stratimikos Options: { }
-            Stratimikos: 
+            Stratimikos:
               Linear Solver Type: AztecOO
-              Linear Solver Types: 
-                AztecOO: 
-                  Forward Solve: 
-                    AztecOO Settings: 
+              Linear Solver Types:
+                AztecOO:
+                  Forward Solve:
+                    AztecOO Settings:
                       Aztec Solver: GMRES
                       Convergence Test: r0
                       Size of Krylov Subspace: 200
                       Output Frequency: 10
                     Max Iterations: 300
                     Tolerance: 1.00000000000000008e-05
-                Belos: 
+                Belos:
                   Solver Type: Block GMRES
-                  Solver Types: 
-                    Block GMRES: 
+                  Solver Types:
+                    Block GMRES:
                       Convergence Tolerance: 1.00000000000000008e-05
                       Output Frequency: 10
                       Output Style: 1
@@ -150,24 +151,30 @@ ANONYMOUS:
                       Block Size: 1
                       Num Blocks: 20
                       Flexible Gmres: false
-              Preconditioner Type: Ifpack
-              Preconditioner Types: 
-                Ifpack: 
+              Preconditioner Type: Ifpack2
+              Preconditioner Types:
+
+                Ifpack2:
+                  Prec Type: RILUK
+                  Ifpack2 Settings:
+                    'fact: iluk level-of-fill': 1
+                    
+                Ifpack:
                   Overlap: 1
                   Prec Type: ILU
-                  Ifpack Settings: 
+                  Ifpack Settings:
                     'fact: drop tolerance': 0.00000000000000000e+00
                     'fact: ilut level-of-fill': 1.00000000000000000e+00
                     'fact: level-of-fill': 1
-      Line Search: 
-        Full Step: 
+      Line Search:
+        Full Step:
           Full Step: 1.00000000000000000e+00
         Method: Full Step
       Nonlinear Solver: Line Search Based
-      Printing: 
+      Printing:
         Output Precision: 3
         Output Processor: 0
-        Output Information: 
+        Output Information:
           Error: true
           Warning: true
           Outer Iteration: true
@@ -177,39 +184,39 @@ ANONYMOUS:
           Stepper Iteration: true
           Stepper Details: true
           Stepper Parameters: true
-      Solver Options: 
+      Solver Options:
         Status Test Check Type: Minimal
-      Status Tests: 
+      Status Tests:
         Test Type: Combo
         Combo Type: OR
         Number of Tests: 2
-        Test 0: 
+        Test 0:
           Test Type: Combo
           Combo Type: AND
           Number of Tests: 2
-          Test 0: 
+          Test 0:
             Test Type: NormF
             Tolerance: 1.00000000000000008e-05
-          Test 1: 
+          Test 1:
             Test Type: NormWRMS
             Tolerance: 1.00000000000000000e+00
             Relative Tolerance: 1.00000000000000004e-10
             Absolute Tolerance: 9.99999999999999979e-17
             alpha: 1.00000000000000000e+00
             beta: 5.00000000000000000e-01
-        Test 1: 
+        Test 1:
           Test Type: MaxIters
           Maximum Iterations: 15
-    Rythmos: 
+    Rythmos:
       Num Time Steps: 10
       Final Time: 1.00000000000000006e-01
       Stepper Type: Backward Euler
-      Rythmos Stepper: 
-        VerboseObject: 
+      Rythmos Stepper:
+        VerboseObject:
           Verbosity Level: medium
       Stratimikos: { }
       Rythmos Integration Control: { }
-      Rythmos Integrator: 
-        VerboseObject: 
+      Rythmos Integrator:
+        VerboseObject:
           Verbosity Level: medium
 ...

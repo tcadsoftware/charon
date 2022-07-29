@@ -1,14 +1,35 @@
-# Copy build scripts from last checkout. This means changes to the
-# build scripts will lag by a day but there is no easy way to just get
-# a single file from a git repo.
+# Edit this file to introduce tasks to be run by cron.
+#
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+#
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').#
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command
 00 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/ctest_regression.cmake /home/glhenni/Nightly-Testing/Charon2/scripts/
+
 02 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/verne/nightly_cron_driver.sh /home/glhenni/Nightly-Testing/Charon2/scripts/
 04 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/verne/nightly_cron_driver.intel.sh /home/glhenni/Nightly-Testing/Charon2/scripts/
+05 05  *  *  *  cp /home/glhenni/Nightly-Testing/Charon2/tcad-charon/src/cmake/ctest/machines/verne/nightly_cron_driver.gnuX.sh /home/glhenni/Nightly-Testing/Charon2/scripts/
 
 # Update TriBITS
 00 04  *  *  *  cd $HOME/Projects/Charon2/TriBITS;git pull > /tmp/tribits-update-out.txt 2>&1
 
-# Run an OPT (intel and gnu) and COV (gnu) test every day
+# Run an OPT (intel and gnu) and DBG (gnu) test every day
 00 03  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.sh COV > /home/glhenni/Nightly-Testing/Charon2/nightly-cov.out 2>&1
-00 02  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.sh OPT > /home/glhenni/Nightly-Testing/Charon2/nightly-opt.out 2>&1
-00 01  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.intel.sh OPT > /home/glhenni/Nightly-Testing/Charon2/nightly-opt.intel.out 2>&1
+00 20  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.gnuX.sh OPT > /home/glhenni/Nightly-Testing/Charon2/nightly-opt.gnuX.out 2>&1
+00 23  *  *  *  /home/glhenni/Nightly-Testing/Charon2/scripts/nightly_cron_driver.intel.sh -n OPT > /home/glhenni/Nightly-Testing/Charon2/nightly-opt.intel1.out 2>&1

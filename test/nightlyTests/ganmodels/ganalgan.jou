@@ -1,0 +1,18 @@
+create brick x 0.5 y 0.5 z 0.1
+move vertex 4 location 0 0 0 
+webcut volume 1 with plane yplane offset 0.25
+merge all
+sideset 1 curve 2
+sideset 1 name "gate"
+sideset 2 curve 4
+sideset 2 name "substrate"
+surface 8 interval 50
+surface 15 interval 50
+mesh surface 8 
+mesh surface 15
+block 1 surface 15
+block 2 surface 8
+block 1 name "algan"
+block 2 name "gan"
+block 1 2 element type QUAD4
+export mesh "ganalgan.gen" dimension 2 overwrite

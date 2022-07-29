@@ -61,13 +61,12 @@ if [ "$#" -eq "1" ]
 then
   if [ "$1" = "heavy" ]
   then
-    BLDSCRIPTARG="${BLDSCRIPTARG} --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
     SITEDESC="skybridge heavy"
     TRACK="Heavy"
     LARG="^heavy$"
   elif [ "$1" = "xyce" ]
   then
-    BLDSCRIPTARG="${BLDSCRIPTARG} -f skybridge-with-xyce-tri-libs.opts --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
+    BLDSCRIPTARG="${BLDSCRIPTARG} -f skybridge-with-xyce-tri-libs.opts"
     SITEDESC="skybridge xyce coupled heavy"
     TRACK="XyceCoupledHeavy"
     LARG="^xycecoupledheavy$"
@@ -186,7 +185,6 @@ then
 
   # set up for a coupled build
   BLDSCRIPTARG="-f skybridge.opts -f skybridge-with-xyce-tri-libs.opts -f skybridge-xyce-cluster.opts"
-  BLDSCRIPTARG="${BLDSCRIPTARG} --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
 
   # Reset the install directory to a globally accessible location for
   # general use to be used by a separate jenkins job later. This

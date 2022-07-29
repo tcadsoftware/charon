@@ -1,0 +1,5 @@
+# Be sure to specify "-b d" as an argument to the python build script
+CMAKE_CXX_FLAGS="--coverage"
+CMAKE_C_FLAGS="--coverage"
+
+tcad-charon_ENABLE_COVERAGE_TESTING:BOOL=ON

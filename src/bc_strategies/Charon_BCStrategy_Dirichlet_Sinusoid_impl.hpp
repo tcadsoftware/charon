@@ -11,6 +11,10 @@
 
 #include "Panzer_IntegrationRule.hpp"
 #include "Panzer_PureBasis.hpp"
+#include "Panzer_ScalarParameterEntry.hpp"
+#include "Panzer_ParameterLibraryUtilities.hpp"
+#include "Panzer_GlobalData.hpp"
+
 #include "Charon_Names.hpp"
 #include "Charon_Scaling_Parameters.hpp"
 
@@ -31,6 +35,7 @@ BCStrategy_Dirichlet_Sinusoid(const panzer::BC& bc, const Teuchos::RCP<panzer::G
   isLatTDof = false;
   isIonDof = false;
   isFermiPin = false;
+  ionDens = 0.0; 
 }
 
 
@@ -63,6 +68,9 @@ setup(const panzer::PhysicsBlock& side_pb,
   // check if Fermi Level Pinning is turned on
   if ( dataPList->isParameter("Fermi Level Pinning") )
     isFermiPin = dataPList->template get<bool>("Fermi Level Pinning");
+
+  if (isFermiPin) // Ion density is pinned at a given value on a contact
+    ionDens = dataPList->template get<double>("Contact Ion Density");
 
   RCP<const charon::Names> names = rcp(new charon::Names(1,prefix,discfields,discsuffix));
   const charon::Names& n = *names;
@@ -214,6 +222,10 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   // get scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams = user_data.get<Teuchos::RCP<charon::Scaling_Parameters> >("Scaling Parameter Object");
 
+  // get the Data parameter list
+  RCP<const Teuchos::ParameterList> dataPList = this->m_bc.params();
+  TEUCHOS_ASSERT(!Teuchos::is_null(dataPList));
+
   ParameterList p("BC Dirichlet Sinusoidal");
   p.set("Prefix", "Target_");
   p.set("Field Library", pb.getFieldLibraryBase());
@@ -222,9 +234,25 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   p.set("Amplitude 1", this->m_bc.params()->template get<double>("Amplitude 1"));
   p.set("Frequency 1", this->m_bc.params()->template get<double>("Frequency 1"));
   p.set("Phase Shift 1", this->m_bc.params()->template get<double>("Phase Shift 1"));
-  p.set("Amplitude 2", this->m_bc.params()->template get<double>("Amplitude 2"));
-  p.set("Frequency 2", this->m_bc.params()->template get<double>("Frequency 2"));
-  p.set("Phase Shift 2", this->m_bc.params()->template get<double>("Phase Shift 2"));
+  p.set("Sideset ID",this->m_bc.sidesetID());
+ 
+  //Insert the paramaeter library
+  p.set<RCP<panzer::ParamLib> >("ParamLib", this->getGlobalData()->pl);
+  
+ // It should be optional to specify the second sinusoidal voltage
+  if (dataPList->isParameter("Amplitude 2"))
+    p.set("Amplitude 2", this->m_bc.params()->template get<double>("Amplitude 2"));
+  else
+    p.set("Amplitude 2", 0.0);
+  if (dataPList->isParameter("Frequency 2"))
+    p.set("Frequency 2", this->m_bc.params()->template get<double>("Frequency 2"));
+  else
+    p.set("Frequency 2", 0.0);
+  if (dataPList->isParameter("Phase Shift 2"))  
+    p.set("Phase Shift 2", this->m_bc.params()->template get<double>("Phase Shift 2"));
+  else
+    p.set("Phase Shift 2", 0.0); 
+    
   p.set<bool>("Fermi Dirac", bUseFD);
   p.set("Scaling Parameters", scaleParams);
   p.sublist("Incomplete Ionization") = incmpl_ioniz;
@@ -235,6 +263,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set<bool>("Solve Ion", isIonDof);
     p.set<int>("Ion Charge", ionCharge);
     p.set<bool>("Fermi Level Pinning", isFermiPin);
+    p.set<double>("Contact Ion Density", ionDens); 
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::DDLatticeBC_Sinusoid<EvalT,panzer::Traits>(p));

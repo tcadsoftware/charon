@@ -1,0 +1,50 @@
+
+Import State File mos.exo
+
+start output parameters
+      Output State File nmos.nlp.exo
+end output parameters
+
+concentration scaling=1e15
+lattice temperature=300
+
+start Physics Block channelSemiconductor
+      geometry block is channel
+      standard discretization type is nlp
+      material model is channelSiliconParameter
+end Physics Block Semiconductor
+
+start Physics Block insulator
+      geometry block is gateoxide
+      standard discretization type is laplace gfem
+      material model is SiO2Parameter
+end Physics Block insulator
+
+start Material Block channelSiliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start uniform doping named Function1
+          Concentration = 1e17
+          spatial range is -1 to 1 in x
+          spatial range is -1 to 1 in y
+          Type is donor
+      end uniform doping named Function1
+end Material Block siliconParameter
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in gateoxide       is uninitialized
+initial conditions for ELECTRIC_POTENTIAL in channel         is uninitialized
+
+BC is ohmic                for body on channel                             fixed at 0
+BC is contact on insulator for gate on gateoxide with work function 4.3111 fixed at 0
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block
+

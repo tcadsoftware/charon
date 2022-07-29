@@ -124,6 +124,22 @@ responseIndex() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  ConstraintBase::responseName() (Get)
+//
+///////////////////////////////////////////////////////////////////////////////
+std::string
+charon::CurrentConstraintList::ConstraintBase::
+responseName() const
+{
+  // The naming scheme is set in addCurrentResponse() in
+  // Charon_Main.cpp. This currently does not work with frequency
+  // domain analysis type.
+  return std::string(this->sidesetId() + "_" + this->elementBlockId() +
+                     + "_Current");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  ConstraintBase::parameterIndex() (Set)
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,6 +161,21 @@ parameterIndex() const
 {
   return parameterIndex_;
 } // end of ConstraintBase::parameterIndex() (Get)
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  ConstraintBase::parameterName() (Get)
+//
+///////////////////////////////////////////////////////////////////////////////
+std::string
+charon::CurrentConstraintList::ConstraintBase::
+parameterName() const
+{
+  // The naming scheme for constraint params comes from the method
+  // buildParameters() in Charon_Main.cpp. If the naming scheme
+  // changes buildParameters(), it should be updated here as well.
+  return std::string(this->sidesetId() + this->type() + "Voltage");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -185,6 +216,21 @@ currentValueImpl() const
     "currentValue() out of a non-Constant Current constraint.")
   return numeric_limits<double>::quiet_NaN();
 } // end of ConstraintBase::currentValueImpl()
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  ConstraintBase::currentValueUpdateImpl()
+//
+///////////////////////////////////////////////////////////////////////////////
+void
+charon::CurrentConstraintList::ConstraintBase::
+currentValueUpdateImpl(double newCurrentValue) const
+{
+  using std::logic_error;
+  using std::numeric_limits;
+  TEUCHOS_TEST_FOR_EXCEPTION(true, logic_error, "Error:  Trying to update the "  \
+    "currentValue() for a non-Constant Current constraint.")
+} // end of ConstraintBase::currentValueUpdateImpl()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -312,6 +358,18 @@ currentValueImpl() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  ConstantCurrent::currentValueUpdateImpl()
+//
+///////////////////////////////////////////////////////////////////////////////
+void
+charon::CurrentConstraintList::ConstantCurrent::
+currentValueUpdateImpl(double newCurrentValue) const
+{
+  currentValue_ = newCurrentValue;
+} // end of ConstantCurrent::currentValueUpdateImpl()
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  ConstantCurrent::printImpl()
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -423,8 +481,9 @@ printImpl(
 //
 ///////////////////////////////////////////////////////////////////////////////
 charon::CurrentConstraintList::
-CurrentConstraintList()
+CurrentConstraintList(bool mixedMode /* = false */)
   :
+  mixedMode_(mixedMode),
   numConstantCurrents_(0),
   numResistorContacts_(0)
 {
@@ -436,10 +495,10 @@ CurrentConstraintList()
 //
 ///////////////////////////////////////////////////////////////////////////////
 charon::CurrentConstraintList::
-CurrentConstraintList(
-  const CurrentConstraintList& original)
+CurrentConstraintList(const CurrentConstraintList& original)
   :
   constraints_(original.constraints_),
+  mixedMode_(original.mixedMode_),
   numConstantCurrents_(original.numConstantCurrents_),
   numResistorContacts_(original.numResistorContacts_)
 {
@@ -654,7 +713,7 @@ addConstantCurrent(
 {
   using std::logic_error;
   using Teuchos::rcp;
-  if (hasConstantCurrent())
+  if (hasConstantCurrent() && !mixedMode_)
   {
     TEUCHOS_TEST_FOR_EXCEPTION(true, logic_error, "Error:  Attempting to "    \
       "add a second Constant Current constraint.  Only one Constant Current " \

@@ -1,0 +1,13 @@
+
+
+interpreter name xMoleFraction
+
+interpreter inputLine (uniform x mole fraction) = {moleVal}
+
+interpreter shortHelp {Set the magnitude of the x mole fraction}
+
+interpreter longHelp {Set the magnitude of the x mole fraction}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},xMoleFrac Value,double,{moleVal}
+
+

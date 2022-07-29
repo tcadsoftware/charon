@@ -11,6 +11,7 @@ start physics block Semiconductor
 end physics block
 
 assembly workset = 50
+tpetra is on
 
 lattice temperature = 300.15
 
@@ -62,7 +63,8 @@ initial conditions for ELECTRON_DENSITY in silicon is Exodus File
 initial conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-  use solver pack 2
-  nonlinear solver tolerance = 1.0e-8
-  max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end

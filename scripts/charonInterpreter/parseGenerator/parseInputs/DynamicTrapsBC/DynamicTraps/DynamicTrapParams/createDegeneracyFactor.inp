@@ -1,0 +1,8 @@
+interpreter name DegeneracyFactor
+
+interpreter inputLine (degeneracy factor) = {gcoef}
+
+interpreter shortHelp {The trap degeneracy factor}
+interpreter longHelp {The trap degeneracy factor. Should be always positive.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Degeneracy Factor,double,{gcoef}

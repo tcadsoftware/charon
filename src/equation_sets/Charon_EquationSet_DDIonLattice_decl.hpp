@@ -56,7 +56,8 @@ namespace charon {
     std::string solveHole;
     std::string solveIon;
 
-    std::string stab_scheme;
+    // std::string stab_scheme;
+    std::string discMethod;
     std::string tau_e_type;
     std::string tau_h_type;
     std::string tau_ion_type;

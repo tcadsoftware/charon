@@ -1,0 +1,7 @@
+COORDINATES absolute 1.0e-14
+
+TIME STEPS absolute 1e-3
+GLOBAL VARIABLES 
+	 ContinuationParameter relative 1.0e-3
+	 drain_silicon_Current relative 3.2e-3 floor 3.0e-08
+	 source_silicon_Current relative 3.2e-3 floor 3.0e-08

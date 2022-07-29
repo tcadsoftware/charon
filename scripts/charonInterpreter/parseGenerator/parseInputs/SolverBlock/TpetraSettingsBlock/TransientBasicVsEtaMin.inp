@@ -1,0 +1,8 @@
+interpreter name TransientBasicVsEtaMin
+
+interpreter shortHelp {Parameter eta_min for Tempus BasicVS time step control strategy}
+interpreter longHelp {Parameter eta_min for Tempus BasicVS time step control strategy}
+
+interpreter inputLine (basicvs eta min) = {etaMin}
+
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Minimum Value Monitoring Function,double,{etaMin} Priority 5

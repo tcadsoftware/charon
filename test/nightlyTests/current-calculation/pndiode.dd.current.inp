@@ -1,44 +1,51 @@
-import state file result_pndiode_equ.exo at index 1
 
-start physics block Semiconductor
-  geometry block is silicon
-  standard discretization type is drift diffusion gfem
-  material model is siliconParameter
-  Radiative Recombination is off
-  Auger Recombination is off
-  SRH Recombination is off
-end physics block
-
-
-start material block siliconParameter
-  material name is Silicon
-  relative permittivity = 11.9
-
-  fixed mobility for electrons is 1000.0
-  fixed mobility for holes is 500.0
-
-  start step junction doping
-    acceptor concentration =1.0e16
-    donor concentration =1.0e16
-    junction location = 0.5
-    dopant order is PN
-    direction is x
-  end step junction doping
-end material block
-
-initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
-initial conditions for ELECTRON_DENSITY in silicon is Exodus File
-initial conditions for HOLE_DENSITY in silicon is Exodus File
-
-BC is ohmic for anode on silicon fixed at 0.6
-BC is ohmic for cathode on silicon fixed at 0.0
+Import State File result_pndiode_equ.exo at index 1
 
 start output parameters
-  output state file result_pndiode_dd_current.exo
+      Output State File result_pndiode_dd_hocurr.exo
 end output parameters
 
+Assembly Workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling = 1.0e16
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+      Radiative Recombination is off
+      Auger Recombination is off
+      SRH Recombination is off
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+
+      fixed mobility for electrons is 1000 
+      fixed mobility for holes is 500
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at 0.7
+BC is ohmic for cathode on silicon fixed at 0.0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
 start solver block
-  use solver pack 1
-  nonlinear solver tolerance = 1.0e-8
-  max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
+

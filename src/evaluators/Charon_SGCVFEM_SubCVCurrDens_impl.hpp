@@ -11,7 +11,7 @@
 #include "Panzer_CellTopologyInfo.hpp"
 
 #include "Shards_CellTopology.hpp"
-#include "Intrepid2_FunctionSpaceTools.hpp"
+#include "Intrepid2_HGRAD_LINE_C1_FEM.hpp"
 
 #include "Charon_Names.hpp"
 
@@ -51,6 +51,12 @@ SGCVFEM_SubCVCurrDens(
   RCP<DataLayout> edge_vector = cellTopoInfo->edge_vector;
   num_edges = edge_vector->dimension(1);
   num_dims = edge_vector->dimension(2);
+
+  // Get reference edge length
+  Intrepid2::Basis_HGRAD_LINE_C1_FEM<PHX::Device> lineBasis;
+  Kokkos::DynRankView<double,PHX::Device> dofCoords("dofCoords",2,1);
+  lineBasis.getDofCoords(dofCoords);
+  refEdgeLen = dofCoords(1,0)-dofCoords(0,0);
 
   // Get the primary cell topology
   cellType = cellTopoInfo->getCellTopology();
@@ -138,8 +144,13 @@ evaluateFields(
           // we needed to multiply edgeLen on the RHS here. Now have removed 1/edgeLen in
           // edge_curdens() so no longer need to multiply here.
 
+          // In this stabilized formulation edge values are mapped to the interior
+          // of the element using HCurl basis functions. In order for the values
+          // to scale properly with the definitions of the HCurl and HGrad basis
+          // functions in Intrepid2 as of 11/2020 we must divide by the reference
+          // edge length. 
           subcv_currdens(cell,iedge,dim) += edge_currdens(cell,jedge)
-                            * (workset.bases[hcurl_basis_index])->basis_vector(cell,jedge,iedge,dim);
+                            * (workset.bases[hcurl_basis_index])->basis_vector(cell,jedge,iedge,dim)/refEdgeLen;
         }
       }
 

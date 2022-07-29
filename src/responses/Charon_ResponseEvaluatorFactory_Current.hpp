@@ -4,7 +4,6 @@
 
 #include <string>
 
-
 #include "Panzer_ResponseEvaluatorFactory_Functional.hpp"
 
 #include "Charon_Names.hpp"
@@ -18,28 +17,14 @@ class ResponseEvaluatorFactory_Current : public panzer::ResponseEvaluatorFactory
 {
 public:
 
-   ResponseEvaluatorFactory_Current(bool enableHoles, bool enableElectrons, MPI_Comm comm, int cubatureDegree,
+   ResponseEvaluatorFactory_Current(MPI_Comm comm, int cubatureDegree,
                                     const Teuchos::RCP<panzer::LinearObjFactory<panzer::Traits> > & linearObjFactory=Teuchos::null,
                                     std::string fd_suffix = "", bool isFreqDom = false)
      : panzer::ResponseEvaluatorFactory_Functional<EvalT,LO,GO>(comm,cubatureDegree,false,"",linearObjFactory)
    {
      names = Teuchos::rcp(new charon::Names(1,"","","",fd_suffix));  // Prefix must be "" in Physics Blocks
 
-   //  j0Name_ = names->field.J0;
-   //  x0Name_ = names->field.X0;
-
-     enableElectrons_ = enableElectrons;
-     enableHoles_ = enableHoles;
-
      isFreqDom_ = isFreqDom;
-
-     if(enableHoles)
-       currents_.push_back(names->field.hole_contact_currdens);
-     if(enableElectrons)
-       currents_.push_back(names->field.elec_contact_currdens);
-
-     TEUCHOS_TEST_FOR_EXCEPTION(currents_.size()==0,std::logic_error,
-                     "Charon Error!: Current calculation requires either holds or electrons to be specified.");
    }
 
    virtual ~ResponseEvaluatorFactory_Current() {}
@@ -70,13 +55,6 @@ public:
    virtual bool typeSupported() const;
 
 private:
-  std::vector<std::string> currents_;
-
-//  std::string j0Name_;
-//  std::string x0Name_;
-
-  bool enableElectrons_;
-  bool enableHoles_;
 
   Teuchos::RCP<charon::Names> names;
 
@@ -87,8 +65,6 @@ private:
 template <typename LO,typename GO>
 struct CurrentResponse_Builder {
   MPI_Comm comm;
-  bool enableHoles;
-  bool enableElectrons;
   int cubatureDegree;
   Teuchos::RCP<panzer::LinearObjFactory<panzer::Traits> > linearObjFactory;
   Teuchos::RCP<const panzer::GlobalIndexer> globalIndexer;
@@ -97,7 +73,7 @@ struct CurrentResponse_Builder {
 
   template <typename T>
   Teuchos::RCP<panzer::ResponseEvaluatorFactoryBase> build() const
-  { return Teuchos::rcp(new ResponseEvaluatorFactory_Current<T,LO,GO>(enableHoles,enableElectrons,comm,cubatureDegree,linearObjFactory,fd_suffix,isFreqDom)); }
+  { return Teuchos::rcp(new ResponseEvaluatorFactory_Current<T,LO,GO>(comm,cubatureDegree,linearObjFactory,fd_suffix,isFreqDom)); }
 };
 
 }

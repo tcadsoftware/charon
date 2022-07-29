@@ -1,0 +1,17 @@
+
+
+interpreter name HaloCenter
+
+interpreter inputLine (Halo center ) [ (in x) = {centerLocation} [ (in y) = {centerLocation} [ (in z) = {centerLocation]]]
+
+interpreter shortHelp {Set the center point of the halo in x, y or z}
+
+interpreter longHelp {Set the center point of the halo in x, y or z <> {centerLocation} is the coordinate of the center location}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},X Center,double,{centerLocation}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Y Center,double,{centerLocation}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Z Center,double,{centerLocation}
+
+

@@ -13,6 +13,8 @@ start Physics Block Semiconductor
       band gap narrowing is off
 end Physics Block Semiconductor
 
+tpetra is on
+
 start Material Block siliconParameter
       material name is Silicon
       relative permittivity = 11.9
@@ -35,15 +37,19 @@ start Material Block siliconParameter
 
 end Material Block siliconParameter
 
-BC is time periodic for anode on silicon with 0.5 sin 1e3 offset by 0
-BC is ohmic for cathode on silicon fixed at OA0
+BC is sinusoidal for anode on silicon with ampl=0.5 freq=1e3 phase=0 and dc offset=0
+BC is ohmic for cathode on silicon fixed at 0
 
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
 Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
 Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 
 start solver block
-      use transient solver pack 2 to 1e-3
-      time integrator fixed step size = 1e-4
+  start tpetra block
+    problem type is tempus
+    verbosity level is high
+    time integrator final time = 1.0e-3
+    time step size is fixed at 1.0e-4
+  end
 end solver block
 

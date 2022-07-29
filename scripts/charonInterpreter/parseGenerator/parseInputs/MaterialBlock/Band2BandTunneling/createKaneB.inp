@@ -1,0 +1,9 @@
+interpreter name KaneB  
+
+interpreter inputLine (Kane B) = {valB} 
+
+interpreter shortHelp {Set the Kane B parameter for the Band2Band tunneling local model}
+
+interpreter longHelp {Set the Kanme B parameter for the Band2Band tunneling local model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Kane B,double,{valB}

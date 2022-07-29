@@ -7,3 +7,8 @@ interpreter shortHelp {set the optical generation temporal function type}
 interpreter longHelp {set the optical generation temporal function type}
 
 xmlOptional (Gauss) Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Function Type,string,Gauss
+
+
+xmlOptional (Gaussian) Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Function Type,string,Gauss
+
+

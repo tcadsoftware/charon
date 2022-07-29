@@ -1,0 +1,10 @@
+
+interpreter name ReadIonDensity
+
+interpreter inputLine (read ion density from exodus)
+
+interpreter shortHelp {Read ion density from an exodus file in the closure models.}
+
+interpreter longHelp {Read ion density from an exodus file in the closure models}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->ION_DENSITY,Value,string,Exodus File

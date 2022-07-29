@@ -83,6 +83,12 @@ SGCVFEM_EdgeCurrDens(
     mobility = MDField<const ScalarT,Cell,Edge>(n.field.elec_mobility, edge_scalar);
     density = MDField<const ScalarT,Cell,BASIS>(n.dof.edensity, basis_scalar);
     sign = 1.0;
+    // Density Gradient
+    useEQC = p.get< bool >("Use Electron Quantum Correction");
+    if( useEQC ) {
+      eqp = MDField<const ScalarT,Cell,BASIS>(n.dof.elec_qpotential, basis_scalar);
+      this->addDependentField(eqp);
+    }
   }
   else if (carrType == "Hole")
   {
@@ -91,6 +97,11 @@ SGCVFEM_EdgeCurrDens(
     mobility = MDField<const ScalarT,Cell,Edge>(n.field.hole_mobility, edge_scalar);
     density = MDField<const ScalarT,Cell,BASIS>(n.dof.hdensity, basis_scalar);
     sign = -1.0;
+    useHQC = p.get< bool >("Use Hole Quantum Correction");
+    if( useHQC ) {
+      hqp = MDField<const ScalarT,Cell,BASIS>(n.dof.hole_qpotential, basis_scalar);
+      this->addDependentField(hqp);
+    }
   }
   else
     TEUCHOS_TEST_FOR_EXCEPTION(true, Teuchos::Exceptions::InvalidParameter, std::endl
@@ -103,6 +114,7 @@ SGCVFEM_EdgeCurrDens(
   elec_degfac = MDField<const ScalarT,Cell,BASIS>(n.field.elec_deg_factor, basis_scalar);
   hole_degfac = MDField<const ScalarT,Cell,BASIS>(n.field.hole_deg_factor, basis_scalar);
   latt_temp = MDField<const ScalarT,Cell,BASIS>(n.field.latt_temp, basis_scalar);
+
 
   // Scaling parameters
   scaleParams = p.get< RCP<charon::Scaling_Parameters> >("Scaling Parameters");
@@ -122,6 +134,7 @@ SGCVFEM_EdgeCurrDens(
   this->addDependentField(elec_degfac);
   this->addDependentField(hole_degfac);
   this->addDependentField(latt_temp);
+  
 
   std::string name = "CVFEM-SG_Primary_Edge_Current_Density";
   this->setName(name);
@@ -179,7 +192,6 @@ evaluateFields(
       ScalarT dEg1 = bandgap(cell,node1) - eff_bandgap(cell,node1) ;
       ScalarT iEf0 = intrin_fermi(cell,node0);  // [eV]
       ScalarT iEf1 = intrin_fermi(cell,node1);
-
       ScalarT edegfac0 = elec_degfac(cell,node0);  // [unitless]
       ScalarT edegfac1 = elec_degfac(cell,node1);
       ScalarT hdegfac0 = hole_degfac(cell,node0);
@@ -189,10 +201,25 @@ evaluateFields(
       ScalarT kbT1 = kbBoltz*latt_temp(cell,node1)*T0;
       ScalarT degterm0 = 0.5*kbT0*log(edegfac0*hdegfac0);  // = 0 for Boltzmann statistics
       ScalarT degterm1 = 0.5*kbT1*log(edegfac1*hdegfac1);
+      ScalarT effPot0, effPot1;
+      if ( carrType == "Electron" && useEQC ) {
+          // Electron Quantum Correction
+          ScalarT eqp0 = eqp(cell,node0); 
+          ScalarT eqp1 = eqp(cell,node1);
+          effPot0 = (sign*0.5*dEg0 - iEf0 + sign*degterm0 ) / V0 + eqp0;
+          effPot1 = (sign*0.5*dEg1 - iEf1 + sign*degterm1 ) / V0 + eqp1;
+      } else if ( carrType == "Hole" && useHQC ) {
+          // Hole Quantum Correction
+          ScalarT hqp0 = hqp(cell,node0); 
+          ScalarT hqp1 = hqp(cell,node1);
+          effPot0 = (sign*0.5*dEg0 - iEf0 + sign*degterm0 ) / V0 - hqp0;
+          effPot1 = (sign*0.5*dEg1 - iEf1 + sign*degterm1 ) / V0 - hqp1;
+      } else {
+          // compute the effective potential at local nodes [scaled]
+          effPot0 = (sign*0.5*dEg0 - iEf0 + sign*degterm0 ) / V0;
+          effPot1 = (sign*0.5*dEg1 - iEf1 + sign*degterm1 ) / V0;
+      }
 
-      // compute the effective potential at local nodes [scaled]
-      ScalarT effPot0 = (sign*0.5*dEg0 - iEf0 + sign*degterm0) / V0;
-      ScalarT effPot1 = (sign*0.5*dEg1 - iEf1 + sign*degterm1) / V0;
 
       //ScalarT effPot0 = (sign*0.5*dEg0 - iEf0) / V0;
       //ScalarT effPot1 = (sign*0.5*dEg1 - iEf1) / V0;
@@ -247,6 +274,9 @@ SGCVFEM_EdgeCurrDens<EvalT, Traits>::getValidParameters() const
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);
+
+  p->set("Use Electron Quantum Correction", false);
+  p->set("Use Hole Quantum Correction", false);
 
   return p;
 }

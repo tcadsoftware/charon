@@ -12,9 +12,12 @@ xmlRequired Charon->Mesh->Exodus File,File Name,string,{filename}
 
 xmlOptional (at Index) Charon->Mesh->Exodus File,Restart Index,int,{index}
 
-xmlOptional (second Option) Charon->Mesh->Exodus File,Option Two,string,{option2}
-
 xmldefault  Charon->Mesh,Source,string,Exodus File
 xmldefault  Charon->Mesh->Exodus File,Restart Index,int,-1
+
+specialInformation importStateFileName {filename}
+specialInformation importStateFileIndex {index}
+
+
 
 

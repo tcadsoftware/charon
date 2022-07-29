@@ -1,0 +1,9 @@
+interpreter name ThermalCondAtTref 
+
+interpreter inputLine (thermal conductivity at Tref) = {thermal} 
+
+interpreter shortHelp {Set the thermal conductivity at reference temperature in 1/cm^3 for the LinearTempDep thermal conductivity model}
+
+interpreter longHelp {Set the thermal conductivity at reference temperature in 1/cm^3 for the LinearTempDep thermal conductivity model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Thermal Conductivity at Reference Temperature,double,{thermal}

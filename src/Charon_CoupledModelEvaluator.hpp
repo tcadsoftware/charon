@@ -42,6 +42,8 @@
 #ifndef __Charon_CoupledModelEvaluator_hpp__
 #define __Charon_CoupledModelEvaluator_hpp__
 
+#include "Charon_config.hpp"
+
 // Teuchos
 #include "Teuchos_RCP.hpp"
 
@@ -51,6 +53,13 @@
 // Panzer
 #include "Panzer_STK_ModelEvaluatorFactory.hpp"
 #include "Panzer_GlobalIndexer.hpp"
+
+#include "Charon_CurrentConstraintList.hpp"
+
+#if defined(ENABLE_MIXED_MODE) or defined(ENABLE_XYCE_CLUSTER)
+//#include <N_CIR_Xyce.h>
+#include <N_CIR_SecondLevelSimulator.h>
+#endif // ENABLE_MIXED_MODE || ENABLE_XYCE_CLUSTER
 
 namespace charon {
 
@@ -69,45 +78,53 @@ class CoupledModelEvaluator :
 {
 public:
   
-  /** \brief Constructs to uninitialized */
+  // constructor
   CoupledModelEvaluator(
-        const Teuchos::RCP<Thyra::ModelEvaluator<Scalar>>& physics,
-        MPI_Comm                                           comm,
-        const Teuchos::RCP<Teuchos::ParameterList>&        parameters,
-        const Teuchos::RCP<panzer_stk::STK_Interface>&     mesh);
-  
-  /** \brief . */
+        const Teuchos::RCP<Thyra::ModelEvaluator<Scalar> >& physics,
+        MPI_Comm                                            comm,
+        const Teuchos::RCP<Teuchos::ParameterList>&         parameters,
+        charon::CurrentConstraintList&                      constraints,
+        const Teuchos::RCP<panzer_stk::STK_Interface>&      mesh);
+
+  // returns description of the model evaluator,
+  // used  when composing mol evaluators and checekingfor compatibilityy
   std::string description() const;
+
+  // destructor
+  ~CoupledModelEvaluator()
+  {
+#if defined(ENABLE_MIXED_MODE) or defined(ENABLE_XYCE_CLUSTER)
+    delete simulator_;
+#endif // ENABLE_MIXED_MODE || ENABLE_XYCE_CLUSTER
+  }
 
 private:
 
-  /** \name Private functions overridden from ModelEvaulatorDefaultBase. */
-  //@{
-
-  /** \brief . */
+  // the core of this model evaluator
   void evalModelImpl(
     const Thyra::ModelEvaluatorBase::InArgs<Scalar> &inArgs,
     const Thyra::ModelEvaluatorBase::OutArgs<Scalar> &outArgs
     ) const;
 
-  //@}
-  
-private:
-
-   /*  \brief The physics `ModelEvaluator`.
-    */
-   Teuchos::RCP<Thyra::ModelEvaluator<Scalar>> physics_;
-
-  /**                                                                                                                       
-   *  \brief The MPI communicator to use with this `ModelEvaluator`.
-   */
+  Teuchos::RCP<Thyra::ModelEvaluator<Scalar>> physics_;
   Teuchos::RCP<const Teuchos::Comm<Thyra::Ordinal>> comm_;
 
   Teuchos::RCP<Teuchos::ParameterList> parameters_;
   const int dimension_;
   const Teuchos::RCP<panzer_stk::STK_Interface> mesh_;
-
   Teuchos::RCP<panzer::GlobalIndexer> globalIndexer_;
+
+  /// The list of all the current constraints. 
+  charon::CurrentConstraintList constraints_;
+  Teuchos::RCP<panzer::ParamLib> paramLib_;
+  Teuchos::RCP<Teuchos::ParameterList> xyceCouplingPL_;
+  bool mixedModeLOCA = false;
+  bool printDebug = false;
+  bool printVerbose = true;
+
+#if defined(ENABLE_MIXED_MODE) or defined(ENABLE_XYCE_CLUSTER)
+  Xyce::Circuit::SecondLevelSimulator * simulator_;
+#endif // ENABLE_MIXED_MODE || ENABLE_XYCE_CLUSTER
 
 };
 

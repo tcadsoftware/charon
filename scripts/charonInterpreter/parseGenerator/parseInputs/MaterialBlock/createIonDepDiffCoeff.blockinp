@@ -1,0 +1,6 @@
+interpreterBlock name IonDepDiffCoeff
+
+interpreterBlock (start iondep diff coeff)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Ion Diffusion Coefficient,Value,string,IonDep
+

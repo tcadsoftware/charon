@@ -106,6 +106,14 @@ private:
   std::vector<bool> eTimeGiven, hTimeGiven;
   std::vector<std::string> eTunnelModel, hTunnelModel, eTunnelDir, hTunnelDir;
   std::vector<std::string> trapSpcProfile, trapType;
+  
+  std::vector<std::string> trapEnDistr;
+  std::vector<double> trapEnWidth;
+  std::vector<int> trapNL;
+  void dicretizeContDistribution(std::vector<ScalarT>* enLevels, 
+				 std::vector<ScalarT>* norm_densities,
+				 const std::string& enDistr, double Et, 
+				 double enSigma, int NL);
 
   double hbar, q, m0, pi, kb;  // universal constants
   double fieldSign; 

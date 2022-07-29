@@ -2,6 +2,7 @@
 Import State File "nmosfet.exo"
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
       Output State File nmosfet.nlp.exo
@@ -59,8 +60,8 @@ BC is ohmic for substrate on silicon fixed at 0
 BC is contact on insulator for gate on sio2 with work function 4.8780 fixed at 0
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1e-10
-      max nonlinear iterations = 15
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
-

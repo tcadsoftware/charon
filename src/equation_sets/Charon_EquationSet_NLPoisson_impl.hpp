@@ -50,7 +50,14 @@ EquationSet_NLPoisson(const Teuchos::RCP<Teuchos::ParameterList>& params,
     valid_parameters.set("Basis Order",1,"Order of the basis");
     valid_parameters.set("Integration Order",default_integration_order,"Order of the integration rule");
 
-    valid_parameters.sublist("Options");
+    Teuchos::ParameterList& opt = valid_parameters.sublist("Options");
+    Teuchos::setStringToIntegralParameter<int>(
+      "Fermi Dirac",
+      "False",
+      "Determine if users want to use the Fermi-Dirac statistics for the source term",
+      Teuchos::tuple<std::string>("True","False"),
+      &opt
+      );
 
     params->validateParametersAndSetDefaults(valid_parameters);
   }
@@ -62,6 +69,8 @@ EquationSet_NLPoisson(const Teuchos::RCP<Teuchos::ParameterList>& params,
   int basis_order = params->get<int>("Basis Order");
   std::string model_id = params->get<std::string>("Model ID");
   int integration_order = params->get<int>("Integration Order");
+
+  UseFD = params->sublist("Options").get<std::string>("Fermi Dirac");
 
   this->getEvaluatorParameterList()->sublist("Options") = params->sublist("Options");
   this->getEvaluatorParameterList()->set("Type",params->get<std::string>("Type"));
@@ -149,6 +158,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       p.set("Data Layout", ir->dl_scalar);
       p.set("Scaling Parameters", scaleParams);
       p.set< RCP<const charon::Names> >("Names", m_names);
+
+      p.set("Fermi Dirac",UseFD);
 
       RCP< PHX::Evaluator<panzer::Traits> > op =
         rcp(new charon::NLPoissonSource<EvalT,panzer::Traits>(p));

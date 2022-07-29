@@ -158,12 +158,6 @@ class createBlockParser:
                     print ("ERROR!! There are duplicate parser names in the <<",subLineSource,">> scope")
                     print ("Duplicated name is ",lpl,"\n")
 
-        for index,lpkl in enumerate(self.localParsingKeyList):
-            for lpkl2 in self.localParsingKeyList[index+1:]:
-                if lpkl == lpkl2:
-                    print ("ERROR!! There are duplicate parsing keys in the <<",subLineSource,">> scope")
-                    print ("Duplicated parsing key is ",lpkl,"\n")
-
         ############################################################################
         # Check for duplicate block parser names and block parsing keywords in this scope
         ############################################################################

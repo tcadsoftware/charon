@@ -1,0 +1,9 @@
+interpreter name TransientNumOfFirstSteps
+
+interpreter shortHelp {Set the number of constant first steps in a transient simulation.}
+interpreter longHelp {Set the number of constant first steps in a transient simulation.}
+
+interpreter inputLine (time integrator number of first steps) = {numSteps}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Number of Constant First Order Steps,int,{numSteps}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Number of Constant First Order Steps,int,{numSteps}

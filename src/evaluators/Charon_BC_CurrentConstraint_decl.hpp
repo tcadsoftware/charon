@@ -268,6 +268,8 @@ namespace charon
        *  \brief Voltage.
        */
       Teuchos::RCP<panzer::ScalarParameterEntry<EvalT>> voltageParameter_;
+      Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+      std::string contactVoltageName;
 
       /**
        *  \brief A flag indicating whether or not to use Fermi-Dirac.

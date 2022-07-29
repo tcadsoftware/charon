@@ -1,0 +1,8 @@
+interpreter name ElectronCrossSection
+
+interpreter inputLine (electron cross section) = {value}
+
+interpreter shortHelp {The trap electron cross section in unit of cm^2}
+interpreter longHelp {The trap electron cross section in unit of cm^2}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Electron Cross Section,double,{value}

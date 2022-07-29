@@ -11,7 +11,7 @@ ANONYMOUS:
     silicon: Semiconductor
   Assembly: 
     Workset Size: 50
-    Use DOFManager FEI: true
+    Use Tpetra: true
   Physics Blocks: 
     Semiconductor: 
       child0: 
@@ -83,7 +83,7 @@ ANONYMOUS:
   Output: 
     File Name: result.pndiode.dd.ACCR.exo
   Options: 
-    Write Volume Assembly Graphs: true
+    Write Volume Assembly Graphs: false
     Volume Assembly Graph Prefix: charon_
   Solver Factories: 
     NOX Observers: 
@@ -153,62 +153,37 @@ ANONYMOUS:
                   VerboseObject: 
                     Verbosity Level: medium
               Preconditioner Type: Teko
-              Preconditioner Types: 
-                Ifpack: 
-                  Overlap: 1
-                  Prec Type: ILU
-                  Ifpack Settings: 
-                    'fact: drop tolerance': 0.00000000000000000e+00
-                    'fact: ilut level-of-fill': 1.00000000000000000e+00
-                    'fact: level-of-fill': 1
+              Preconditioner Types:
                 Teko: 
-                  Inverse Type: Schur2x2
+                  Inverse Type: GS
                   Write Block Operator: false
                   Test Block Operator: false
                   Inverse Factory Library: 
-                    Schur2x2: 
-                      Type: Schur2x2
-                      Inverse Type: ML-DD
-                      Inverse Type for SC: PrecIterative-Belos
-                    PrecIterative-Belos: 
-                      Type: Belos
-                      Use Preconditioner: ML-DD
-                      Solver Types: 
-                        Block GMRES: 
-                          Convergence Tolerance: 1.00000000000000002e-03
-                          Output Frequency: 10
-                          Output Style: 1
-                          Verbosity: 33
-                          Maximum Iterations: 100
-                          Block Size: 1
-                          Num Blocks: 20
-                          Flexible Gmres: false
-                      VerboseObject: 
-                        Verbosity Level: medium
-                    ML-DD: 
-                      Type: ML
-                      Base Method Defaults: SA
-                      ML Settings: 
-                        ML output: 10
-                        ML label: Velocity
-                        prec type: MGV
-                        print unused: 0
-                        PDE equations: 3
-                        max levels: 10
-                        cycle applications: 2
-                        'aggregation: threshold': 0.00000000000000000e+00
-                        'aggregation: type': Uncoupled
-                        'smoother: type': IFPACK
-                        'smoother: ifpack type': Amesos
-                        'smoother: ifpack overlap': 1
-                        'smoother: ifpack list': 
-                          'fact: level-of-fill': 1
-                          'schwarz: reordering type': rcm
-                          reuse numeric factorization: 1
-                        'smoother: pre or post': both
-                        'smoother: sweeps': 2
-                        'coarse: max size': 500
-                        'coarse: type': Amesos-KLU
+
+                    GS:
+                      Type: Block Gauss-Seidel
+                      Use Upper Triangle: true
+                      Inverse Type 1: ILU_tpetra
+                      Inverse Type 2: Id
+                      
+                    ILU_epetra: 
+                      Type: Ifpack
+                      Overlap: 1
+                      Ifpack Settings: 
+                        'fact: drop tolerance': 0.0
+                        'fact: ilut level-of-fill': 1.0
+                        'fact: level-of-fill': 1
+
+                    ILU_tpetra: 
+                      Type: Ifpack2
+                      Overlap: 1
+                      Ifpack2 Settings: 
+                        'fact: drop tolerance': 0.0
+                        'fact: ilut level-of-fill': 1.0
+                        
+                    Id: 
+                      Type: Identity
+		      
       Line Search: 
         Full Step: 
           Full Step: 1.00000000000000000e+00

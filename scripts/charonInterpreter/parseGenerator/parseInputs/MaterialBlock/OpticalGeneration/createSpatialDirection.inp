@@ -1,0 +1,13 @@
+interpreter name SpatialDirection
+
+interpreter inputLine (spatial direction is ) [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the spatial direction along which 1D spatial opt. gen. factor is applied.}
+
+interpreter longHelp {Set the spatial direction along which 1D spatial opt. gen. factor is applied in x, in y, or in z.}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Space Direction,string,X
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Space Direction,string,Y
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Space Direction,string,Z
+
+

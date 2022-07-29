@@ -1,0 +1,8 @@
+interpreter name ManufacturedSolution
+
+interpreter inputLine (manufactured solution) is {varlist}
+
+interpreter shortHelp {Create a manufactured solution based on the named variable}
+interpreter longHelp {Create a manufactured solution based on the named variable}
+
+xmlRequired Charon->Closure Models->Global Norm->Manufactured Solution,Value,string,{varlist}

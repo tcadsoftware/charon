@@ -1,0 +1,11 @@
+interpreter name Direction
+
+interpreter inputLine (direction) is {direc} [(in x) [(in y) [(in z)]]]
+
+interpreter shortHelp {Where the erfc() is maximum.}
+
+interpreter longHelp {Is the erfc() maximum value at the minimum coordinate (negative) or at the maximum coordinate (positive).}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},X Direction,string,{direc}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Y Direction,string,{direc}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Z Direction,string,{direc}

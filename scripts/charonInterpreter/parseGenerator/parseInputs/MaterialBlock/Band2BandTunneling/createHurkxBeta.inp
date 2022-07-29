@@ -1,0 +1,9 @@
+interpreter name HurkxBeta 
+
+interpreter inputLine (Hurkx beta) = {value} 
+
+interpreter shortHelp {Set the Hurkx beta parameter for the Band2Band tunneling local model}
+
+interpreter longHelp {Set the Hurkx beta parameter for the Band2Band tunneling local model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Hurkx beta,double,{value}

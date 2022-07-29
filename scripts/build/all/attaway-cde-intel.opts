@@ -1,0 +1,19 @@
+##
+## Modules loaded for this build:
+##
+CMAKE_CXX_COMPILER:FILEPATH="mpic++"
+CMAKE_C_COMPILER:FILEPATH="mpicc"
+CMAKE_Fortran_COMPILER:FILEPATH="mpif77"
+
+# Without this you'll often get "internal compiler errors" with
+# associated segmentation violations during the link. Disabling
+# interprocedural optimization with this flag gets rid of that error.
+CMAKE_EXE_LINKER_FLAGS:STRING="-no-ipo"
+CMAKE_SHARED_LINKER_FLAGS:STRING="-no-ipo"
+
+## This flag prevents the code from using the threaded math
+## library.
+#CMAKE_EXE_LINKER_FLAGS:STRING="-mkl=sequential"
+
+CMAKE_INSTALL_PREFIX:PATH="/projects/charon/install/attaway.jenkins/cde.intel"
+

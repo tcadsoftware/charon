@@ -1,0 +1,15 @@
+
+
+interpreter name HaloRotation
+
+interpreter inputLine (Halo rotation) = {angle}
+
+interpreter shortHelp {Set the rotation of the halo}
+
+interpreter longHelp {Set the rotation of the halo <> {angle} is rotation angle (positive for clockwise) in degrees}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Rotation,double,{angle}
+
+
+
+

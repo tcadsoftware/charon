@@ -5,10 +5,11 @@ INCLUDE(TribitsAddAdvancedTest)
 SET(testName charon_mp_particleStrike)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
-    diode-particleStrike.yaml
+    diode-particleStrike.sg.inp
     potential_pndiode.exo.4.0
     potential_pndiode.exo.4.1
     potential_pndiode.exo.4.2
@@ -16,16 +17,20 @@ TRIBITS_ADD_ADVANCED_TEST(
     diode-particleStrike.gold.exo
     diode-particleStrike.exodiff
 
-  TEST_1 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
-    ARGS  --i=diode-particleStrike.yaml --current
+  TEST_1 CMND ../../../../src/charonInterpreter 
+    ARGS -i diode-particleStrike.sg.inp
+
+  TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
+    ARGS  --i=diode-particleStrike.sg.inp.xml --current
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # test the correctness of the exodus output
-  TEST_2 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "diode-particleStrike.exo.${MPI_EXEC_MAX_NUMPROCS}."
+  TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
+    ARGS  "-auto" "diode-particleStrike.exo.4."
     NUM_MPI_PROCS 1
 
-  TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
+  TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
     NOEXESUFFIX
     ARGS -f
          diode-particleStrike.exodiff
@@ -37,7 +42,7 @@ TRIBITS_ADD_ADVANCED_TEST(
   )
 IF (${testName}_CREATED)
   SET_PROPERTY(TEST Charon_charon_mp_particleStrike PROPERTY LABELS
-    particleStrike nightly)
+    particleStrike nightly debugexclude)
 ENDIF()
 
 
@@ -46,10 +51,11 @@ ENDIF()
 SET(testName charon_mp_3DparticleStrike)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
-    diode3D-particleStrike.xml
+    diode3D-particleStrike.sg.inp
     diode3D.exo.4.0
     diode3D.exo.4.1
     diode3D.exo.4.2
@@ -57,16 +63,20 @@ TRIBITS_ADD_ADVANCED_TEST(
     diode3D-particleStrike.gold.exo
     diode3D-particleStrike.exodiff
 
-  TEST_1 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
-    ARGS  --i=diode3D-particleStrike.xml --current
+  TEST_1 CMND ../../../../src/charonInterpreter 
+    ARGS -i diode3D-particleStrike.sg.inp
+
+  TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
+    ARGS  --i=diode3D-particleStrike.sg.inp.xml --current
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # test the correctness of the exodus output
-  TEST_2 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "diode3D-particleStrike.exo.${MPI_EXEC_MAX_NUMPROCS}."
+  TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
+    ARGS  "-auto" "diode3D-particleStrike.exo.4."
     NUM_MPI_PROCS 1
 
-  TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
+  TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
     NOEXESUFFIX
     ARGS -f
          diode3D-particleStrike.exodiff
@@ -78,88 +88,5 @@ TRIBITS_ADD_ADVANCED_TEST(
   )
 IF (${testName}_CREATED)
   SET_PROPERTY(TEST Charon_charon_mp_3DparticleStrike PROPERTY LABELS
-    particleStrike nightly)
-ENDIF()
-
-
-####################################################
-# Interpreter test
-SET(testName charon_mp_3DparticleStrike_input)
-TRIBITS_ADD_ADVANCED_TEST(
-  ${testName}
-  OVERALL_WORKING_DIRECTORY TEST_NAME
-
-  TEST_0 COPY_FILES_TO_TEST_DIR
-    diode3D-particleStrike.sg.inp
-    diode3D-particleStrike.sg.inp.gold.xml
-
-  TEST_1 CMND ../../../../src/charonInterpreter 
-    ARGS -i diode3D-particleStrike.sg.inp
-
-  TEST_2 CMND ../../../../src/interpreter/charonInterpreter/tools/compareParameterLists.py
-    ARGS diode3D-particleStrike.sg.inp.xml diode3D-particleStrike.sg.inp.gold.xml 
-    PASS_REGULAR_EXPRESSION "Files are the same."
-
-
-  ADDED_TEST_NAME_OUT ${testName}_CREATED
-  )
-IF (${testName}_CREATED)
-  SET_PROPERTY(TEST Charon_charon_mp_3DparticleStrike_input PROPERTY LABELS
-    particleStrike_input inputVerification)
-ENDIF()
-
-
-
-####################################################
-# Interpreter test
-SET(testName charon_mp_particleStrike_input)
-TRIBITS_ADD_ADVANCED_TEST(
-  ${testName}
-  OVERALL_WORKING_DIRECTORY TEST_NAME
-
-  TEST_0 COPY_FILES_TO_TEST_DIR
-    diode-particleStrike.sg.inp
-    diode-particleStrike.sg.inp.gold.xml
-
-  TEST_1 CMND ../../../../src/charonInterpreter 
-    ARGS -i diode-particleStrike.sg.inp
-
-  TEST_2 CMND ../../../../src/interpreter/charonInterpreter/tools/compareParameterLists.py
-    ARGS diode-particleStrike.sg.inp.xml diode-particleStrike.sg.inp.gold.xml
-    PASS_REGULAR_EXPRESSION "Files are the same."
-
-
-  ADDED_TEST_NAME_OUT ${testName}_CREATED
-  )
-IF (${testName}_CREATED)
-  SET_PROPERTY(TEST Charon_charon_mp_particleStrike_input PROPERTY LABELS
-    particleStrike_input inputVerification)
-ENDIF()
-
-
-
-####################################################
-# Interpreter test
-SET(testName charon_mp_3DparticleStrike_input)
-TRIBITS_ADD_ADVANCED_TEST(
-  ${testName}
-  OVERALL_WORKING_DIRECTORY TEST_NAME
-
-  TEST_0 COPY_FILES_TO_TEST_DIR
-    diode3D-particleStrike.sg.inp
-    diode3D-particleStrike.sg.inp.gold.xml
-
-  TEST_1 CMND ../../../../src/charonInterpreter 
-    ARGS -i diode3D-particleStrike.sg.inp
-
-  TEST_2 CMND ../../../../src/interpreter/charonInterpreter/tools/compareParameterLists.py
-    ARGS diode3D-particleStrike.sg.inp.xml diode3D-particleStrike.sg.inp.gold.xml
-    PASS_REGULAR_EXPRESSION "Files are the same."
-
-
-  ADDED_TEST_NAME_OUT ${testName}_CREATED
-  )
-IF (${testName}_CREATED)
-  SET_PROPERTY(TEST Charon_charon_mp_3DparticleStrike_input PROPERTY LABELS
-    3DparticleStrike_input inputVerification)
+    particleStrike nightly debugexclude)
 ENDIF()

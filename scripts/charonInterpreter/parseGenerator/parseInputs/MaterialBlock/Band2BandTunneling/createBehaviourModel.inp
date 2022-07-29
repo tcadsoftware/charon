@@ -1,0 +1,14 @@
+interpreter name BehaviorModel
+
+interpreter inputLine (behavior model) is [ (Hurkx) [ (Kane) ]]
+
+interpreter shortHelp {Set behavior model for band2band tunneling}
+
+interpreter longHelp {Set behavior model for band2band tunneling}
+
+xmlOptional (Hurkx) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Value,string,Local
+xmlOptional (Hurkx) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Model,string,Hurkx
+
+xmlOptional (Kane) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Value,string,Local
+xmlOptional (Kane) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Model,string,Kane
+

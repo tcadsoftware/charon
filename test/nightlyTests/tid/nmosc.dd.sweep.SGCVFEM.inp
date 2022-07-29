@@ -8,6 +8,7 @@ start output parameters
 end output parameters
 
 assembly workset = 20
+tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e15
 
@@ -69,7 +70,7 @@ start material block sio2Parameter
 	    end interface traps
             start volume traps
 		  total density = 1e15
-		  initial filling factor = 0.1
+		  initial filling factor = 0.0
 		  capture cross section = 1e-13
                   critical capture cross section = 0.7e-13
 	    end volume traps
@@ -97,8 +98,8 @@ start sweep options
 end sweep options
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-10
-      max nonlinear iterations = 30
-      aztec max iterations = 200
+  start tpetra block
+    problem type is parameter sweep
+    verbosity level is high
+  end
 end solver block

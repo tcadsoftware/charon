@@ -62,6 +62,7 @@ cdef extern from "refine_external.hpp":
           void setWriteJunctions(bool setJunctions)
           void setTetNum(int tn)
           int getTetNum()
+          void setAutoRefine()
 
 
 cdef class PyMeshRefine:
@@ -180,3 +181,5 @@ cdef class PyMeshRefine:
          return self.thisptr.setTetNum(tn)
      def getTetNum(self):
          return self.thisptr.getTetNum()
+     def setAutoRefine(self):
+         return self.thisptr.setAutoRefine()

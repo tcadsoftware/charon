@@ -93,8 +93,8 @@ private:
   PHX::MDField<const ScalarT,Cell,Point,Dim> grad_qfp;  // gradient of quasi-fermi potential at IP, scaled
   PHX::MDField<const ScalarT,Cell,Point,Dim> eff_field; // effective electric field at IP, scaled
 
-  PHX::MDField<ScalarT,Cell,Point> bulk_mobility; // bulk low field mobility
-  PHX::MDField<ScalarT,Cell,Point> perp_mobility; // bulk low field mobility
+  PHX::MDField<const ScalarT,Cell,Point> bulk_mobility; // bulk low field mobility
+  PHX::MDField<const ScalarT,Cell,Point> perp_mobility; // bulk low field mobility
 
   // scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;

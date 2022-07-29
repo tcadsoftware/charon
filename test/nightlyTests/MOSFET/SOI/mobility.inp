@@ -1,0 +1,33 @@
+     start MOSFET mobility
+      	    start electron bulk mobility klaassen
+		enable high field mobility
+		maximum mobility = {MUEMAX}
+		minimum mobility = {MUEMIN}
+      	    end electron bulk mobility klaassen
+	    start electron channel mobility shirahata
+	    	  boundary layer thickness = 0.002
+		  spatial range is -0.033 to 0.033 in x
+		  spatial range is  0.00 to 0.00 in y
+		  spatial range is  0.00 to 0.00 in z
+		  theta = 0.05
+		  E1 = {E1E}
+		  E2 = {E2E}
+		  mu0 = {Emuo}
+	    end electron channel mobility shirahata
+
+      	    start hole bulk mobility klaassen
+		enable high field mobility
+		maximum mobility = {MUHMAX}
+		minimum mobility = {MUHMIN}
+      	    end hole bulk mobility klaassen
+	    start hole channel mobility shirahata
+	    	  boundary layer thickness = 0.002
+		  spatial range is -0.033 to 0.033 in x
+		  spatial range is  0.00 to 0.00 in y
+		  spatial range is  0.00 to 0.00 in z
+		  theta = 0.05
+		  E1 = {E1H}
+		  E2 = {E2H}
+		  mu0 = {Hmuo}
+	    end hole channel mobility shirahata
+      end MOSFET mobility

@@ -2,7 +2,7 @@
 
 interpreter name ContactOnInsulator
 
-interpreter inputLine (BC is contact on insulator for) {sidesetID} on {geometryBlock} with work function {workFunction} [(fixed at) {potential}[ (swept from) {potential1} to {potential2}]]
+interpreter inputLine (BC is contact on insulator for) {sidesetID} on {geometryBlock} with work function {workFunction} [(fixed at) {potential}[ (swept from) {potential1} to {potential2} [ (linearly ramped) from {time0} to {time1} and voltage from {voltage0} to {voltage1}[ (trapezoid pulse) with amplitude = {amplitude} period = {period} rise time = {risetime} fall time = {falltime} [(duty cycle) = {dutycycle} [(dc offset) = {DCoffset} [(delay) = {delay} [(repeat) = {repeat}]]]]]]]]
 
 interpreter shortHelp {Specify the potential on a contact}
 
@@ -16,6 +16,20 @@ xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Co
 xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Work Function,double,{workFunction}
 
 xmlOptional (fixed at) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Voltage,double,{potential}
+
+xmlOptional (linearly ramped) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Linear Ramp,Initial Time,double,{time0}
+xmlOptional (linearly ramped) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Linear Ramp,Final Time,double,{time1}
+xmlOptional (linearly ramped) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Linear Ramp,Initial Voltage,double,{voltage0}
+xmlOptional (linearly ramped) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Linear Ramp,Final Voltage,double,{voltage1}
+
+xmlOptional (trapezoid pulse) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Amplitude,double,{amplitude}
+xmlOptional (trapezoid pulse) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Period,double,{period}
+xmlOptional (trapezoid pulse) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Rise Time,double,{risetime}
+xmlOptional (trapezoid pulse) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Fall Time,double,{falltime}
+xmlOptional (duty cycle) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Duty Cycle,double,{dutycycle}
+xmlOptional (dc offset) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,DC Offset,double,{DCoffset}
+xmlOptional (delay) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Delay,double,{delay}
+xmlOptional (repeat) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Trapezoid Pulse,Number Pulses,int,{repeat}
 
 # Set the data parameter to a string
 xmlOptional (swept from) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Varying Voltage,string,Parameter

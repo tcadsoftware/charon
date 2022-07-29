@@ -1,0 +1,60 @@
+Import State File resistor.hb-laplace.ls.exo
+tpetra is on
+
+start output parameters
+      Output State File resistor.hb-dd.ls.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = 1e0
+          remapped fundamental harmonics = 1e0
+      end harmonic balance parameters 
+      material model is siliconParameter
+      SRH Recombination is off
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start uniform doping named Function1
+      	    type is donor
+	    concentration = 1e16
+      end uniform doping named Function1
+end Material Block siliconParameter
+
+start Harmonic Balance BC for anode on silicon
+  type is ohmic
+  frequencies  "0.0,1.0"
+  amplitudes   "0.5,0.5"
+  phase shifts "0.0,0.0"
+end Harmonic Balance BC for anode on silicon
+start Harmonic Balance BC for cathode on silicon
+  type is ohmic
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for cathode on silicon
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL_CosH0.000000_ in silicon is exodus file
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL_CosH1.000000_ in silicon is exodus file
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL_SinH1.000000_ in silicon is exodus file
+Harmonic Balance initial conditions for ELECTRON_DENSITY_CosH0.000000_ in silicon is constant = 1e-16
+Harmonic Balance initial conditions for ELECTRON_DENSITY_CosH1.000000_ in silicon is constant = 1e-16
+Harmonic Balance initial conditions for ELECTRON_DENSITY_SinH1.000000_ in silicon is constant = 1e-16
+Harmonic Balance initial conditions for HOLE_DENSITY_CosH0.000000_ in silicon is constant = 1e-16
+Harmonic Balance initial conditions for HOLE_DENSITY_CosH1.000000_ in silicon is constant = 1e-16
+Harmonic Balance initial conditions for HOLE_DENSITY_SinH1.000000_ in silicon is constant = 1e-16
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    nonlinear solver residual tolerance = 1e-6
+  end
+end solver block

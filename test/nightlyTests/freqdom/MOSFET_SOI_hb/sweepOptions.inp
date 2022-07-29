@@ -1,0 +1,7 @@
+
+start sweep options 
+    initial step size = 0.00125
+    maximum step size = 0.1
+    predictor method is secant
+    minimum step size = 1e-4
+end sweep options

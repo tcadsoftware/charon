@@ -1,0 +1,8 @@
+interpreter name H1Norm
+
+interpreter inputLine (h1 norm) for {varlist}
+
+interpreter shortHelp {Calculate the global H1 norm for the named variables}
+interpreter longHelp {Calculate the global H1 norm for the named variables}
+
+xmlRequired Charon->Closure Models->Global Norm->Norm Calculation: H1,Value,string,{varlist}

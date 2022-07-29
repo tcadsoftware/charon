@@ -1,0 +1,10 @@
+interpreter name TransientRelativeTolerance
+
+interpreter shortHelp {Set the relative error tolerance in a transient simulation.}
+interpreter longHelp {Set the relative error tolerance in a transient simulation.}
+
+interpreter inputLine (time integrator relative error) = {relTol}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Relative Error Tolerance,double,{relTol}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Maximum Relative Error,double,{relTol}
+

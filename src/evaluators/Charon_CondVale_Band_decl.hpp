@@ -24,9 +24,14 @@ namespace charon {
  * of degenerate semiconductors," Semicond. Sci. Technol. 9, 364 (1994).
  * Note: the formulation in the reference is for isothermal DD simulations only.
  *
- * For DDLattice, DDIon, and DDIonLattice formulations, Ec and Ev are computed as:
- * Ec = q*theta - q*phi - Chieff,  Ev = Ec - Egeff,
- * where q*theta = Chieff + 0.5*Egeff + 0.5*kB*T*log(Nc/Nv).
+ * 11/04/2021, Suzey commented: the following lines are not valid any more.
+ * This is because all the equation sets now use the same potential
+ * reference when solving the Poisson equation. Therefore, the same calculation for
+ * Ec and Ev are also held for all equation sets, hence commenting out the lines.
+ *
+ * // For DDLattice, DDIon, and DDIonLattice formulations, Ec and Ev are computed as:
+ * // Ec = q*theta - q*phi - Chieff,  Ev = Ec - Egeff,
+ * // where q*theta = Chieff + 0.5*Egeff + 0.5*kB*T*log(Nc/Nv).
  */
 
 
@@ -60,20 +65,14 @@ private:
   PHX::MDField<const ScalarT,Cell,Point> eff_affinity;  // [eV]
   PHX::MDField<const ScalarT,Cell,Point> eff_bandgap;   // [eV]
 
-  PHX::MDField<const ScalarT,Cell,Point> latt_temp;     // scaled by T0
+  // PHX::MDField<const ScalarT,Cell,Point> latt_temp;     // scaled by T0
   PHX::MDField<const ScalarT,Cell,Point> potential;     // scaled by V0=kb*T/q
-
-  PHX::MDField<const ScalarT,Cell,Point> elec_effdos;   // scaled by C0
-  PHX::MDField<const ScalarT,Cell,Point> hole_effdos;
 
   // scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double V0; // voltage scaling, [V]
-  double T0; // temperature scaling, [K]
 
   int num_points;
-
-  std::string eqnSetType;
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
 

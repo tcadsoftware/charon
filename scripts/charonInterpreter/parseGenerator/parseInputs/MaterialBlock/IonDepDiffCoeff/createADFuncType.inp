@@ -1,0 +1,11 @@
+interpreter name ADFuncType 
+
+interpreter inputLine (AD function type) is [(reciprocal) [(sqrt)]]
+
+interpreter shortHelp {The AD function type for the IonDep diffusion coefficient model}
+
+interpreter longHelp {The AD function type for the IonDep diffusion coefficient model}
+
+xmlOptional (reciprocal) Charon->Closure Models->{MaterialBlockName}->Ion Diffusion Coefficient,AD Function Type,string,Reciprocal
+
+xmlOptional (sqrt) Charon->Closure Models->{MaterialBlockName}->Ion Diffusion Coefficient,AD Function Type,string,ReciprocalSqrt

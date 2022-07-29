@@ -20,6 +20,7 @@
 // #include <ctime> 
 
 const int MAX_NUM_TRAPS = 50;
+const int DEF_NL = 20;
 const int MAX_NUM_ENERGIES = 200;
 const int ENERGY_GRID_RATIO = 4;
 const double MIN_ELECTRIC_FIELD = 1e5;  // [V/m]
@@ -333,6 +334,18 @@ evaluateFields(
         // loop over the number of traps
         for (int itrap = 0; itrap < numofTraps; ++itrap)
         {
+          // if IP outside the trap box, skip contribution from trap 
+	  if (num_dims == 2) {
+	    if (xcoord < minXCoord[itrap] || xcoord > maxXCoord[itrap] || 
+		ycoord < minYCoord[itrap] || ycoord > maxYCoord[itrap])
+	      continue;
+	  } else if(num_dims == 3) {
+	    if (xcoord < minXCoord[itrap] || xcoord > maxXCoord[itrap] || 
+		ycoord < minYCoord[itrap] || ycoord > maxYCoord[itrap] ||
+		zcoord < minZCoord[itrap] || zcoord > maxZCoord[itrap])
+	      continue;
+	  }
+	  
           ScalarT taun0 = eLifeTime[itrap]; // [s]
           ScalarT taup0 = hLifeTime[itrap];
 
@@ -392,38 +405,84 @@ evaluateFields(
           taun = taun / gn;
           taup = taup / gp;
 
-          double Et = energyLevel[itrap];
-          ScalarT ni2 = Nc * Nv * std::exp(-Eg / kbT);  // scaled
-          ScalarT n1 = Nc * std::exp(-Et / kbT);
-          ScalarT p1 = Nv * std::exp((Et - Eg) / kbT);
+	  if (trapEnDistr[itrap] == "Level") {
+	    double Et = energyLevel[itrap];
+	    ScalarT ni2 = Nc * Nv * std::exp(-Eg / kbT);  // scaled
+	    ScalarT n1 = Nc * std::exp(-Et / kbT);
+	    ScalarT p1 = Nv * std::exp((Et - Eg) / kbT);
 
-          // scaled and unscaled Rsrh have the same expression
-          ScalarT numer = n*p - ni2;
-          ScalarT denom = taup*(n+n1) + taun*(p+p1);
-          ScalarT Rsrh = numer / denom;       // scaled
-          ScalarT deriv_e = p / denom - numer*taup / (denom*denom);
-          ScalarT deriv_h = n / denom - numer*taun / (denom*denom);
+	    // scaled and unscaled Rsrh have the same expression
+	    ScalarT numer = n*p - ni2;
+	    ScalarT denom = taup*(n+n1) + taun*(p+p1);
+	    ScalarT Rsrh = numer / denom;       // scaled
+	    ScalarT deriv_e = p / denom - numer*taup / (denom*denom);
+	    ScalarT deriv_h = n / denom - numer*taun / (denom*denom);
 
-          // sum up the contribution from all specified traps
-          trap_srh_rate(cell,point) += Rsrh;
-          trap_srh_deriv_e(cell,point) += deriv_e;
-          trap_srh_deriv_h(cell,point) += deriv_h;
+	    // sum up the contribution from all specified traps
+	    trap_srh_rate(cell,point) += Rsrh;
+	    trap_srh_deriv_e(cell,point) += deriv_e;
+	    trap_srh_deriv_h(cell,point) += deriv_h;
 
-          // compute and sum up the trap charge (scaled)
-          ScalarT ft = 0.0;  // trap occupation within [0,1]
-          ScalarT Qt = 0.0;  // trap charge (scaled)
-          if (trapType[itrap] == "Acceptor")      // electron capture (close to Ec)
-          { 
-            ft = (taup*n + taun*p1) / denom; 
-            Qt = - trapDensity[itrap] * ft / C0;  // carry -e when occupied
-          }
-          else if (trapType[itrap] == "Donor")    // hole capture (close to Ev)
-          {
-            ft = (taup*n1 + taun*p) / denom; 
-            Qt = trapDensity[itrap] * ft / C0;    // carry +e when occupied
-          }
+	    // compute and sum up the trap charge (scaled)
+	    ScalarT ft = 0.0;  // trap occupation within [0,1]
+	    ScalarT Qt = 0.0;  // trap charge (scaled)
+	    if (trapType[itrap] == "Acceptor")      // electron capture (close to Ec)
+	      { 
+		ft = (taup*n + taun*p1) / denom; 
+		Qt = - trapDensity[itrap] * ft / C0;  // carry -e when occupied
+	      }
+	    else if (trapType[itrap] == "Donor")    // hole capture (close to Ev)
+	      {
+		ft = (taup*n1 + taun*p) / denom; 
+		Qt = trapDensity[itrap] * ft / C0;    // carry +e when occupied
+	      }
+	    
+	    trap_srh_charge(cell,point) += Qt;  // will be added to the RHS of the Poisson equation
+	  } else { // for continuous distributions
+	    double Nt = trapDensity[itrap]; // [cm-3 eV-1]
+	    std::vector<ScalarT> enLevels;
+	    std::vector<ScalarT> levNormDensities; // at mid-points
+	    dicretizeContDistribution(&enLevels, &levNormDensities, trapEnDistr[itrap], 
+				      energyLevel[itrap], trapEnWidth[itrap], trapNL[itrap]);
+	    for (size_t k=0; k<enLevels.size()-1; k++) {
+	      ScalarT norm_dens = levNormDensities[k]; // [1]
+	      ScalarT en = 0.5*(enLevels[k]+enLevels[k+1]); // [eV]
+	      ScalarT deltaE = enLevels[k+1] - enLevels[k];
+	      ScalarT taun_lev = taun/norm_dens; // [eV]
+	      ScalarT taup_lev = taup/norm_dens; // [eV]
 
-          trap_srh_charge(cell,point) += Qt;  // will be added to the RHS of the Poisson equation
+	      ScalarT ni2 = Nc * Nv * std::exp(-Eg / kbT);  // scaled
+	      ScalarT n1 = Nc * std::exp(-en / kbT);
+	      ScalarT p1 = Nv * std::exp((en - Eg) / kbT);
+
+	      ScalarT numer = n*p - ni2; 
+	      ScalarT denom = taup_lev*(n+n1) + taun_lev*(p+p1); // [ev]
+	      ScalarT Rsrh_lev = (numer / denom) * deltaE; // scaled
+	      ScalarT deriv_e_lev = ( p / denom - numer*taup_lev / (denom*denom) ) * deltaE; 
+	      ScalarT deriv_h_lev = ( n / denom - numer*taun_lev / (denom*denom) ) * deltaE;
+
+	      // accumulate contribution from level
+	      trap_srh_rate(cell,point) += Rsrh_lev;
+	      trap_srh_deriv_e(cell,point) += deriv_e_lev;
+	      trap_srh_deriv_h(cell,point) += deriv_h_lev;
+
+	      // accumulate trap charge (scaled)
+	      ScalarT ft_lev = 0.0;  // trap occupation within [0,1]
+	      ScalarT Qt_lev = 0.0;  // trap charge (scaled)
+	      if (trapType[itrap] == "Acceptor")      // electron capture (close to Ec)
+	      { 
+		ft_lev = (taup_lev*n + taun_lev*p1) / denom; 
+		Qt_lev = - Nt*norm_dens * ft_lev * deltaE / C0;  // carry -e when occupied
+	      }
+	      else if (trapType[itrap] == "Donor")    // hole capture (close to Ev)
+	      {
+		ft_lev = (taup_lev*n1 + taun_lev*p) / denom; 
+		Qt_lev = Nt*norm_dens * ft_lev * deltaE / C0;    // carry +e when occupied
+	      }
+	    
+	      trap_srh_charge(cell,point) += Qt_lev;  // will be added to the RHS of the Poisson equation
+	    } // end of look over levels
+	  }
        }  // end of loop over traps
 
      }  // end of if (n > 0. && p > 0.)
@@ -1306,6 +1365,44 @@ const double& xloc, const double& alpha)
 }
 
 
+
+template<typename EvalT, typename Traits>
+void RecombRate_TrapSRH<EvalT, Traits>::
+dicretizeContDistribution(std::vector<ScalarT>* enLevels, 
+			  std::vector<ScalarT>* norm_densities,
+			  const std::string& enDistr, double Et, 
+			  double enSigma, int nL) {
+  ScalarT en_step = 2.0*enSigma/(nL-1);
+  for (int i=0; i<nL; i++) {
+    ScalarT en_lev = Et - enSigma + i*en_step; 
+    enLevels->push_back(en_lev);
+  }
+  
+  if (enDistr == "Uniform") {  
+    for (int i=0; i<nL-1; i++) {
+      // normalized densities at energy mid points
+      norm_densities->push_back(1.0);
+    }
+  } else if (enDistr == "Exponential") {
+    for (int i=0; i<nL-1; i++) {
+      ScalarT en_lev = 0.5*((*enLevels)[i] + (*enLevels)[i+1]);
+      // normalized densities at energy mid points
+      norm_densities->push_back(
+	std::exp(-abs(en_lev-Et)/enSigma) );
+    }
+  } else if (enDistr == "Gaussian") {
+    for (int i=0; i<nL-1; i++) {
+      // normalized densities at energy mid points
+      ScalarT en_lev = 0.5*((*enLevels)[i] + (*enLevels)[i+1]);
+      norm_densities->push_back(
+	std::exp(-(en_lev-Et)*(en_lev-Et)/(2.0*enSigma*enSigma)) );
+    }
+  }
+  
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  getValidParameters()
@@ -1346,9 +1443,13 @@ RecombRate_TrapSRH<EvalT, Traits>::getValidParameters() const
 
     // trap related parameters
     trapPL.sublist(subListName).set<double>("Energy Level", 0.0, "Trap energy level measured from the conduction band in [eV]");
-    trapPL.sublist(subListName).set<double>("Trap Density", 0.0, "Trap density in [cm^-3]");
+    trapPL.sublist(subListName).set<double>("Trap Density", 0.0, "Trap density in [cm^-3] or [cm^-3 eV^-1]");
     trapPL.sublist(subListName).set<string>("Trap Type", "", "Either Acceptor (0 if unoccupied and -1 if occupied, electron capture) or Donor (0 if unoccupied and +1 if occupied, hole capture)");
     trapPL.sublist(subListName).set<string>("Spatial Profile", "Uniform", "Spatial profile for the trap distribution in space, currently only Uniform");
+    trapPL.sublist(subListName).set<string>("Energy Distribution", "", "Energy distribution type");
+    trapPL.sublist(subListName).set<double>("Energy Width", 0.0, "Distribution energy width [eV]");
+    trapPL.sublist(subListName).set<int>("Number of Levels", 20, 
+		  "Number of discrete energy levels for continuous a distribution");
     trapPL.sublist(subListName).set<double>("X Min", 0., "X min for the spatial box containing trap i");
     trapPL.sublist(subListName).set<double>("X Max", 0., "X max for the spatial box containing trap i");
     trapPL.sublist(subListName).set<double>("Y Min", 0., "Y min for the spatial box containing trap i");
@@ -1427,6 +1528,35 @@ const std::string& matName, const Teuchos::ParameterList& trapSRHParamList)
       TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error ! Either Acceptor or Donor must be specified for Trap Type!");
     trapType.push_back(tType);
 
+    string enDistr = "Level";
+    if (trapPList.isParameter("Energy Distribution")) {
+      enDistr = trapPList.get<std::string>("Energy Distribution");
+      if ((enDistr != "Level") && (enDistr != "Uniform") && 
+	  (enDistr != "Exponential") && (enDistr != "Gaussian")) 
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error ! Energy Distribution  must be Level, Uniform, Exponential or Gaussian!");
+    }
+    trapEnDistr.push_back(enDistr);
+    if (enDistr != "Level") {
+      if (trapPList.isParameter("Energy Width")) {
+	trapEnWidth.push_back(trapPList.get<double>("Energy Width"));
+      } else {
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error ! Energy Distribution  must have a width specified!");
+      }
+    }
+    int NL = DEF_NL;
+    if (trapPList.isParameter("Number of Levels")) {
+      if (!trapPList.isParameter("Energy Distribution")) {
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+		"Error ! Number of Levels can be specified only for continuous distributions!");
+      } else {
+	if (trapPList.get<string>("Energy Distribution") == "Level") 
+	  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+	     "Error ! Number of Levels can be specified only for continuous distributions!");
+      }
+      NL = trapPList.get<int>("Number of Levels");
+    }
+    trapNL.push_back(NL);
+
     // trap related parameters (optional)
     if (trapPList.isParameter("Spatial Profile"))
       spaceProfile = trapPList.get<string>("Spatial Profile");
@@ -1451,6 +1581,9 @@ const std::string& matName, const Teuchos::ParameterList& trapSRHParamList)
     {
       taun0 = trapPList.get<double>("Electron Lifetime");  // [s]
       eTime = true;
+      if (enDistr != "Level") 
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+		"Error ! Electron Lifetime cannot be specified for continuous distribution; use Electron Cross Section instead!");
     }
     else if (trapPList.isParameter("Electron Cross Section"))
     {
@@ -1474,6 +1607,9 @@ const std::string& matName, const Teuchos::ParameterList& trapSRHParamList)
     {
       taup0 = trapPList.get<double>("Hole Lifetime");  // [s]
       hTime = true;
+      if (enDistr != "Level") 
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+		"Error ! Hole Lifetime cannot be specified for continuous distribution; use Hole Cross Section instead!");
     }
     else if (trapPList.isParameter("Hole Cross Section"))
     {

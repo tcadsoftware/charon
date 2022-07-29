@@ -76,6 +76,15 @@ private:
   bool withVaryingV;
   double V_freeze;
 
+  bool interfaceTrapSweep;
+  double initialInterfaceTrapCrossSection;
+  double finalInterfaceTrapCrossSection;
+
+  bool interfaceDensitySweep;
+  double initialInterfaceTotalDensity;
+  double finalInterfaceTotalDensity;
+
+
   // material properties
   double mass_dens;
   
@@ -99,6 +108,9 @@ private:
   // for basis points
   std::string hcurl_basis_name;
   std::size_t hcurl_basis_index;
+
+  // reference edge length
+  double refEdgeLen;
 
   // primary cell topology
   Teuchos::RCP<const shards::CellTopology> cellType;

@@ -23,6 +23,8 @@
 #include "Kokkos_ViewFactory.hpp"
 #include <iostream>
 
+const int DEF_NL = 20;
+
 namespace charon {
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,10 +157,10 @@ NeumannBC_SurfaceCharge(const Teuchos::ParameterList& p)
   // dependent fields
   if (bSurfTrap || bSurfRecomb)
   {
-    edensity =  MDField<ScalarT,Cell,Point>(names.dof.edensity, input_dl);
-    hdensity =  MDField<ScalarT,Cell,Point>(names.dof.hdensity, input_dl);
-    intrin_conc = MDField<ScalarT,Cell,Point>(names.field.intrin_conc, input_dl);
-    latt_temp = MDField<ScalarT,Cell,Point>(names.field.latt_temp, input_dl);
+    edensity =  MDField<const ScalarT,Cell,Point>(names.dof.edensity, input_dl);
+    hdensity =  MDField<const ScalarT,Cell,Point>(names.dof.hdensity, input_dl);
+    intrin_conc = MDField<const ScalarT,Cell,Point>(names.field.intrin_conc, input_dl);
+    latt_temp = MDField<const ScalarT,Cell,Point>(names.field.latt_temp, input_dl);
     this->addDependentField(edensity);
     this->addDependentField(hdensity);
     this->addDependentField(intrin_conc);
@@ -249,37 +251,77 @@ void NeumannBC_SurfaceCharge<EvalT, Traits>::evaluateFields(typename Traits::Eva
           // loop over the number of traps
           for (int itrap = 0; itrap < numofTraps; ++itrap)
           {
-            ScalarT taun = 1.0/eTrapVelocity[itrap] * std::sqrt(300.0/latt); // [s/cm]
-            ScalarT taup = 1.0/hTrapVelocity[itrap] * std::sqrt(300.0/latt); // [s/cm]
+            ScalarT taun = 1.0/eTrapVelocity[itrap] * std::sqrt(300.0/latt); // [s/cm] or [s.eV/cm]
+            ScalarT taup = 1.0/hTrapVelocity[itrap] * std::sqrt(300.0/latt); // [s/cm] or [s.eV/cm]
+	    
+	    if (trapEnDistr[itrap] == "Level") {
+	      double Et = trapEnergy[itrap];  // [eV] measured from Ei, + for above Ei, - for below Ei
+	      ScalarT n1 = nie * std::exp(Et/kbT);
+	      ScalarT p1 = nie * std::exp(-Et/kbT); 
             
-            double Et = trapEnergy[itrap];  // [eV] measured from Ei, + for above Ei, - for below Ei
-            ScalarT n1 = nie * std::exp(Et/kbT);
-            ScalarT p1 = nie * std::exp(-Et/kbT); 
-            
-            // compute the surface recombination rate due to one type of surface traps
-            ScalarT numer = n*p - nie*nie;              // [cm^(-6)]
-            ScalarT denom = taup*(n+n1) + taun*(p+p1);  // [cm^(-4).s]
-            ScalarT Rs = numer / denom;                 // [cm^(-2).s^(-1)]
-            Rs *= 1.0/ scaling4Recomb;                  // scaled
-            
-            // sum up the contribution from all specified traps
-            rate_nodes(point) += Rs; 
+	      // compute the surface recombination rate due to one type of surface traps
+	      ScalarT numer = n*p - nie*nie;              // [cm^(-6)]
+	      ScalarT denom = taup*(n+n1) + taun*(p+p1);  // [cm^(-4).s]
+	      ScalarT Rs = numer / denom;                 // [cm^(-2).s^(-1)]
+	      Rs *= 1.0/ scaling4Recomb;                  // scaled
+	      
+	      // sum up the contribution from all specified traps
+	      rate_nodes(point) += Rs; 
 
-            // compute and sum up the trap charge 
-            ScalarT ft = 0.0;  // trap occupation within [0,1]
-            ScalarT Qt = 0.0;  // trap charge (scaled)
-            if (trapType[itrap] == "Acceptor")      // electron capture (close to Ec)
-            { 
-              ft = (taup*n + taun*p1) / denom; 
-              Qt = - trapDensity[itrap] * ft / scaling4Charge;  // carry -e when occupied
-            }
-            else if (trapType[itrap] == "Donor")    // hole capture (close to Ev)
-            {
-              ft = (taup*n1 + taun*p) / denom; 
-              Qt = trapDensity[itrap] * ft / scaling4Charge;    // carry +e when occupied
-            }
-            charge_nodes(point) += Qt; 
-            
+	      // compute and sum up the trap charge 
+	      ScalarT ft = 0.0;  // trap occupation within [0,1]
+	      ScalarT Qt = 0.0;  // trap charge (scaled)
+	      if (trapType[itrap] == "Acceptor")      // electron capture (close to Ec)
+		{ 
+		  ft = (taup*n + taun*p1) / denom; 
+		  Qt = - trapDensity[itrap] * ft / scaling4Charge;  // carry -e when occupied
+		}
+	      else if (trapType[itrap] == "Donor")    // hole capture (close to Ev)
+		{
+		  ft = (taup*n1 + taun*p) / denom; 
+		  Qt = trapDensity[itrap] * ft / scaling4Charge;    // carry +e when occupied
+		}
+	      charge_nodes(point) += Qt; 
+	    } else { // for continuous distributions
+	      double Nt = trapDensity[itrap]; // [cm-2 eV-1]
+	      std::vector<ScalarT> enLevels;
+	      std::vector<ScalarT> levNormDensities; // at mid-points
+	      discretizeContDistribution(&enLevels, &levNormDensities, trapEnDistr[itrap], 
+				       trapEnergy[itrap], trapEnWidth[itrap], trapNL[itrap]);
+	      for (size_t k=0; k<enLevels.size()-1; k++) {
+		ScalarT norm_dens = levNormDensities[k]; // [1]
+		ScalarT en = 0.5*(enLevels[k]+enLevels[k+1]); // [eV]
+		ScalarT deltaE = enLevels[k+1] - enLevels[k]; // [eV]
+		ScalarT taun_lev = taun/norm_dens; // [s.eV/cm]
+		ScalarT taup_lev = taup/norm_dens; // [s.eV/cm]
+
+		ScalarT n1 = nie * std::exp(en/kbT); // [cm^-3]
+		ScalarT p1 = nie * std::exp(-en/kbT); // [cm^-3]
+
+		ScalarT numer = n*p - nie*nie; // [cm^(-6)]
+		ScalarT denom = taup_lev*(n+n1) + taun_lev*(p+p1);  // [cm^(-4).s.eV]
+		ScalarT Rs_lev = (numer / denom) * deltaE;  // [cm^(-2).s^(-1)]
+		Rs_lev *= 1.0 / scaling4Recomb;  // scaled
+
+		// accumulate contribution from levels
+		rate_nodes(point) += Rs_lev; 
+
+		// compute and sum up the trap charge 
+		ScalarT ft_lev = 0.0;  // trap occupation within [0,1]
+		ScalarT Qt_lev = 0.0;  // trap charge (scaled)
+		if (trapType[itrap] == "Acceptor")      // electron capture (close to Ec)
+		{ 
+		  ft_lev = (taup_lev*n + taun_lev*p1) / denom; 
+		  Qt_lev = -Nt*norm_dens*deltaE*ft_lev / scaling4Charge;  // carry -e when occupied
+		}
+		else if (trapType[itrap] == "Donor")    // hole capture (close to Ev)
+		{
+		  ft_lev = (taup_lev*n1 + taun_lev*p) / denom; 
+		  Qt_lev =  Nt*norm_dens*deltaE*ft_lev / scaling4Charge;    // carry +e when occupied
+		}
+		charge_nodes(point) += Qt_lev; 
+	      } // cont distr levels 
+	    }
           }  // end of loop over traps           
         }  // end of if (n > 0. && p > 0.)
 
@@ -370,6 +412,47 @@ void NeumannBC_SurfaceCharge<EvalT, Traits>::evaluateFields(typename Traits::Eva
 }
 
 
+
+
+
+template<typename EvalT, typename Traits>
+void NeumannBC_SurfaceCharge<EvalT, Traits>::
+discretizeContDistribution(std::vector<ScalarT>* enLevels, 
+			  std::vector<ScalarT>* norm_densities,
+			  const std::string& enDistr, double Et, 
+			  double enSigma, int nL) {
+  ScalarT en_step = 2.0*enSigma/(nL-1);
+  for (int i=0; i<nL; i++) {
+    ScalarT en_lev = Et - enSigma + i*en_step; 
+    enLevels->push_back(en_lev);
+  }
+ 
+  if (enDistr == "Uniform") {  
+    for (int i=0; i<nL-1; i++) {
+      // normalized densities at energy mid points
+      norm_densities->push_back(1.0);
+    }
+  } else if (enDistr == "Exponential") {
+    for (int i=0; i<nL-1; i++) {
+      ScalarT en_lev = 0.5*((*enLevels)[i] + (*enLevels)[i+1]);
+      // normalized densities at energy mid points
+      norm_densities->push_back(
+	std::exp(-abs(en_lev-Et)/enSigma) );
+    }
+  } else if (enDistr == "Gaussian") {
+    for (int i=0; i<nL-1; i++) {
+      // normalized densities at energy mid points
+      ScalarT en_lev = 0.5*((*enLevels)[i] + (*enLevels)[i+1]);
+      norm_densities->push_back(
+	std::exp(-(en_lev-Et)*(en_lev-Et)/(2.0*enSigma*enSigma)) );
+    }
+  } 
+}
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  initSurfTrapParams()
@@ -402,7 +485,7 @@ void NeumannBC_SurfaceCharge<EvalT, Traits>::initSurfTrapParams(const Teuchos::P
       // trap related parameters (required)
       trapEnergy.push_back(plist.get<double>("Trap Energy"));  // [eV]
 
-      double Nst = plist.get<double>("Trap Density");           // [cm^(-2)]
+      double Nst = plist.get<double>("Trap Density");  // [cm^(-2)] or [cm^(-2)/eV]
       trapDensity.push_back(Nst);
 
       string tType = plist.get<string>("Trap Type");
@@ -410,16 +493,47 @@ void NeumannBC_SurfaceCharge<EvalT, Traits>::initSurfTrapParams(const Teuchos::P
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! Either Acceptor or Donor must be specified for Trap Type!");
       trapType.push_back(tType);
 
+      string enDistr = "Level";
+      if (plist.isParameter("Energy Distribution")) {
+	enDistr = plist.get<std::string>("Energy Distribution");
+	if ((enDistr != "Level") && (enDistr != "Uniform") && 
+	    (enDistr != "Exponential") && (enDistr != "Gaussian")) 
+	  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+            "Error ! Energy Distribution  must be Level, Uniform, Exponential or Gaussian!");
+      }
+      trapEnDistr.push_back(enDistr);
+      if (enDistr != "Level") {
+	if (plist.isParameter("Energy Width")) {
+	  trapEnWidth.push_back(plist.get<double>("Energy Width"));
+	} else {
+	  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+	    "Error ! Energy Distribution  must have a width specified!");
+	}
+      }
+      int NL = DEF_NL;
+      if (plist.isParameter("Number of Levels")) {
+	if (!plist.isParameter("Energy Distribution")) {
+	  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+		"Error ! Number of Levels can be specified only for continuous distributions!");
+	} else {
+	  if (plist.get<string>("Energy Distribution") == "Level") 
+	    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
+	     "Error ! Number of Levels can be specified only for continuous distributions!");
+	}
+	NL = plist.get<int>("Number of Levels");
+      }
+      trapNL.push_back(NL);
+
       // compute electron surface recombination velocity due to traps at 300 K
       double eXsec = plist.get<double>("Electron Cross Section");  // [cm^2]
       double eVel = velPrefactor / std::sqrt(eMass);  // [cm/s]
-      double eSurfVel = eXsec * eVel * Nst;  // [cm/s]
+      double eSurfVel = eXsec * eVel * Nst;  // [cm/s] or [cm/s/eV]
       eTrapVelocity.push_back(eSurfVel); 
     
       // compute hole surface recombination velocity due to traps at 300 K
       double hXsec = plist.get<double>("Hole Cross Section");  // [cm^2]
       double hVel = velPrefactor / std::sqrt(hMass);  // [cm/s]
-      double hSurfVel = hXsec * hVel * Nst;  // [cm/s]
+      double hSurfVel = hXsec * hVel * Nst;  // [cm/s] or [cm/s/eV]
       hTrapVelocity.push_back(hSurfVel); 
     }
   }

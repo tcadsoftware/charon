@@ -1,0 +1,74 @@
+Import State File pndiode_dd_equ.exo
+tpetra is on
+
+start output parameters
+      Output State File pndiode-shortbase_hb-dd_sweep.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = 1e5
+          remapped fundamental harmonics = 1e0
+      end harmonic balance parameters 
+      material model is siliconParameter
+      SRH Recombination is off
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 0.2e-9
+	    hole lifetime is constant = 0.2e-9
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e15
+	    donor concentration = 2e15
+	    junction location = 5.0
+	    dopant order is PN
+            direction is X
+      end step junction doping
+
+end Material Block siliconParameter
+
+
+start Harmonic Balance BC for anode on silicon
+  type is ohmic
+  small signal sweep from -0.55 to 0.55 with amplitude 1e-3
+end Harmonic Balance BC for anode on silicon
+start Harmonic Balance BC for cathode on silicon
+  type is ohmic
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for cathode on silicon
+
+#Harmonic Balance initial conditions for ELECTRIC_POTENTIAL_CosH0.000000_ in silicon is remapped named ELECTRIC_POTENTIAL
+#Harmonic Balance Initial Conditions for ELECTRON_DENSITY_CosH0.000000_ in silicon is remapped named ELECTRON_DENSITY
+#Harmonic Balance Initial Conditions for HOLE_DENSITY_CosH0.000000_ in silicon is remapped named HOLE_DENSITY
+#Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized for higher harmonics
+#Harmonic Balance Initial Conditions for ELECTRON_DENSITY in silicon is uninitialized for higher harmonics
+#Harmonic Balance Initial Conditions for HOLE_DENSITY in silicon is uninitialized for higher harmonics
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in silicon is DC remapped
+Harmonic Balance Initial Conditions for ELECTRON_DENSITY in silicon is DC remapped
+Harmonic Balance Initial Conditions for HOLE_DENSITY in silicon is DC remapped
+
+start sweep options
+  initial step size = 0.1
+  maximum step size  = 0.1
+end sweep options
+
+start solver block
+  start tpetra block
+    problem type is parameter sweep
+    verbosity level is high
+  end
+end solver block

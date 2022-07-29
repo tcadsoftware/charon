@@ -8,6 +8,7 @@ start output parameters
 end output parameters
 
 assembly workset = 50
+tpetra is on
 
 start Physics Block Semiconductor
       geometry block is silicon
@@ -48,7 +49,8 @@ initial conditions for HOLE_DENSITY in silicon is Exodus File
 scale initial conditions is on
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

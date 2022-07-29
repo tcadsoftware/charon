@@ -1,0 +1,11 @@
+
+
+interpreter name C
+
+interpreter inputLine (c) = {c} 
+
+interpreter shortHelp {Set the band gap beta mole fraction c value}
+
+interpreter longHelp {Set the band gap beta mole fraction c value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap->Mole Fraction Parameters->beta,c,double,{c}

@@ -38,9 +38,9 @@ private:
   PHX::MDField<ScalarT,Cell,Point> space_charge;
 
   // input 
-  PHX::MDField<ScalarT,Cell,Point> elec_density;
-  PHX::MDField<ScalarT,Cell,Point> hole_density;
-  PHX::MDField<ScalarT,Cell,Point> doping;
+  PHX::MDField<const ScalarT,Cell,Point> elec_density;
+  PHX::MDField<const ScalarT,Cell,Point> hole_density;
+  PHX::MDField<const ScalarT,Cell,Point> doping;
   int num_points;
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;

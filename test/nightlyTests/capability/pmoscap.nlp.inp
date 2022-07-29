@@ -2,16 +2,18 @@
 Import State File "pmoscap.exo"
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
-      Output State File potential_pmoscap.exo
+      Output State File pmoscap.nlp.exo
 end output parameters
 
 concentration scaling=1e14
+lattice temperature = 300.0
 
 start Physics Block Semiconductor
       geometry block is psilicon
-      standard discretization type is nlp
+      standard discretization type is nlp gfem
       material model is siliconParameter
 end Physics Block Semiconductor
 
@@ -34,15 +36,16 @@ start Material Block SiO2Parameter
       relative permittivity = 3.9
 end Material Block
 
-initial conditions for ELECTRIC_POTENTIAL in Default is uninitialized
+initial conditions for ELECTRIC_POTENTIAL in psilicon is Equilibrium Potential
+initial conditions for ELECTRIC_POTENTIAL in sio2 is uninitialized
 
 BC is ohmic for substrate on psilicon fixed at 0
-BC is contact on insulator for gate on sio2 with work function 4.05 fixed at 2.0
+BC is contact on insulator for gate on sio2 with work function 4.05 fixed at 0.5
 
 start solver block
-      use solver pack 1
-      line search method is backtrack
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

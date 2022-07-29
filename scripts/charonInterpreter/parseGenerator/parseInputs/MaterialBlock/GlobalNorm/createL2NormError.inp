@@ -1,0 +1,8 @@
+interpreter name L2NormError
+
+interpreter inputLine (l2 error norm) for {varlist}
+
+interpreter shortHelp {Calculate the global L2 norm of error for the named variables}
+interpreter longHelp {Calculate the global L2 norm of error for the named variables}
+
+xmlRequired Charon->Closure Models->Global Norm->Norm Calculation: L2 Error,Value,string,{varlist}

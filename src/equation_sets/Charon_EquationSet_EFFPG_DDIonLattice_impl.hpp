@@ -281,7 +281,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   // Construct Poisson Equation (solved with continuity equations)
   // The same code as in Charon_EquationSet_DDIonLattice_impl.hpp
   // ***************************************************************************
-
+/*
   // Compute the vacuum potential
   {
     ParameterList p("Vacuum Potential");
@@ -316,20 +316,19 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       rcp(new panzer::DOFGradient<EvalT,panzer::Traits>(p));
     fm.template registerEvaluator<EvalT>(op);
   }
-
+*/
   // Laplacian Operator: \int_{\Omega} \lambda2 \epsilon_r \grad_vacpot \cdot \grad_basis d\Omega
   {
     ParameterList p("Laplacian Residual");
     p.set("Residual Name", n.res.phi);
-    p.set("Flux Name", n.field.grad_vac_pot);
+    // p.set("Flux Name", n.field.grad_vac_pot);
+    p.set("Flux Name", n.grad_dof.phi);
     p.set("Basis", basis);
     p.set("IR", ir);
-    //p.set("Multiplier", 1.0);
     p.set("Multiplier", scaleParams->scale_params.Lambda2);
 
     Teuchos::RCP<std::vector<std::string> > fms = Teuchos::rcp(new std::vector<std::string>);
     fms->push_back(n.field.rel_perm);
-    //fms->push_back(n.field.Lambda2);
     p.set< Teuchos::RCP<const std::vector<std::string> > >("Field Multipliers",fms);
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
@@ -513,6 +512,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set("Basis", basis);
     p.set("IR", ir);
     p.set<bool>("Temperature Gradient", true);
+    p.set("Scaling Parameters", scaleParams);
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::EFFPG_DDIonLattice_CurrentDensity<EvalT,panzer::Traits>(p));

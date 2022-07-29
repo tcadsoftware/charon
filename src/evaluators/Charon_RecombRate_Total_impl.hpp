@@ -60,6 +60,8 @@ RecombRate_Total(
   bEmpiricalDefect = false;
   bParticleStrike = false;
   bOptGen = false;
+  bBBT = false;
+
   if (p.get<string>("SRH") == "On") bSRH = true;
   if (p.get<string>("Trap SRH") == "On") bTrapSRH = true;
   if (p.get<string>("Radiative") == "On") bRadiative = true;
@@ -69,6 +71,7 @@ RecombRate_Total(
   if (p.get<string>("Empirical Defect") == "On") bEmpiricalDefect = true;
   if (p.get<string>("Particle Strike") == "On") bParticleStrike = true;
   if (p.get<string>("Optical Generation") == "On") bOptGen = true;
+  if (p.get<string>("Band2Band Tunneling") == "On") bBBT = true;
 
   // Evaluated fields (computed at IPs)
   total_rate = MDField<ScalarT,Cell,Point>(n.field.total_recomb, ip_scalar);
@@ -143,6 +146,11 @@ RecombRate_Total(
     this->addDependentField(trap_srh_rate);
     this->addDependentField(trap_srh_deriv_e);
     this->addDependentField(trap_srh_deriv_h);
+  }
+  if (bBBT)
+  {
+    bbt_rate = MDField<const ScalarT, Cell, Point>(n.field.bbt_rate, ip_scalar);
+    this->addDependentField(bbt_rate);
   }
 
   std::string name = "Total_Recombination_Rate";
@@ -384,6 +392,9 @@ evaluateFields(
       if (bAvalanche)  // subtract avalanche generation
         total -= ava_rate(cell,point);   
 
+      if (bBBT)  // subtract band-to-band tunneling generation
+        total -= bbt_rate(cell, point);
+ 
       if (bTrapSRH)  // add trap srh recomb.
       {
         total += trap_srh_rate(cell,point); 
@@ -414,6 +425,7 @@ RecombRate_Total<EvalT, Traits>::getValidParameters() const
   p->set<std::string>("Radiative", "Off");
   p->set<std::string>("Auger", "Off");
   p->set<std::string>("Avalanche", "Off");
+  p->set<std::string>("Band2Band Tunneling", "Off");
   p->set<std::string>("Defect Cluster", "Off");
   p->set<std::string>("Empirical Defect", "Off");
   p->set<std::string>("Particle Strike", "Off");

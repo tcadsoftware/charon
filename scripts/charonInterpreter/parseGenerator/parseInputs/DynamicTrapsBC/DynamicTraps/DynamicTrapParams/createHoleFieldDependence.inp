@@ -1,0 +1,12 @@
+interpreter name HoleFieldDependence
+
+interpreter inputLine (hole field dependence) is [ (saturation) [(kimpton)]]
+
+interpreter shortHelp {The trap hole field-dependence cross section type}
+interpreter longHelp {The trap hole field-dependence cross section type. It can be saturation or kimpton}
+
+xmlOptional (saturation) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Hole Field Dependence,string,Saturation
+
+xmlOptional (kimpton) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Hole Field Dependence,string,Kimpton
+
+

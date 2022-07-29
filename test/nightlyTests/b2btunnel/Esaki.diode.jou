@@ -1,0 +1,65 @@
+
+# Arbitray zDim for creating the bricks 0.002
+
+${zDim  = 1.0}
+${yDim  = 0.3}
+${xDim  = 0.5}
+
+################################################################################
+# Create geometry
+#################################################################################
+
+# create the entire block
+brick x {xDim} y {yDim } z {zDim}
+move vertex 4 location 0.0 0.0 0.0
+
+#### Partition geometry for physical entities ####
+# y-cut for the substrate region
+webcut volume 1 with plane xplane offset {xDim /2}
+
+imprint all
+merge all
+
+
+################################################################################
+# Define electrical contacts
+################################################################################
+sideset 1 curve 3
+sideset 1 name "anode"
+color sideset 1 blue
+
+sideset 2 curve 1
+sideset 2 name "cathode"
+color sideset 2 red
+
+
+################################################################################
+# Define blocks
+################################################################################
+block 1 surface 15 8
+block 1 name "silicon" 
+block 1 element type quad4
+
+
+################################################################################
+# Define mesh
+################################################################################
+${xFineSize   = 1.0e-4}
+${xCoarseSize = 1.0e-2}
+${yFineSize = yDim/10.0}
+${yCoarseSize = yDim/10.0}
+
+# graded x-mesh
+curve 26 28 scheme bias fine size {xFineSize} coarse size {xCoarseSize} start vertex 12 11
+curve 18 17 scheme bias fine size {xFineSize} coarse size {xCoarseSize} start vertex 12 11
+
+# graded y-mesh
+curve 3 15 1 scheme dualbias fine size {yFineSize} coarse size {yCoarseSize}
+
+# actually mesh the geometry using the default meshing engine (Map)
+mesh surface 15 8
+
+# dimension size is assumed in [um]
+export mesh "Esaki.diode.exo" dimension 2 block all overwrite
+
+

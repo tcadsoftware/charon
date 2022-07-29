@@ -6,6 +6,7 @@ start output parameters
 end output parameters
 
 Assembly Workset = 50
+tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e19
 
@@ -85,11 +86,9 @@ end Material Block siliconParameter
 BC is ohmic for anode on silicon swept from -30.0 to 0.0
 BC is ohmic for cathode on silicon fixed at 0
 
-
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
 Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 Initial Conditions for HOLE_DENSITY in silicon is Exodus File
-
 
 start sweep options
   continuation method is natural
@@ -102,13 +101,13 @@ start sweep options
 end sweep options
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-10
-      max nonlinear iterations = 30
-      line search method is full step
-      aztec max iterations = 700
-      aztec tolerance = 1e-5
-      aztec Krylov subspace size = 200
-      ifpack level of fill = 1
-      thyra function scaling is Row Sum
+  start tpetra block
+    problem type is parameter sweep
+    linear solver tolerance = 1.0e-10
+    nonlinear solver residual tolerance = 1.0e-10
+    verbosity level is high
+    start nonlinear solver wrms block
+      test is off
+    end
+  end
 end solver block

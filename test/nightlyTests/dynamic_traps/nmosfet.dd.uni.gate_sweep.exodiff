@@ -1,0 +1,4 @@
+GLOBAL VARIABLES relative 9.0e-03 floor 4.0e-8
+ELEMENT VARIABLES relative 4.0e-3 floor 1.0e-7
+NODAL VARIABLES relative 1.0e-3 floor 1.0e-8
+	

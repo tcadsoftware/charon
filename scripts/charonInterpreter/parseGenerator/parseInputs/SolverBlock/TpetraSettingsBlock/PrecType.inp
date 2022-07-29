@@ -1,0 +1,11 @@
+# Override of the default preconditioner
+interpreter name PrecType
+
+interpreter shortHelp {Set the preconditioner for the linear solve.}
+interpreter longHelp {Set the preconditioner for the linear solve.}
+
+interpreter inputLine (preconditioner is) [ (ilut) [ (riluk) [ (schwarz) ]]]
+
+xmlOptional (ilut) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2,Prec Type,string,ILUT
+xmlOptional (riluk) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2,Prec Type,string,RILUK
+xmlOptional (schwarz) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2,Prec Type,string,SCHWARZ

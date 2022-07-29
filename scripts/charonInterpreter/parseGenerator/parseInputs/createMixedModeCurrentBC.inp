@@ -1,0 +1,25 @@
+
+interpreter name MixedModeCurrentBC
+
+interpreter inputLine (BC is mixed mode via current for) {sidesetID} on {geometryBlock} fixed at {current} and initial voltage {voltage} [(with area) {cntarea} [ (and length) {cntlength} [ (with base doping type) {baseType} ]]]
+
+interpreter inputLine (BC is mixed mode via current for) {sidesetID} on {geometryBlock} as node named {nodeName} in netlist {netlistName} with initial current {initCurrent} with initial voltage {initVoltage} [(with area) {cntarea} [ (and length) {cntlength} [ (with base doping type) {baseType} ]]]
+
+interpreter shortHelp {Specify a mixed mode Xyce-coupled current boundary condition}
+
+interpreter longHelp {Specify a mixed mode Xyce-coupled current boundary condition, <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> nodeName is the name of the node in the Xyce netlist <> netlistName is the Xyce netlist <> initCurrent and initVoltage are the initialized  current and voltage couple values}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Mixed Mode via Current
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Netlist,string,{netlistName}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Node Name,string,{nodeName}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Current Value,double,{initCurrent}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Voltage,double,{initVoltage}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Initial Xyce Coupling on Step Number,int,3
+
+xmlOptional (with area) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Device Contact Area,double,{cntarea}
+xmlOptional (and length) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Simulation Contact Length,double,{cntlength}
+xmlOptional (with base doping type) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,BJT1D Base Doping Type,string,{baseType}

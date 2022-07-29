@@ -1,0 +1,60 @@
+Import State File result_pndiode_dd.exo
+tpetra is on
+
+start output parameters
+      Output State File pndiode_hb-sgcvfem-dd.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      apply harmonic balance for large signal analysis
+      start harmonic balance parameters
+          truncation order = 1
+          truncation scheme is box
+          fundamental harmonics = "1e0"
+          remapped fundamental harmonics = "1e0"
+      end harmonic balance parameters 
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is X
+      end step junction doping
+end Material Block siliconParameter
+
+start Harmonic Balance BC for anode on silicon
+  type is ohmic
+  frequencies  "0.0,1.0"
+  amplitudes   "4.0,2.0"
+  phase shifts "0.0,0.0"
+end Harmonic Balance BC for anode on silicon
+start Harmonic Balance BC for cathode on silicon
+  type is ohmic
+  frequencies  "0"
+  amplitudes   "0"
+  phase shifts "0"
+end Harmonic Balance BC for cathode on silicon
+
+Harmonic Balance initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized for higher harmonics
+Harmonic Balance initial conditions for ELECTRON_DENSITY in silicon is uninitialized for higher harmonics
+Harmonic Balance initial conditions for HOLE_DENSITY in silicon is uninitialized for higher harmonics
+
+start solver block
+  start tpetra block
+    problem type is harmonic balance
+    verbosity level is high
+    nonlinear solver residual tolerance = 1e-8
+  end
+end solver block

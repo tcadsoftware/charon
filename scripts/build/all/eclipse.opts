@@ -1,0 +1,40 @@
+##
+## Modules loaded for this build:
+##   intel
+##   cmake
+##   mkl
+##   openmpi-intel/4.0
+##   sems-git
+##
+CMAKE_CXX_COMPILER:FILEPATH="mpic++"
+CMAKE_C_COMPILER:FILEPATH="mpicc"
+CMAKE_Fortran_COMPILER:FILEPATH="mpif77"
+
+CMAKE_CXX_FLAGS_RELEASE_OVERRIDE:STRING="-O"
+CMAKE_C_FLAGS_RELEASE_OVERRIDE:STRING="-O"
+CMAKE_Fortran_FLAGS_RELEASE_OVERRIDE:STRING="-O"
+
+BLAS_LIBRARY_NAMES:STRING="mkl_rt"
+BLAS_LIBRARY_DIRS:PATH=${MKL_LIBS}
+
+LAPACK_LIBRARY_NAMES:STRING="mkl_rt"
+LAPACK_LIBRARY_DIRS:PATH=${MKL_LIBS}
+
+TPL_ENABLE_Boost:BOOL=ON
+TPL_ENABLE_BoostLib:BOOL=ON
+Boost_INCLUDE_DIRS:PATH=/projects/charon/install/attaway.native.openmpi-4.intel-20.opt
+BoostLib_LIBRARY_DIRS:PATH=/projects/charon/install/attaway.native.openmpi-4.intel-20.opt/lib
+BoostLib_INCLUDE_DIRS:PATH=/projects/charon/install/attaway.native.openmpi-4.intel-20.opt/include
+
+TPL_ENABLE_Netcdf:BOOL=ON
+Netcdf_LIBRARY_DIRS:PATH=/projects/charon/install/attaway.native.openmpi-4.intel-20.opt/lib
+Netcdf_INCLUDE_DIRS:PATH=/projects/charon/install/attaway.native.openmpi-4.intel-20.opt/include
+
+Panzer_ENABLE_TESTS:BOOL=OFF
+
+# Turn these on to aid in debugging build
+tcad-charon_TRACE_FILE_PROCESSING:BOOL=OFF
+tcad-charon_DUMP_PACKAGE_DEPENDENCIES:BOOL=OFF
+CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+
+CMAKE_INSTALL_PREFIX:PATH="/projects/charon/install/attaway.openmpi-4.intel-20.opt"

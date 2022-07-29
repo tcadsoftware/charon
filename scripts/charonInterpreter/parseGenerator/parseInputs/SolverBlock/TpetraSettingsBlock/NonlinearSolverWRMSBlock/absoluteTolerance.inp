@@ -1,0 +1,12 @@
+interpreter name AbsoluteTolerance
+
+interpreter shortHelp {Set the WRMS absolute tolerance for the nonlinear solver status test.}
+interpreter longHelp {Set the WRMS absolute tolerance for the nonlinear solver status test.}
+
+interpreter inputLine (absolute tolerance) = {absTol}
+
+# rythmos
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Absolute Tolerance,double,{absTol}
+
+# tempus
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Absolute Tolerance,double,{absTol}

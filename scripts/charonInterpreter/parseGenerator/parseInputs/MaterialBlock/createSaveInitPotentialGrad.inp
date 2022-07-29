@@ -1,0 +1,13 @@
+interpreter name SaveInitPotentialGrad 
+
+interpreter inputLine (save initial potential gradient is true)
+
+interpreter shortHelp {Save the initial potential gradient from input Exodus file}
+
+interpreter longHelp {Save the initial potential gradient from input Exodus file}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->ELECTRIC_POTENTIAL,Value,string,Initial PotentialGrad
+
+
+
+

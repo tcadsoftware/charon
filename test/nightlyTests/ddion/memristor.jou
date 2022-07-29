@@ -1,0 +1,42 @@
+
+# The two-dimensional mesh will be defined on a surface of this brick
+brick x 0.05 y 0.001 z 0.05
+volume 1 name "mybrick"
+list names volume
+
+# This will make all coordinates positive. Not necessary
+# but can be convenient. Cubit uses symmetrical coordinates by default.
+move vertex 4 location 0 0 0 nomerge
+
+# Define sidesets for Dirichlet BC
+sideset 1 curve 3
+sideset 1 name "left"
+sideset 2 curve 1
+sideset 2 name "right"
+
+# Define blocks for a single material
+block 1 surface 1
+block 1 name "tio2"
+block 1 element type quad4
+
+# Define meshing size on the long side
+curve 2 4 interval 1000
+# curve 2 4 scheme dualbias fine size 1e-5 coarse size 1e-4
+
+# Define meshing size on the short side
+curve 1 3 interval 1
+
+# Actually mesh the geometry using the default meshing engine (Map)
+surface 1 scheme map
+mesh surface all
+
+# Merge all meshing elements
+merge all
+
+# the structure size is assumed in [um] in Cubit
+
+# Output the Exodus II mesh
+export mesh "memristor.exo" dimension 2 block all overwrite
+
+
+

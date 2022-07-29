@@ -11,6 +11,7 @@
 #include "Panzer_Workset_Utilities.hpp"
 #include "Panzer_BasisIRLayout.hpp"
 #include "Panzer_FieldLibrary.hpp"
+#include "Panzer_ParameterLibraryUtilities.hpp"
 
 #include "Charon_Names.hpp"
 #include "Charon_Material_Properties.hpp"
@@ -32,6 +33,7 @@ BC_Sinusoid(
   const Teuchos::ParameterList& p)
 {
   using Teuchos::RCP;
+  using Teuchos::rcp;
   using PHX::DataLayout;
   using PHX::MDField;
 
@@ -51,7 +53,16 @@ BC_Sinusoid(
   RCP<PHX::DataLayout> data_layout = basis->functional;
   num_basis = data_layout->dimension(1);
 
-  // read in user-specified values
+  //Set up to write the contact voltage to the parameter library
+  contactVoltage = rcp(new panzer::ScalarParameterEntry<EvalT>);
+  contactVoltage->setRealValue(0);
+  contactVoltageName = p.get<std::string>("Sideset ID")+"_Voltage";
+  contactVoltage = 
+    panzer::createAndRegisterScalarParameter<EvalT>(
+						    std::string(contactVoltageName),
+						    *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+
+ // read in user-specified values
   dc_offset = p.get<double>("DC Offset");
   amplitude1 = p.get<double>("Amplitude 1");
   frequency1 = p.get<double>("Frequency 1");
@@ -65,7 +76,10 @@ BC_Sinusoid(
   incmpl_ioniz = p.sublist("Incomplete Ionization");
   expandIonizEnParams(incmpl_ioniz);
 
-  // evaluated fields
+   //Set the parameter library contact voltage to an initial value
+  contactVoltage->setValue(dc_offset);
+
+ // evaluated fields
   potential = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.phi, data_layout);
   edensity = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.edensity, data_layout);
   hdensity = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.hdensity, data_layout);
@@ -141,6 +155,8 @@ evaluateFields(
   bool bBJT1DBase = false;
   bool bUseRefE = true;
 
+  contactVoltage->setValue(voltage);
+
   OhmicContact<EvalT, Traits>::evaluateOhmicContactBC(
        bBJT1DBase, bUseFD, bUseRefE, incmpl_ioniz, voltage, Eref, vScaling, densScaling,
        tempScaling, workset, doping, acceptor, donor,
@@ -201,6 +217,13 @@ BC_Sinusoid<EvalT, Traits>::getValidParameters() const
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);
+
+ //Sideset ID
+  p->set<std::string>("Sideset ID","");
+ 
+  Teuchos::RCP<panzer::ParamLib> pl;
+  p->set("ParamLib", pl);
+
 
   return p;
 }

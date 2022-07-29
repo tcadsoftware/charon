@@ -1,4 +1,4 @@
-from __future__ import print_function
+import sys
 
 class createLineParser:
     "create line parser from interpreter input and xml"
@@ -14,7 +14,9 @@ class createLineParser:
         self.parserName = "noName"
         self.lines = list(open(self.sourcePath+"/"+filename))
         self.parsingKey = "Undefined"
+        self.primary = "Undefined"
         self.parsingKeyOptional = []
+        self.options = []
         self.verbosity = int(verbosity)
         self.interpreterHelpLine = "No help section exists"
         self.interpreterQuickHelp = ""
@@ -48,7 +50,12 @@ class createLineParser:
         if self.verbosity > 0:
             class_name = self.__class__.__name__
             print (class_name, self.filename,"created")
-
+        #######################################################################################
+        # Special information lines allow the interpreter to capture inforamtion that can be
+        # back up to the master interpolator to be used for tools other than Charon such as
+        # meshing, mesh decomposition, optimization, etc.
+        #######################################################################################
+        self.specialInformation = []
 
 #######################################################################################################
 ##  Create line parser destructor
@@ -126,6 +133,7 @@ class createLineParser:
                     #extract the parsing keys from the main line and the options
                     (self.parsingKey,self.parsingKeyOptional) = self.extractKeys(interpreterLine,interpreterOptionalLines)
 
+                    (self.primary,self.options) = self.extractLines(line)
                     #extract the arguments
                     (self.xmlRequiredArgument,self.xmlRequiredArgumentIndexes,self.xmlOptionalArgument,self.xmlOptionalArgumentIndexes) = self.extractArguments(interpreterLine,interpreterOptionalLines)
 
@@ -162,8 +170,12 @@ class createLineParser:
                     else:
                         self.xmlOptionalLinePriorityTemp.append("2")
                     self.xmlOptionalLinesTemp.append((line.replace(lineTokens[0]+" ","")).rstrip())
-                    
                     foundLineToProcess = True
+
+            if len(lineTokens) != 0:
+                if lineTokens[0].lower() == "specialinformation":
+                    self.specialInformation.append(lineTokens[1:])
+                foundLineToProcess = True
 
             if len(lineTokens) != 0:
                 if lineTokens[0][0] != "#":
@@ -212,13 +224,58 @@ class createLineParser:
 #######################################################################################################
 
     def extractKeys(self,interpreterLine,interpreterOptional):
-        parsingKey = interpreterLine.partition('(')[-1].rpartition(')')[0].lower()
-        if parsingKey == "":
-            print("Error!  Cannot extract a parsing key for \n",interpreterLine," in ",self.filename,". Check the input file.")
+        parsingKey = ""  # No longer used
+
         parsingKeyOptional = []
         for option in interpreterOptional:
             parsingKeyOptional.append(option.partition('(')[-1].rpartition(')')[0].lower())
         return (parsingKey,parsingKeyOptional)
+
+#######################################################################################################
+##  extractLines:  this extracts the syntax lines from the required and optional interpreter lines
+#######################################################################################################
+
+    def extractLines(self,line):
+         #Extract the compound options line
+        compoundOptions = line.partition('[')[-1].rpartition(']')[0]
+        interpreterLine = line.replace("["+compoundOptions+"]","")
+        #strip off the interpreter directive token
+        interpreterLine = interpreterLine.replace(interpreterLine.split()[0]+" ","")
+        interpreterLine = interpreterLine.replace(interpreterLine.split()[0]+" ","")
+        # buffer = sign
+        interpreterLine = interpreterLine.replace("="," = ")
+        # Don't want parentheses in this
+        interpreterLine = interpreterLine.replace("(","").replace(")","")
+        #strip carriage return from primary line
+        interpreterLine = interpreterLine.strip()
+        #rebuild interpreter line lowering case for non-variables
+        iLT = interpreterLine.split()
+        iLTtemp = []
+        for iL in iLT:
+            if "{" in iL:
+                iLTtemp.append(iL)
+            else:
+                iLTtemp.append(iL.lower())
+        interpreterLine = ' '.join(iLTtemp)
+
+        optionLines = []
+        # remove parens from compound options
+        compoundOptions = compoundOptions.replace("(","").replace(")","")
+        #rebuild compund options preserving case for variables
+        cPTokens = compoundOptions.split()
+        cPtemp = []
+        for cP in cPTokens:
+            if "{" in cP:
+                cPtemp.append(cP)
+            else:
+                cPtemp.append(cP.lower())
+        compoundOptions = ' '.join(cPtemp)
+        while len(compoundOptions) > 0:
+            remainingOptions = compoundOptions.partition('[')[-1].rpartition(']')[0]
+            optionLines.append(compoundOptions.replace("["+remainingOptions+"]",""))
+            compoundOptions = remainingOptions
+            
+        return (interpreterLine,optionLines)
 
 #######################################################################################################
 ##  stripOptionalKeys:  this strips the parsing keys from the optional xml lines
@@ -231,13 +288,24 @@ class createLineParser:
             self.xmlOptionalLines.append([])
             self.xmlOptionalLinePriority.append([])
         oLineCounter=-1
+        OptionalKeyCheck = [False]*len(self.parsingKeyOptional)
         for xmlOLine in self.xmlOptionalLinesTemp:
             oLineCounter += 1
             parsingKey = "("+xmlOLine.partition('(')[-1].partition(')')[0]+")"
+            FoundOptionalKeyForXML = False
             for ioptKey in range(len(self.parsingKeyOptional)):
                 if parsingKey.replace("(","").replace(")","").lower() == self.parsingKeyOptional[ioptKey]:
+                    OptionalKeyCheck[ioptKey] = True
+                    FoundOptionalKeyForXML = True
                     self.xmlOptionalLines[ioptKey].append(xmlOLine.replace(parsingKey,""))
                     self.xmlOptionalLinePriority[ioptKey].append(self.xmlOptionalLinePriorityTemp[oLineCounter])
+            if FoundOptionalKeyForXML == False:
+                print ("Error!!  I cannot find a parser key for the xmlOptional: ",parsingKey.replace("(","").replace(")","")," in ",self.sourcePath+"/"+self.filename)
+        #Check if each option in the interpreter has an xml input
+        for index,parseKeyBool in enumerate(OptionalKeyCheck):
+            if parseKeyBool == False:
+                print ("Error!!  The optional key ",self.parsingKeyOptional[index]," has no xmlOptional input in ",self.sourcePath+"/"+self.filename)
+                
 
 
 #######################################################################################################
@@ -305,7 +373,6 @@ class createLineParser:
         #import the copy module for deep copies
         ###################################################################
         fileContents = nextLine
-        fileContents += "from __future__ import print_function"+nextLine
         fileContents += "import copy"+nextLine
         fileContents += nextLine
 
@@ -328,11 +395,19 @@ class createLineParser:
         # Add parser name
         fileContents += self.indent2+"self.parserName = \""+self.parserName+"\""+nextLine
         #Add the parsing keys
-        fileContents += self.indent2+"self.parsingKey = \""+self.parsingKey+"\""+nextLine
-        fileContents += self.indent2+"self.parsingKeyOptional = []"+nextLine
-        for optionalKey in self.parsingKeyOptional:
-            fileContents += self.indent2+"self.parsingKeyOptional.append(\""+optionalKey+"\")"+nextLine
 
+        fileContents += self.indent2+"self.primary = \""+self.primary+"\""+nextLine
+
+        fileContents += self.indent2+"self.options = []"+nextLine
+        for opt in self.options:
+            fileContents += self.indent2+"self.options.append(\""+opt.strip()+"\")"+nextLine
+        
+        fileContents += self.indent2+"self.foundOptions = []"+nextLine
+        fileContents += self.indent2+"for index,opt in enumerate(self.options):"+nextLine
+        fileContents += self.indent3+"self.foundOptions.append(False)"+nextLine
+        fileContents += self.indent2+"self.primaryVariables = []"+nextLine
+        fileContents += self.indent2+"self.optionVariables = [[]]*len(self.options)"+nextLine
+ 
         #Add help related strings
         fileContents += self.indent2+"self.interpreterHelpLine = "+"\""+self.interpreterHelpLine+"\""+nextLine
         fileContents += self.indent2+"self.interpreterQuickHelp = "+"\""+self.interpreterQuickHelp+"\""+nextLine
@@ -350,14 +425,6 @@ class createLineParser:
 
         fileContents += self.indent2+"self.xmlNewRequiredLines = []"+nextLine
 
-        #Add the xml required arguments
-        fileContents += nextLine+self.indent2+"# Register the xml required arguments and their indexes"+nextLine
-        fileContents += self.indent2+"self.xmlRequiredArgument = []"+nextLine
-        for xmlReqArg in self.xmlRequiredArgument:
-            fileContents += self.indent2+"self.xmlRequiredArgument.append(\""+xmlReqArg+"\")"+nextLine
-        fileContents += self.indent2+"self.xmlRequiredArgumentIndexes = []"+nextLine
-        for xmlReqArg in self.xmlRequiredArgumentIndexes:
-            fileContents += self.indent2+"self.xmlRequiredArgumentIndexes.append(\""+str(xmlReqArg)+"\")"+nextLine
 
         #Add the xml optional lines
         fileContents += nextLine+self.indent2+"# Register the xml optional lines"+nextLine
@@ -379,11 +446,6 @@ class createLineParser:
             if optCounter < len(self.xmlOptionalLinePriority):
                 fileContents += self.indent2+"self.xmlOptionalLinePriority.append([])"+nextLine
 
-        #Add the xml optional arguments
-        fileContents += nextLine+self.indent2+"# Register the xml optional arguments and their indexes"+nextLine
-        fileContents += self.indent2+"self.xmlOptionalArgument = "+str(self.xmlOptionalArgument)+nextLine
-        fileContents += self.indent2+"self.xmlOptionalArgumentIndexes = "+str(self.xmlOptionalArgumentIndexes)+nextLine
-
 
         #Add the xml default lines
         fileContents += nextLine+self.indent2+"# Register the xml default lines"+nextLine
@@ -397,26 +459,32 @@ class createLineParser:
         #Create a list for the returned xml content and priority codes
         fileContents += nextLine+self.indent2+"self.xmlReturned = []"+nextLine
         fileContents += self.indent2+"self.xmlPriorityCode = []"+nextLine
-
+        #Create lists for special information
+        fileContents += self.indent2+"self.specialInformation = []"+nextLine
+#        fileContents += self.indent2+"self.specialInformation.append("+print("\"",*self.specialInformation,"\"", sep=',')+"]"+nextLine
+        for siIndex,sI in enumerate(self.specialInformation):
+            fileContents += self.indent2+"self.specialInformation.append(["
+            for siValueIndex,siValue in enumerate(self.specialInformation[siIndex]):
+                if siValueIndex < len(self.specialInformation[siIndex])-1:
+                    comma = ","
+                else:
+                    comma = ""
+                fileContents += "\""+siValue+"\""+comma
+            fileContents += "])"+nextLine
 
         ###################################################################
         #isThisMe block
         ###################################################################
         fileContents += nextLine+nextLine+nextLine
         fileContents += self.indent+"def isThisMe(self,tokenizer,line):"+nextLine
-        fileContents += self.indent2+"# Tokenize the line"+nextLine
-#        fileContents += self.indent2+"lineTokens = line.split()"+nextLine
-        fileContents += self.indent2+"lineTokens = tokenizer.tokenize(line)"+nextLine
-        fileContents += self.indent2+"# Tokenize the parsing key"+nextLine
-        fileContents += self.indent2+"parsingTokens = self.parsingKey.split()"+nextLine
-        fileContents += self.indent2+"returnType = True"+nextLine
-        fileContents += self.indent2+"for itoken in range(len(parsingTokens)):"+nextLine
-        fileContents += self.indent3+"if itoken+1 > len(lineTokens):"+nextLine
-        fileContents += self.indent4+"return False"+nextLine
-        fileContents += self.indent3+"if lineTokens[itoken].lower() != parsingTokens[itoken].lower():"+nextLine
-        fileContents += self.indent4+"returnType = False"+nextLine
-        fileContents += self.indent2+"return returnType"+nextLine
+        fileContents += self.indent2+"affirmPrimary = False"+nextLine
+        fileContents += self.indent2+"for index,fO in enumerate(self.foundOptions):"+nextLine
+        fileContents += self.indent3+"self.foundOptions[index] = False"+nextLine
+        fileContents += self.indent2+"self.primaryVariables = {}"+nextLine
+        fileContents += self.indent2+"self.optionVariables = []*len(self.options)"+nextLine
+        fileContents += self.indent2+"(affirmPrimary,self.foundOptions,self.primaryVariables,self.optionVariables,suggestedSyntax) = tokenizer.isItMe(line,self.primary,self.options)"+nextLine
 
+        fileContents += self.indent2+"return (affirmPrimary,suggestedSyntax)"+nextLine
 
         ###################################################################
         #getName block
@@ -444,63 +512,59 @@ class createLineParser:
         fileContents += nextLine+nextLine+nextLine
         fileContents += self.indent+"def generateXML(self,tokenizer,line):"+nextLine
         fileContents += self.indent2+"# Tokenize the line"+nextLine
-#        fileContents += self.indent2+"lineTokens = line.split()"+nextLine
         fileContents += self.indent2+"lineTokens = tokenizer.tokenize(line)"+nextLine
         fileContents += self.indent2+"self.xmlNewRequiredLines[:] = []"+nextLine
         fileContents += self.indent2+"for xL in self.xmlRequiredLines:"+nextLine
         fileContents += self.indent3+"self.xmlNewRequiredLines.append(xL)"+nextLine
 
-        fileContents += self.indent2+"for ipar in range(len(self.xmlRequiredArgument)):"+nextLine
-        fileContents += self.indent3+"line.replace(self.xmlRequiredArgument[ipar],lineTokens[int(self.xmlRequiredArgumentIndexes[ipar])])"+nextLine
-        #required xml content
-        fileContents += self.indent3+"for iRLine in range(len(self.xmlRequiredLines)):"+nextLine
-        fileContents += self.indent4+"self.xmlNewRequiredLines[iRLine]=self.xmlNewRequiredLines[iRLine].replace(self.xmlRequiredArgument[ipar],lineTokens[int(self.xmlRequiredArgumentIndexes[ipar])])"+nextLine
+        fileContents += nextLine
+        fileContents += self.indent2+"for key in self.primaryVariables:"+nextLine
+        fileContents += self.indent3+"for nRLIndex,nRL in enumerate(self.xmlNewRequiredLines):"+nextLine
+        fileContents += self.indent4+"self.xmlNewRequiredLines[nRLIndex] = nRL.replace(key,self.primaryVariables[key])"+nextLine
+        fileContents += self.indent3+"for siIndex, siValue in enumerate(self.specialInformation):"+nextLine
+        fileContents += self.indent4+"self.specialInformation[siIndex] = [item.replace(key,self.primaryVariables[key]) for item in siValue]"+nextLine
+        fileContents += nextLine
+
+ 
+
         fileContents += self.indent2+"for index,xmlLine in enumerate(self.xmlNewRequiredLines):"+nextLine
         fileContents += self.indent3+"self.xmlReturned.append(xmlLine)"+nextLine
         fileContents += self.indent3+"self.xmlPriorityCode.append(self.xmlRequiredLinePriority[index]) #required lines have priority code 2"+nextLine
 
-        fileContents += self.indent2+"# Look over input line to see if any options are called out."+nextLine
-        fileContents += self.indent2+"optCounter = 0"+nextLine
-        fileContents += self.indent2+"optIndex = 0"+nextLine
-        fileContents += self.indent2+"for optKey in self.parsingKeyOptional:"+nextLine
-        fileContents += self.indent3+"# Tokenize the opt keys"+nextLine
-        fileContents += self.indent3+"foundOptionalKey = False"+nextLine
-        fileContents += self.indent3+"optKeyTokens = optKey.split()"+nextLine
-        fileContents += self.indent3+"for iLT in range(len(lineTokens)):"+nextLine
-        fileContents += self.indent4+"if lineTokens[iLT].lower() == optKeyTokens[0]:"+nextLine
-        fileContents += self.indent5+"if len(optKeyTokens) == 1:"+nextLine
-        fileContents += self.indent6+"optIndex = iLT"+nextLine
-        fileContents += self.indent6+"foundOptionalKey = True"+nextLine
-        fileContents += self.indent5+"else:"+nextLine
+        #fileContents += self.indent2+"print (\"FOUND OPTIONS \",self.foundOptions)"+nextLine
+        #fileContents += self.indent2+"print (\"FOUND OPTIONS \",self.optionVariables)"+nextLine
+        fileContents += self.indent2+"for optIndex,fO in enumerate(self.foundOptions):"+nextLine
+        fileContents += self.indent3+"if fO == True:"+nextLine
+        fileContents += self.indent4+"self.Returned=copy.deepcopy(self.xmlOptionalLines[optIndex])"+nextLine
+        fileContents += self.indent4+"for key in self.primaryVariables:"+nextLine
+        fileContents += self.indent5+"for retIndex,xOL in enumerate(self.Returned):"+nextLine
+        fileContents += self.indent6+"self.Returned[retIndex] = xOL.replace(key,self.primaryVariables[key])"+nextLine
 
-        fileContents += self.indent6+"for iPK in range(len(optKeyTokens)-1):"+nextLine
-        fileContents += self.indent7+"optIndex = iLT"+nextLine
-        fileContents += self.indent7+"if iLT+iPK+1 > len(lineTokens)-1:"+nextLine
-        fileContents += self.indent8+"continue"+nextLine
-        fileContents += self.indent7+"if optKeyTokens[iPK+1] == lineTokens[iLT+iPK+1].lower():"+nextLine
-        fileContents += self.indent8+"if iPK+2 == len(optKeyTokens):"+nextLine
-        fileContents += self.indent9+"foundOptionalKey = True"+nextLine
-        fileContents += self.indent8+"else:"+nextLine
-        fileContents += self.indent9+"continue"+nextLine
+        fileContents += self.indent4+"for key in self.optionVariables[optIndex]:"+nextLine
+        fileContents += self.indent5+"for retIndex,xOL in enumerate(self.Returned):"+nextLine
+        fileContents += self.indent6+"self.Returned[retIndex] = xOL.replace(key,self.optionVariables[optIndex][key])"+nextLine
+        fileContents += self.indent6+"for siIndex, siValue in enumerate(self.specialInformation):"+nextLine
+        fileContents += self.indent7+"self.specialInformation[siIndex] = [item.replace(key,self.optionVariables[optIndex][key]) for item in siValue]"+nextLine
+
+        fileContents += self.indent4+"for retIndex,ret in enumerate(self.Returned):"+nextLine
+        fileContents += self.indent5+"self.xmlReturned.append(ret)"+nextLine
+        fileContents += self.indent5+"self.xmlPriorityCode.append(self.xmlOptionalLinePriority[optIndex][retIndex])"+nextLine
 
 
-        fileContents += self.indent3+"#Found the key, now create the xml line"+nextLine
-        fileContents += self.indent3+"if foundOptionalKey == True:"+nextLine
-        fileContents += self.indent4+"self.Returned=copy.deepcopy(self.xmlOptionalLines[optCounter])"+nextLine
+        fileContents += nextLine
 
-        fileContents += self.indent4+"for iopt in range(len(self.xmlOptionalLines[optCounter])):"+nextLine
-        fileContents += self.indent5+"for ipar in range(len(self.xmlOptionalArgument[optCounter])):"+nextLine
-        fileContents += self.indent6+"self.Returned[iopt] = self.Returned[iopt].replace(self.xmlOptionalArgument[optCounter][ipar],lineTokens[optIndex+int(self.xmlOptionalArgumentIndexes[optCounter][ipar])])"+nextLine
-        fileContents += self.indent5+"for ipar in range(len(self.xmlRequiredArgument)):"+nextLine
-        fileContents += self.indent6+"self.Returned[iopt] = self.Returned[iopt].replace(self.xmlRequiredArgument[ipar],lineTokens[int(self.xmlRequiredArgumentIndexes[ipar])])"+nextLine
-        fileContents += self.indent5+"self.xmlReturned.append(self.Returned[iopt])"+nextLine
-        fileContents += self.indent5+"self.xmlPriorityCode.append(2) #optional lines have priority code 2"+nextLine
-        fileContents += self.indent3+"optCounter += 1"+nextLine
 
         fileContents += self.indent2+"for xmlLine in self.xmlDefaultLines:"+nextLine
         fileContents += self.indent3+"self.xmlReturned.append(xmlLine)"+nextLine
         fileContents += self.indent3+"self.xmlPriorityCode.append(1) #optional lines have priority code 1"+nextLine
 
-        fileContents += nextLine+self.indent2+"return (self.xmlReturned,self.xmlPriorityCode)"+nextLine
+        fileContents += nextLine+self.indent2+"return (self.xmlReturned,self.xmlPriorityCode,self.specialInformation)"+nextLine
+
+        #Write the isItMe parser checker and variable extractor
+
+
+        fileContents += nextLine+nextLine+nextLine
+
+
 
         parserFile.write(fileContents)

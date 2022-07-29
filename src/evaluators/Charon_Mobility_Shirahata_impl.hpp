@@ -174,6 +174,8 @@ Mobility_Shirahata(
   if(p.sublist("Mobility ParameterList").isParameter("End Z"))
     zOIEnd = p.sublist("Mobility ParameterList").get<double>("End Z");
 
+
+  surfaceInfo surfTemp;
   if(num_dims == 2)
     {
       double normx = -(yOIEnd - yOIStart);
@@ -182,13 +184,18 @@ Mobility_Shirahata(
       oxideNorm.push_back(normx/normMag);
       oxideNorm.push_back(normy/normMag);
       oxideNorm.push_back(0.0);
+      surfTemp.setNode(xOIStart, yOIStart);
+      surfTemp.setNode(xOIEnd, yOIEnd);
+      surfs.push_back(surfTemp);
     }
   else if (num_dims == 3)
     {
+      //The 3D version of this needs work.  start and end is insufficient to define 2D manifold 
+      //in R3 even if it is a flat plane.
       // P1, P2, P3 points in the plane
       double xp1=xOIStart, yp1=yOIStart, zp1=zOIStart;
-      double xp2=xOIEnd, yp2=yOIEnd, zp2=zOIStart;
-      double xp3=xOIStart, yp3=yOIStart, zp3=zOIEnd;
+      double xp2=xOIEnd, yp2=yOIStart, zp2=zOIStart;
+      double xp3=xOIEnd, yp3=yOIEnd, zp3=zOIStart;
       // P1P2, P1P3 vectors in the plane
       double x12 = xp2-xp1, y12 = yp2-yp1, z12 = zp2-zp1;
       double x13 = xp3-xp1, y13 = yp3-yp1, z13 = zp3-zp1;
@@ -200,6 +207,19 @@ Mobility_Shirahata(
       oxideNorm.push_back(normx/normMag);
       oxideNorm.push_back(normy/normMag);
       oxideNorm.push_back(normz/normMag);
+      surfTemp.setNode(xp1, yp1, zp1);
+      surfTemp.setNode(xp2, yp2, zp2);
+      surfTemp.setNode(xp3, yp3, zp3);
+      surfs.push_back(surfTemp);
+      //second triangle
+      xp1=xOIStart ; yp1=yOIStart; zp1=zOIStart;
+      xp2=xOIStart ; yp2=yOIEnd ; zp2=zOIStart;
+      xp3=xOIEnd ; yp3=yOIEnd ; zp3=zOIStart;
+      surfTemp.clearNode();
+      surfTemp.setNode(xp1, yp1, zp1);
+      surfTemp.setNode(xp2, yp2, zp2);
+      surfTemp.setNode(xp3, yp3, zp3);
+      surfs.push_back(surfTemp);
     }
 
 
@@ -273,7 +293,7 @@ evaluateFields(
 	}
     }
 
-  double xn,yn,zn,xn0,xn1,yn0,yn1,zn0,zn1,distance;
+  double xn,yn,zn=0.0,xn0,xn1,yn0,yn1,zn0,zn1,distance=1e30;
 
   // Want mobility available at the center of primary edges for CVFEM-SG and EFFPG-FEM
   if (isEdgedl)
@@ -344,36 +364,21 @@ evaluateFields(
 	ScalarT mob1 = pow(1.0+perpField/E1,P1) + pow(perpField/E2,P2);
 	ScalarT mob  = muo * pow(normMidTemp,-theta) / mob1;
 
-        /*
-	if(xn < xOIStart || xn > xOIEnd)
-	  distance = 1;
-	else
-	  distance = yOIStart - yn;
-	
-	double distanceFactor = exp(distance/criticalDistance);
-	if(distanceFactor < 1e-16)
-	  distanceFactor = 1e-16;
-
-	if(distance > 2*criticalDistance)
-	  mob = 0.0;
-
-        mobility(cell,edge) = mob/distanceFactor/Mu0;
-        */
     
-	distance = yOIStart - yn;
+	double xnew, ynew,znew;
+	if (num_dims==2)
+	  distance = dFs.distanceToLine(xn,yn,xnew,ynew,surfs[0].X,surfs[0].Y);
+	if (num_dims==3)
+	  distance = std::min(dFs.distanceToSurface(xn, yn, zn, xnew, ynew, znew, surfs[0]),
+			      dFs.distanceToSurface(xn, yn, zn, xnew, ynew, znew, surfs[1]));
+
 	double distanceFactor = std::exp(-distance/criticalDistance);
-	
-	double latdistanceFactor = 1.;
-	double latcriticalDistance = 0.01; // 10 nm
-	if(xn < xOIStart ||  xn > xOIEnd) {
-	  double lat_distance = (xn < xOIStart) ? xOIStart - xn : xn - xOIEnd;
-	  latdistanceFactor = std::exp(-lat_distance/latcriticalDistance);
-	}
 
        if (distance > 2*criticalDistance)
          mob = 0.0;
 
-	mobility(cell,edge) = mob*latdistanceFactor*distanceFactor/Mu0;
+	mobility(cell,edge) = mob*distanceFactor/Mu0;
+
       }
     }
   }  // end of if block
@@ -402,37 +407,21 @@ evaluateFields(
 	   }
 
 	 zn = zn;  //This exists for the sole purpose of squelching a warning for the time being.
+	 
+	 double xnew, ynew,znew;
+	 if (num_dims==2)
+	   distance = dFs.distanceToLine(xn,yn,xnew,ynew,surfs[0].X,surfs[0].Y);
+	 if (num_dims==3)
+	   distance = std::min(dFs.distanceToSurface(xn, yn, zn, xnew, ynew, znew, surfs[0]),
+			       dFs.distanceToSurface(xn, yn, zn, xnew, ynew, znew, surfs[1]));
 
-         /*
-	 if(xn < xOIStart || xn > xOIEnd)
-	   distance = 1;
-	 else
-	   distance = yOIStart - yn;
-
-	 double distanceFactor = exp(distance/criticalDistance);
-	 if(distanceFactor < 1e-16)
-	   distanceFactor = 1e-16;
-
-	 ScalarT mob = tmpMob(cell,point);
-
-	 if(distance > criticalDistance)
-	   mob = 0.0;
-
-	 mobility(cell,point) = mob/distanceFactor;
-	 */
-       
-         distance = yOIStart - yn;
 	 double distanceFactor = std::exp(-distance/criticalDistance);
 
-	 double latdistanceFactor = 1;
-	 double latcriticalDistance = 0.01; // 10 nm
-	 if(xn < xOIStart || xn > xOIEnd) {
-	   double lat_distance = (xn < xOIStart) ? xOIStart - xn : xn - xOIEnd;
-	   latdistanceFactor = std::exp(-lat_distance/latcriticalDistance);
-	 }
-	 
-	 ScalarT mob = tmpMob(cell,point);
-	 mobility(cell,point) = latdistanceFactor*distanceFactor*mob;
+         ScalarT mob = tmpMob(cell,point);
+         if (distance > 2*criticalDistance)
+           mob = 0.0;
+
+	 mobility(cell,point) = distanceFactor*mob;  // Mu0 is already divivded when computing tmpMob;
        }
   }
 
@@ -487,6 +476,15 @@ void Mobility_Shirahata<EvalT, Traits>::initMobilityParams
     muo = mobParamList.get<double>("muo");
   if (mobParamList.isParameter("theta"))
     theta = mobParamList.get<double>("theta");
+
+  if (mobParamList.isParameter("E1"))
+    E1 = mobParamList.get<double>("E1");
+  if (mobParamList.isParameter("E2"))
+    E2 = mobParamList.get<double>("E2");
+  if (mobParamList.isParameter("P1"))
+    P1 = mobParamList.get<double>("P1");
+  if (mobParamList.isParameter("P2"))
+    P2 = mobParamList.get<double>("P2");
 
 }
 

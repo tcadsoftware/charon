@@ -1,0 +1,10 @@
+interpreter name PulseMinimumRadSi
+
+interpreter inputLine (Minimum pulse rate RadSi =) {pulseRate}
+
+interpreter shortHelp {set the minimum RadSi rate of the pulse}
+
+interpreter longHelp {set the minimum RadSi rate of the pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Min RadSi,double,{pulseRate}
+

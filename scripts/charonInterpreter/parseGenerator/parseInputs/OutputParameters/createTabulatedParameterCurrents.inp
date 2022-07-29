@@ -11,3 +11,5 @@ xmlRequired Charon->Solver Factories->NOX Observers,Output Responses,string,ON
 xmlRequired Charon->Solver Factories->NOX Observers,Output Responses File,string,{filename}
 
 
+specialInformation textDataFilename {filename}
+

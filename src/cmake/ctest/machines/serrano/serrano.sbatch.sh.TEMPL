@@ -53,13 +53,13 @@ if [ "$#" -eq "1" ]
 then
   if [ "$1" = "heavy" ]
   then
-    BLDSCRIPTARG="${BLDSCRIPTARG} --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
+    BLDSCRIPTARG="${BLDSCRIPTARG}"
     SITEDESC="serrano heavy"
     TRACK="Heavy"
     LARG="^heavy$"
   elif [ "$1" = "xyce" ]
   then
-    BLDSCRIPTARG="${BLDSCRIPTARG} -f serrano-with-xyce-tri-libs.opts --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
+    BLDSCRIPTARG="${BLDSCRIPTARG} -f serrano-with-xyce-tri-libs.opts"
     SITEDESC="serrano xyce coupled heavy"
     TRACK="XyceCoupledHeavy"
     LARG="^xycecoupledheavy$"
@@ -171,7 +171,6 @@ then
 
   # set up for a coupled build
   BLDSCRIPTARG="-f serrano.opts -f serrano-with-xyce-tri-libs.opts -f serrano-xyce-cluster.opts"
-  BLDSCRIPTARG="${BLDSCRIPTARG} --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
 
   # Clean up build directory for next phase of testing
   cd ${WORKSPACE}

@@ -1,0 +1,10 @@
+
+interpreter name Read1DSpaceFile
+
+interpreter inputLine (read 1d spatial file from) {filename} 
+
+interpreter shortHelp {Read the 1D space dependent factor from a tabulated file}
+
+interpreter longHelp {Read the 1D space dependent factor from a tabulated file that contains 1D coordinate in (um) and a unitless factor. This factor is a multiplication factor to the time dependent optical generation rate.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Space File1D,string,{filename}

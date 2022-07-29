@@ -61,8 +61,22 @@ private:
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double T0; // Temperature Scaling in [K]
   double V0; // potential scaling in [V]
+  double C0; 
 
   int num_basis;
+
+  std::string matName;
+  std::string matType;
+ 
+  // insulator related
+  std::string blockId;
+  Teuchos::RCP<vector<string>> semBlockIds;
+  Teuchos::RCP<vector<string>> semMaterials;
+  vector<double> Nc300;
+  vector<double> Nv300;
+  vector<double> Nc_F;
+  vector<double> Nv_F;
+  vector<std::set<stk::mesh::Entity>> inter_nodes;
 
   std::string dof_name;
 
@@ -76,6 +90,12 @@ private:
   Teuchos::RCP<vector<double>> sc_wf;
   Teuchos::RCP<vector<double>> sc_vapp;
   std::map<string,vector<stk::mesh::Entity>> sch_cnt_nodes;
+
+  Teuchos::RCP<vector<string>> g_cnts;
+  Teuchos::RCP<vector<string>> g_blks;
+  Teuchos::RCP<vector<double>> g_wf;
+  Teuchos::RCP<vector<double>> g_vapp;
+  std::map<string,vector<stk::mesh::Entity>> g_cnt_nodes;
 
   Teuchos::RCP<const charon::Names>  m_names;
 

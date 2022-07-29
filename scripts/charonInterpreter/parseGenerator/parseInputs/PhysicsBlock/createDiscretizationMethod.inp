@@ -1,13 +1,18 @@
 interpreter name DiscretizationMethod
 
-interpreter inputLine (discretization method) [ (is FEM-EFFPG) [ (is FEM-SUPG) [ (CVFEM-SG) ]]]
+interpreter inputLine (discretization method) [ (is FEM-SUPG) [ (is FEM-EFFPG) [(is FEM-SymEFFPG) ] ]]
 
-interpreter shortHelp {Select discretization method}
+interpreter shortHelp {Select a discretization method for ddlattice or ddionlattice simulation} 
 
-interpreter longHelp {Select discretization method}
+interpreter longHelp {Select a discretization method for ddlattice or ddionlattice simulation, which can be FEM-SUPG, FEM-EFFPG, or FEM-SymEFFPG}
+
+xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,FEM-SUPG
+xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Tau_E,string,Tanh
+xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Tau_H,string,Tanh
+xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Length Scale,string,Stream
+xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Add Source Term,string,Off
 
 xmlOptional (is FEM-EFFPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,FEM-EFFPG
 
-xmlOptional (is FEM-SUPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,FEM-SUP
+xmlOptional (is FEM-SymEFFPG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,FEM-SymEFFPG
 
-xmlOptional (is CVFEM-SG) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Discretization Method,string,CVFEM-SG

@@ -1,0 +1,90 @@
+import State File memristor.ddion.trans.3V.exo at index -1
+
+start output parameters
+      Output State File memristor.ddion.iv.loca.exo
+      Output tabulated parameter currents to currents-ddion-iv-loca.dat
+      unscale variables is off
+end output parameters
+
+concentration scaling = 5e20
+lattice temperature = 300
+tpetra is on
+
+start Physics Block Semiconductor
+      geometry block is tio2
+      standard discretization type is ddion gfem
+      solve ion equation is false
+      ion charge = 1
+      supg stabilization is on
+      material model is TiO2Parameter
+      srh recombination is off
+      auger recombination is off
+      radiative recombination is off
+      band gap narrowing is off
+end Physics Block Semiconductor
+
+start Material Block TiO2Parameter
+      material name is TiO2
+      reference material is TiO2
+      relative permittivity = 10.0
+
+      start uniform doping named Function1
+        concentration = 5e18
+        type is acceptor
+      end uniform doping
+
+      fixed mobility for electrons is 1.0
+      fixed mobility for holes is 0.5
+      fixed mobility for ions is 1e-10
+
+      start intrinsic concentration
+        model is old slotboom
+      end
+
+      read ion density from exodus
+
+end Material Block TiO2Parameter
+
+BC is ohmic for left on tio2 fixed at 0.0 with fermi pinning and contact ion density = 5e20
+BC is ohmic for right on tio2 swept from 0.0 to 0.5 with fermi pinning and contact ion density = 5e20
+
+Initial conditions for ELECTRIC_POTENTIAL in tio2 is Exodus File
+Initial Conditions for ELECTRON_DENSITY in tio2 is Exodus File
+Initial Conditions for HOLE_DENSITY in tio2 is Exodus File
+
+start sweep options
+  continuation method is natural
+  predictor method is constant
+  maximum number of steps = 3
+  max value = 0.5
+  min value = 0.0
+  initial step size = 0.02
+  minimum step size = 1e-6
+  maximum step size = 1.0
+  step size aggressiveness = 0.0
+  return failed on reaching max steps = false
+  hit continuation bound = false
+end sweep options
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    linear solver is aztecOO
+    maximum number nonlinear iterations = 20
+    nonlinear solver residual tolerance = 1e-8
+    
+    start nonlinear solver wrms block
+      absolute tolerance = 1e-8
+      relative tolerance = 1e-4
+      alpha = 1.0
+      beta = 0.5
+    end
+
+  end tpetra block
+end solver block
+
+
+
+
+

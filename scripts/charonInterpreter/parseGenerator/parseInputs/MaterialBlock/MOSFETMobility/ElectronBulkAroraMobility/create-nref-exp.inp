@@ -1,0 +1,9 @@
+interpreter name nrefexp
+
+interpreter inputLine (nrefexp) = {nrefexpval}
+
+interpreter shortHelp {set the exponent of the doping term in the Arora mobility model}
+
+interpreter longHelp {set the exponent of the doping term in the Arora mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,nref_exp,double,{nrefexpval}

@@ -1,0 +1,11 @@
+
+start solver block
+      aztec max iterations = 1000
+      aztec krylov subspace size = 800
+      use solver pack 2
+      Ifpack reordering type is rcm
+      nonlinear solver tolerance = 1e-4
+      max nonlinear iterations = 60
+#      line search method is full step
+end solver block
+

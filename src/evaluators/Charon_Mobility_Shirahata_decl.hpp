@@ -6,6 +6,8 @@
 #include "Phalanx_Evaluator_Macros.hpp"
 #include "Phalanx_MDField.hpp"
 #include "Charon_Scaling_Parameters.hpp"
+#include "Charon_SurfaceGeometry.hpp"
+#include "Charon_DistanceFunctions.hpp"
 
 using panzer::Cell;
 using panzer::Point;
@@ -90,6 +92,10 @@ private:
   Teuchos::RCP<const shards::CellTopology> cellType;
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
+
+  std::vector<surfaceInfo> surfs;
+
+  distanceFunctions dFs;
 
 }; // end of class Mobility_Shirahata
 

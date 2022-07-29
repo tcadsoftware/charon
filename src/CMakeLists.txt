@@ -202,20 +202,19 @@ Tribits_ADD_EXECUTABLE(
 IF (${PACKAGE_NAME}_ENABLE_TESTS)
   ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/unitTests
     ${CMAKE_BINARY_DIR}/test/unitTests)
-  IF (ENABLE_HEAVY_TESTS)
+  ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/nightlyTests
+    ${CMAKE_BINARY_DIR}/test/nightlyTests)
+  IF (EXISTS ${CMAKE_SOURCE_DIR}/test/nightlyTestsOUO)
+    ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/nightlyTestsOUO
+      ${CMAKE_BINARY_DIR}/test/nightlyTestsOUO)
+  ENDIF()
+  IF (EXISTS ${CMAKE_SOURCE_DIR}/test/heavyTests)
     ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/heavyTests
       ${CMAKE_BINARY_DIR}/test/heavyTests)
-    IF (EXISTS ${CMAKE_SOURCE_DIR}/test/heavyTestsOUO)
-      ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/heavyTestsOUO
-        ${CMAKE_BINARY_DIR}/test/heavyTestsOUO)
-    ENDIF()
-  ELSE()
-    ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/nightlyTests
-      ${CMAKE_BINARY_DIR}/test/nightlyTests)
-    IF (EXISTS ${CMAKE_SOURCE_DIR}/test/nightlyTestsOUO)
-      ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/nightlyTestsOUO
-        ${CMAKE_BINARY_DIR}/test/nightlyTestsOUO)
-    ENDIF()
+  ENDIF()
+  IF (EXISTS ${CMAKE_SOURCE_DIR}/test/heavyTestsOUO)
+    ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test/heavyTestsOUO
+      ${CMAKE_BINARY_DIR}/test/heavyTestsOUO)
   ENDIF()
 ENDIF()
 

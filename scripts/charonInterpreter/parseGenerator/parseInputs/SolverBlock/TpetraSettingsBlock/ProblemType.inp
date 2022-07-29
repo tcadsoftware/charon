@@ -1,0 +1,258 @@
+interpreter name ProblemType
+
+interpreter shortHelp {Use typical settings for Tpetra and the specified problem type}
+interpreter longHelp {Use typical settings for Tpetra and the specified problem type}
+
+interpreter inputLine (problem type is) [ (steady state) [ (constrained steady state) [ (householder constrained steady state) [ (parameter sweep) [ (constrained parameter sweep) [ (householder constrained parameter sweep) [ (transient) [ (tempus) [(harmonic balance) [(harmonic balance sweep) ]]]]]]]]]]
+
+xmlRequired Charon->Solution Control,Compute Sensitivities,bool,false
+xmlRequired Charon->Solution Control,Jacobian Operator,string,Have Jacobian
+
+xmlRequired Charon->Solution Control->NOX->Direction,Method,string,Newton
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton,Forcing Term Method,string,Constant
+xmlRequired Charon->Solution Control->NOX->Direction->Newton,Rescue Bad Newton Solve,bool,true
+
+xmlDefault Charon->Solution Control,Piro Solver,string,NOX
+xmlOptional (parameter sweep) Charon->Solution Control,Piro Solver,string,LOCA
+xmlOptional (harmonic balance sweep) Charon->Solution Control,Piro Solver,string,LOCA
+xmlOptional (transient) Charon->Solution Control,Piro Solver,string,Rythmos
+xmlOptional (tempus) Charon->Solution Control,Piro Solver,string,Tempus
+xmlOptional (householder constrained steady state) Charon->Solution Control,Piro Solver,string,NOX-Constrained
+xmlOptional (householder constrained parameter sweep) Charon->Solution Control,Piro Solver,string,LOCA-Constrained
+
+# This can be overridden by a line parser
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Linear Solver,Tolerance,double,1.0e-06
+
+################################################
+# Belos settings, for constrained problems
+################################################
+# Must use Belos for block systems like a constraint problem
+xmlOptional (constrained steady state) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,Belos
+xmlOptional (constrained parameter sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,Belos
+xmlOptional (householder constrained steady state) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,Belos
+xmlOptional (householder constrained parameter sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,Belos
+
+# Have to use Teko for the blocked system
+xmlOptional (constrained steady state) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Teko
+xmlOptional (constrained parameter sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Teko
+xmlOptional (householder constrained steady state) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (householder constrained parameter sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos,Solver Type,string,Block GMRES
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->VerboseObject,Verbosity Level,string,none
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Convergence Tolerance,double,1.0e-06
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Output Frequency,int,20
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Output Style,int,1
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Verbosity,int,33
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Block Size,int,1
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Num Blocks,int,100
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Maximum Iterations,int,300
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->Belos->Solver Types->Block GMRES,Flexible Gmres,bool,false
+
+# Each block will have it's own preconditioner
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko,Inverse Type,string,GS
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko,Write Block Operator,bool,false
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko,Test Block Operator,bool,false
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->GS,Type,string,Block Gauss-Seidel
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->GS,Use Upper Triangle,bool,true
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->GS,Inverse Type 1,string,ILU_tpetra
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->GS,Inverse Type 2,string,Id
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->ILU_tpetra,Type,string,Ifpack2
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->ILU_tpetra,Overlap,int,1
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->ILU_tpetra->Ifpack2 Settings,fact: drop tolerance,double,0.0
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->ILU_tpetra->Ifpack2 Settings,fact: ilut level-of-fill,double,1.0
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Teko->Inverse Factory Library->Id,Type,string,Identity
+
+###################################################################
+# AztecOO settings, for steady state and transient/tempus problems
+###################################################################
+# Generally AztecOO performs better than Belos
+xmlOptional (steady state) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlOptional (parameter sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlOptional (harmonic balance sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlOptional (transient) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlOptional (tempus) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlOptional (harmonic balance) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+
+xmlOptional (steady state) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (parameter sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (harmonic balance sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (harmonic balance sweep) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,fact: absolute threshold,double,1e-3
+xmlOptional (transient) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (tempus) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (harmonic balance) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Preconditioner Type,string,Ifpack2
+xmlOptional (harmonic balance) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,fact: absolute threshold,double,1e-3
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Aztec Solver,string,GMRES
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Convergence Test,string,r0
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Output Frequency,int,20
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve,Max Iterations,int,300
+
+# can be overridden by a separate parser
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Size of Krylov Subspace,int,200
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,RCM Reordering,string,Disabled
+xmlDefault Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Overlap,int,0
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2,Prec Type,string,ILUT
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,schwarz: overlap level,int,1
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,schwarz: use reordering,bool,false
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,schwarz: combine mode,string,add
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,fact: ilut level-of-fill,double,3.0
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,fact: iluk level-of-fill,int,3
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Preconditioner Types->Ifpack2->Ifpack2 Settings,fact: iluk level-of-overlap,int,1
+
+
+################################################
+# General settings for all tpetra problems
+################################################
+xmlRequired Charon->Solution Control->NOX,Nonlinear Solver,string,Line Search Based
+xmlRequired Charon->Solution Control->NOX->Thyra Group Options,Function Scaling,string,Row Sum
+
+xmlRequired Charon->Solution Control->NOX->Line Search->Full Step,Full Step,double,1
+xmlRequired Charon->Solution Control->NOX->Line Search,Method,string,Full Step
+
+xmlRequired Charon->Solution Control->NOX->Printing,Output Precision,int,3
+xmlRequired Charon->Solution Control->NOX->Printing,Output Processor,int,0
+
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Error,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Warning,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Inner Iteration,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Outer Iteration StatusTest,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Parameters,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Details,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Linear Solver Details,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Stepper Iteration,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Stepper Details,bool,true
+xmlRequired Charon->Solution Control->NOX->Printing->Output Information,Stepper Parameters,bool,true
+
+xmlRequired Charon->Solution Control->NOX->Solver Options,Status Test Check Type,string,Minimal
+
+
+// replicate for tempus
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX,Nonlinear Solver,string,Line Search Based
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Thyra Group Options,Function Scaling,string,Row Sum
+
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Line Search->Full Step,Full Step,double,1
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Line Search,Method,string,Full Step
+
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing,Output Precision,int,3
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing,Output Processor,int,0
+
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Error,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Warning,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Inner Iteration,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Outer Iteration,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Outer Iteration StatusTest,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Parameters,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Details,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Linear Solver Details,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Stepper Iteration,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Stepper Details,bool,true
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Printing->Output Information,Stepper Parameters,bool,true
+
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Solver Options,Status Test Check Type,string,Minimal
+
+################################################
+# Transient solver settings (rythmos)
+################################################
+xmlRequired Charon->Solution Control->Rythmos,Final Time,double,5.5e-4
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Integration Control,Take Variable Steps,bool,true
+xmlRequired Charon->Solution Control->Rythmos,Stepper Type,string,Backward Euler
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Initial Step Size,double,1e-5
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Min Step Size,double,1e-7
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Max Step Size,double,1.0e-4
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Number of Constant First Order Steps,int,5
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Step Size Decrease Factor,double,0.2
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Step Size Increase Factor,double,1.5
+
+xmlRequired Charon->Solution Control->Rythmos,Nonlinear Solver Type,string,NOX
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Stepper->VerboseObject,Verbosity Level,string,none
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Integrator->VerboseObject,Verbosity Level,string,none
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Min Order,int,1
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Max Order,int,1
+
+################################################
+# Transient solver settings (tempus)
+################################################
+xmlRequired Charon->Solution Control->Tempus,Integrator Name,string,Default Integrator
+
+xmlRequired Charon->Solution Control->Tempus->Default Integrator,Integrator Type,string,Integrator Basic
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Output Index Interval,int,0
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Initial Time Step,double,1e-5
+
+xmlRequired Charon->Solution Control->Tempus->Default Integrator,Stepper Name,string,Default Stepper
+xmlRequired Charon->Solution Control->Tempus->Default Stepper,Stepper Type,string,Backward Euler
+xmlRequired Charon->Solution Control->Tempus->Default Stepper,Solver Name,string,Default Solver
+
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX,Nonlinear Solver,string,Line Search Based
+
+##############################################
+# Convergence tests for the nonlinear solve
+#
+# NOTE: If you change the order of these, at
+# a minimum, you need to modify the WRMS line
+# parsers accordingly
+##############################################
+xmlRequired Charon->Solution Control->NOX->Status Tests,Test Type,string,Combo
+xmlRequired Charon->Solution Control->NOX->Status Tests,Combo Type,string,OR
+xmlRequired Charon->Solution Control->NOX->Status Tests,Number of Tests,int,3
+
+// replication for tempus
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests,Test Type,string,Combo
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests,Combo Type,string,OR
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests,Number of Tests,int,3
+
+## When WRMS is on
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Test Type,string,Combo
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Combo Type,string,AND
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0,Number of Tests,int,2
+
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 0,Test Type,string,NormF
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 0,Tolerance,double,1.0e-4
+
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Test Type,string,NormWRMS
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Tolerance,double,1.0
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Relative Tolerance,double,1.0e-07
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Absolute Tolerance,double,1.0e-14
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Alpha,double,0.0
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 0->Test 1,Beta,double,1.0
+
+// replication for tempus
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0,Test Type,string,Combo
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0,Combo Type,string,AND
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0,Number of Tests,int,2
+
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 0,Test Type,string,NormF
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 0,Tolerance,double,1.0e-4
+
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Test Type,string,NormWRMS
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Tolerance,double,1.0
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Relative Tolerance,double,1.0e-07
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Absolute Tolerance,double,1.0e-14
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Alpha,double,0.0
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 0->Test 1,Beta,double,1.0
+
+## Both
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 1,Test Type,string,MaxIters
+xmlDefault Charon->Solution Control->NOX->Status Tests->Test 1,Maximum Iterations,int,30
+
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 2,Test Type,string,FiniteValue
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 2,Vector Type,string,F Vector
+
+// replication for tempus
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 1,Test Type,string,MaxIters
+xmlDefault Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 1,Maximum Iterations,int,30
+
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 2,Test Type,string,FiniteValue
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 2,Vector Type,string,F Vector

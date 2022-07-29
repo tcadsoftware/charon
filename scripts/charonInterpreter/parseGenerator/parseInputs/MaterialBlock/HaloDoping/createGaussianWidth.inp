@@ -1,0 +1,14 @@
+
+
+interpreter name DopingGaussianWidth
+
+interpreter inputLine (width) = {width}
+
+interpreter shortHelp {Set the width of the Gaussian in the doping concentration}
+
+interpreter longHelp {Set the width of the Gaussian in the doping concentration}
+
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Width,double,{width}
+
+

@@ -6,6 +6,7 @@
 #include "Phalanx_Evaluator_Macros.hpp"
 #include "Phalanx_MDField.hpp"
 #include "Charon_Scaling_Parameters.hpp"
+#include "Charon_Material_Properties.hpp"
 
 using panzer::Cell;
 using panzer::Point;
@@ -41,6 +42,8 @@ private:
 
   // input
   PHX::MDField<const ScalarT,Cell,Point> latt_temp;
+  PHX::MDField<const ScalarT,Cell,Point> xMoleFrac;
+  PHX::MDField<const ScalarT,Cell,Point> yMoleFrac;
 
   // scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
@@ -51,6 +54,10 @@ private:
 
   // material parameters
   double Nc300, Nv300, Nc_F, Nv_F;
+
+  std::string materialName;
+  bool withMoleFrac;
+  Teuchos::RCP<CompoundMaterial> comp_mat;
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
 

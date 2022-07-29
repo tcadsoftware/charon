@@ -1,0 +1,10 @@
+interpreter name xMoleFracValue
+
+interpreter inputLine (xmole value) = {mval}
+
+interpreter shortHelp {set the xmole fraction value for the material}
+
+interpreter longHelp {set the xmole fraction value for the material}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},xMoleFrac Value,double,{mval}
+

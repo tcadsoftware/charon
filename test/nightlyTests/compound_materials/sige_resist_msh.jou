@@ -1,0 +1,64 @@
+undo on
+graphics mode wireframe
+
+
+
+################################################
+# Geometry definition
+################################################
+
+# The depth isn't used so use a value that looks reasonable visually
+#{zsize = 16.0}
+
+#{DY = 0.5}
+#{DX = 1.0}
+
+
+################################################
+# Geometry 
+################################################
+
+# resistor body
+create brick x {DX} y {DY} z {zsize}
+volume 1 rename "resist"
+
+#imprint all
+#merge all
+
+# Move everything to positive coordinate values
+move vertex 4 location x 0 y 0 z 0 include_merged
+
+###############################################
+## Boundary conditions
+################################################
+
+sideset 1 curve 1 
+sideset 1 name "right"
+
+sideset 2 curve 3
+sideset 2 name "left"
+
+
+################################################
+## Mesh
+################################################
+
+#{DX_fine = 0.25}
+#{DY_fine = 0.25}
+
+curve 2 4 interval size {DX_fine}
+curve 1 3 interval size {DY_fine}
+surface 1 scheme map
+mesh surface 1
+
+
+################################################
+# Element blocks
+################################################
+
+block 1 surface 1 
+block 1 element type quad4
+block 1 name "si(1-x)ge(x)"
+
+
+export mesh 'sige_resist_msh.exo' dimension 2 overwrite

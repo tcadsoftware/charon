@@ -1,4 +1,4 @@
 NODAL VARIABLES relative 1.0e-10
-	ELECTRIC_POTENTIAL relative 5.0e-7
-	ELECTRON_DENSITY relative 5.0e-07
-	HOLE_DENSITY relative 5.0e-07
+	ELECTRIC_POTENTIAL relative 3.0e-6
+	ELECTRON_DENSITY relative 1.5e-3
+	HOLE_DENSITY relative 3.5e-05

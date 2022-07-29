@@ -38,16 +38,22 @@ class NLPoissonSource
   PHX::MDField<ScalarT,Cell,Point> nlpsrc; // scaled
 
   // input
-  PHX::MDField<const ScalarT,Cell,Point> intrin_fermi; // [eV]
   PHX::MDField<const ScalarT,Cell,Point> doping;       // scaled (net doping)
-  PHX::MDField<const ScalarT,Cell,Point> intrin_conc;  // scaled (effective ni)
   PHX::MDField<const ScalarT,Cell,Point> latt_temp;    // scaled
+  PHX::MDField<const ScalarT,Cell,Point> elec_effdos;
+  PHX::MDField<const ScalarT,Cell,Point> hole_effdos;
+  PHX::MDField<const ScalarT,Cell,Point> condband;
+  PHX::MDField<const ScalarT,Cell,Point> valeband;
+
 
  // Scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double T0;
 
   int num_points;
+
+  std::string UseFD="False"; // True=Fermi-Dirac statistics, False=Maxwell-Boltzman statistics
+  ScalarT Fhalf ( const ScalarT&);
 
 private:
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;

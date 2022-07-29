@@ -1,0 +1,165 @@
+%YAML 1.1
+---
+ANONYMOUS:
+  Mesh: 
+    Source: Exodus File
+    Exodus File: 
+      Restart Index: -1
+      File Name: ganalgan.gen
+  Closure Models: 
+    Concentration Scaling: 1.00000000000000000e+16
+    Reference Material: GaN
+    ganParameter: 
+      Material Name: GaN
+      Doping: 
+        Value: Function
+        Function1: 
+          Function Type: Uniform
+          Doping Value: 1.00000000000000000e+14
+          Doping Type: Acceptor
+      Band Gap: 
+        Value: Nitride
+    alganParameter: 
+      Material Name: AlGaN
+      Mole Fraction: 
+        Value: Function
+        Function1: 
+          Function Type: Linear
+          Mole Start Value: 2.00000000000000011e-01
+          Mole End Value: 4.00000000000000022e-01
+          Ymin: 2.50000000000000000e-01
+          Ymax: 5.00000000000000000e-01
+      Doping: 
+        Value: Function
+        Function1: 
+          Function Type: Uniform
+          Doping Value: 1.00000000000000000e+14
+          Doping Type: Donor
+      Band Gap: 
+        Value: Nitride
+      Relative Permittivity: 
+        Value: Nitride
+      Effective DOS: 
+        Value: Nitride
+  Solution Control: 
+    Piro Solver: NOX
+    Compute Sensitivities: false
+    Jacobian Operator: Have Jacobian
+    NOX: 
+      Nonlinear Solver: Line Search Based
+      Direction: 
+        Method: Newton
+        Newton: 
+          Forcing Term Method: Constant
+          Rescue Bad Newton Solve: true
+          Stratimikos Linear Solver: 
+            Stratimikos: 
+              Linear Solver Type: AztecOO
+              Preconditioner Type: Ifpack
+              Linear Solver Types: 
+                AztecOO: 
+                  Forward Solve: 
+                    Max Iterations: 400
+                    Tolerance: 9.99999999999999955e-07
+                    AztecOO Settings: 
+                      Aztec Solver: GMRES
+                      Convergence Test: r0
+                      Size of Krylov Subspace: 500
+                      Output Frequency: 10
+                Belos: 
+                  Solver Type: Block GMRES
+                  Solver Types: 
+                    Block GMRES: 
+                      Convergence Tolerance: 1.00000000000000002e-08
+                      Output Frequency: 10
+                      Output Style: 1
+                      Verbosity: 33
+                      Maximum Iterations: 200
+                      Block Size: 1
+                      Num Blocks: 50
+                      Flexible Gmres: false
+              Preconditioner Types: 
+                Ifpack: 
+                  Overlap: 1
+                  Prec Type: ILU
+                  Ifpack Settings: 
+                    'fact: drop tolerance': 0.00000000000000000e+00
+                    'fact: ilut level-of-fill': 1.00000000000000000e+00
+                    'fact: level-of-fill': 3
+      Line Search: 
+        Method: Backtrack
+        Full Step: 
+          Full Step: 0.00000000000000000e+00
+      Printing: 
+        Output Precision: 3
+        Output Processor: 0
+        Output Information: 
+          Error: true
+          Warning: true
+          Outer Iteration: true
+          Parameters: true
+          Details: true
+          Linear Solver Details: true
+          Stepper Iteration: true
+          Stepper Details: true
+          Stepper Parameters: true
+      Solver Options: 
+        Status Test Check Type: Minimal
+      Status Tests: 
+        Test Type: Combo
+        Combo Type: OR
+        Number of Tests: 2
+        Test 0: 
+          Test Type: NormF
+          Tolerance: 1.00000000000000000e+00
+        Test 1: 
+          Test Type: MaxIters
+          Maximum Iterations: 30
+  Output: 
+    File Name: ganalgan.nlp.exo
+    Cell Average Quantities: 
+      gan: 'Doping,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level, Reference Energy, Relative Permittivity, Electron Effective DOS, Hole Effective DOS'
+      algan: 'Doping,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level,Mole Fraction, Reference Energy, Relative Permittivity, Electron Effective DOS, Hole Effective DOS'
+  Block ID to Physics ID Mapping: 
+    gan: GaN
+    algan: AlGaN
+  Physics Blocks: 
+    GaN: 
+      child0: 
+        Type: NLPoisson
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 2
+        Model ID: ganParameter
+    AlGaN: 
+      child0: 
+        Type: NLPoisson
+        Basis Type: HGrad
+        Basis Order: 1
+        Integration Order: 2
+        Model ID: alganParameter
+  Boundary Conditions: 
+    child0: 
+      Type: Dirichlet
+      Sideset ID: gate
+      Element Block ID: algan
+      Equation Set Name: ALL_DOFS
+      Strategy: Ohmic Contact
+      Data: 
+        Voltage: 0.00000000000000000e+00
+    child1: 
+      Type: Dirichlet
+      Sideset ID: substrate
+      Element Block ID: gan
+      Equation Set Name: ALL_DOFS
+      Strategy: Ohmic Contact
+      Data: 
+        Voltage: 0.00000000000000000e+00
+  Initial Conditions: 
+    algan: 
+      ELECTRIC_POTENTIAL: 
+        Value: Equilibrium Potential
+    gan: 
+      ELECTRIC_POTENTIAL: 
+        Value: Equilibrium Potential
+...

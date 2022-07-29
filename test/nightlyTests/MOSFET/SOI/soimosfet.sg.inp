@@ -1,0 +1,129 @@
+
+/include geometry.inp
+
+Import State File soimosfet.sg.in.exo at index -1
+
+start output parameters
+      Output State File soimosfet.sg.out.exo
+      Output Nodal Variables in body for "Doping,Acceptor Concentration,Donor Concentration, Conduction Band, Valence Band"
+      Output cell average Variables in body for scalar "Doping,Acceptor Concentration,Donor Concentration,Space Charge"
+      Output cell average Variables in body for vector "Electron Current Density,Hole Current Density"
+      Output Nodal Variables in substrateregion for "Doping,Acceptor Concentration,Donor Concentration, Conduction Band, Valence Band"
+      Output cell average Variables in substrateregion for scalar "Doping,Acceptor Concentration,Donor Concentration"
+      Output tabulated parameter currents to RFSOI-45.gatesweep.1.dat 
+end output parameters
+
+
+/include scaling.inp
+
+lattice temperature=300
+
+#############################
+#body physics block
+#############################
+
+ start Physics Block bodySemiconductor
+      geometry block is body
+      standard discretization type is drift diffusion cvfem
+      material model is bodySiliconParameter
+      use fermi dirac with schroeder
+end Physics Block Semiconductor
+
+#############################
+#substrate physics block
+#############################
+
+start Physics Block substrateSemiconductor
+      geometry block is substrateregion
+      standard discretization type is drift diffusion cvfem
+      material model is substrateSiliconParameter
+      use fermi dirac with schroeder
+end Physics Block Semiconductor
+
+
+#############################
+#gate oxide physics block 
+#############################
+
+ start Physics Block gateInsulator
+      geometry block is gateoxide
+      standard discretization type is laplace gfem
+      material model is SiO2Parameter
+end Physics Block insulator
+
+#############################
+#box  physics block
+#############################
+
+start Physics Block boxInsulator
+      geometry block is buriedoxide
+      standard discretization type is laplace gfem
+      material model is SiO2ParameterBox
+end Physics Block insulator
+
+#############################
+#body material block
+#############################
+
+start Material Block bodySiliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      /include mobility.inp
+
+      /include bodyDoping.inp
+
+end Material Block bodySiliconParameter
+
+#############################
+#substrate material block
+#############################
+
+start Material Block substrateSiliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      /include bodyDoping.inp
+
+ end Material Block siliconParameter
+
+#############################
+#insulator material block
+#############################
+
+/include insulatorProperties.inp
+
+start Material Block SiO2ParameterBox
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+
+#############################
+#initial conditions
+#############################
+
+initial conditions for ELECTRIC_POTENTIAL in gateoxide is  exodus file
+initial conditions for ELECTRIC_POTENTIAL in body is  exodus file
+initial conditions for ELECTRIC_POTENTIAL in buriedoxide is  exodus file
+initial conditions for ELECTRIC_POTENTIAL in substrateregion is  exodus file
+
+Initial Conditions for ELECTRON_DENSITY in body is exodus file 
+Initial Conditions for HOLE_DENSITY in body is exodus file 
+
+Initial Conditions for ELECTRON_DENSITY in substrateregion is exodus file 
+Initial Conditions for HOLE_DENSITY in substrateregion is exodus file 
+
+#############################
+# boundary conditions
+#############################
+
+BC is ohmic for source on body fixed at 0
+BC is ohmic for drain on body fixed at 1
+BC is ohmic for substrate on substrateregion fixed at 0
+BC is contact on insulator for gate on gateoxide with work function {WF}  fixed at 1.0
+
+/include sweepOptions.inp
+
+/include solverSettings.inp
+#/include TpetraSolverSettings.inp

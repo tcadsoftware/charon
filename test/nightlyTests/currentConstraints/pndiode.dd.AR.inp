@@ -1,6 +1,8 @@
 
 Import State File pndiode.dd.exo at index 1
 
+tpetra is on
+
 start output parameters
       Output State File result.pndiode.dd.AR.exo
 end output parameters
@@ -36,7 +38,8 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 Initial Conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use solver pack 3
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is constrained steady state
+    verbosity level is high
+  end
 end solver block

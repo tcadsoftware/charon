@@ -1,0 +1,71 @@
+
+Import State File memristor.nlp.exo at index 1
+
+start output parameters
+  Output State File memristor.dd.equ.exo
+  Output cell average Variables in tio2 for scalar "Doping,Intrinsic Concentration,Conduction Band,Valence Band,Intrinsic Fermi Level"
+end output parameters
+
+start Physics Block Semiconductor
+  geometry block is tio2
+  standard discretization type is drift diffusion gfem
+  material model is TiO2Parameter
+  SRH recombination is off
+  Auger recombination is off
+  radiative recombination is off
+  band gap narrowing is off 
+end Physics Block Semiconductor
+
+tpetra is on
+concentration scaling = 5e20
+lattice temperature = 300
+
+start Material Block TiO2Parameter
+  material name is TiO2
+  reference material is TiO2
+  relative permittivity = 10.0
+
+  start uniform doping named Function1
+    type is donor
+    concentration = 5e20
+  end uniform doping named Function1
+
+  start uniform doping named Function2
+    type is acceptor
+    concentration = 5e18
+  end uniform doping
+
+  fixed mobility for electrons is 1.0
+  fixed mobility for holes is 0.5
+  
+  start intrinsic concentration
+    model is old slotboom
+  end  
+end Material Block TiO2Parameter
+
+BC is ohmic for left on tio2 fixed at 0
+BC is ohmic for right on tio2 fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in tio2 is exodus file
+initial conditions for ELECTRON_DENSITY in tio2 is equilibrium density
+initial conditions for HOLE_DENSITY in tio2 is equilibrium density
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    linear solver is aztecOO
+    maximum number nonlinear iterations = 15
+    nonlinear solver residual tolerance = 1e-10
+
+    start nonlinear solver wrms block
+      absolute tolerance = 1e-8
+      relative tolerance = 1e-4
+      alpha = 1.0
+      beta = 0.5
+    end
+
+  end tpetra block
+
+end solver block
+

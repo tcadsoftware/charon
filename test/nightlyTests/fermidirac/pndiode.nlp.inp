@@ -6,6 +6,7 @@ start output parameters
 end output parameters
 
 Assembly Workset = 50
+tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e20
 
@@ -35,13 +36,9 @@ BC is ohmic for cathode on silicon fixed at 0
 initial conditions for ELECTRIC_POTENTIAL in silicon is uninitialized
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
-
-      aztec max iterations = 300
-      aztec tolerance = 1e-5
-      aztec Krylov subspace size = 200
-      ifpack level of fill = 1
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

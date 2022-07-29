@@ -1,0 +1,72 @@
+
+Import State File pndiode.sg.-1V.exo at index 1
+
+start output parameters
+      Output State File pndiode.sg.analytic.optgen.fwhm.radsi.exo
+      Output nodal Variables in silicon for "Optical Generation"
+      Output tabulated transient currents to current_time_trans_opt.fwhm.radsi.csv
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is off
+      auger recombination is off
+      optical generation is on
+end Physics Block Semiconductor
+
+lattice temperature = 300
+assembly workset = 50
+tpetra is on
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+
+      fixed mobility for electrons is 1000
+      fixed mobility for holes is 500
+
+      start optical generation named Function1
+            temporal function is gauss
+            temporal range is 1.0e-9 to 3e-7
+            pulse peak time = 1.0e-7
+            pulse time fwhm = 40.0e-9 
+	    maximum pulse rate radsi = 1e12
+	    minimum pulse rate radsi = 0.2e-13
+	    pulse time integrator steps = 40
+      end 	      	    
+
+end Material Block siliconParameter
+
+BC is ohmic for anode on silicon fixed at -1.0
+BC is ohmic for cathode on silicon fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+  start tpetra block
+    problem type is tempus
+    verbosity level is high
+    time integrator final time = 5e-7
+    time step size is variable
+    time integrator initial step size = 5e-10
+  end
+end solver block
+

@@ -1,0 +1,15 @@
+
+
+interpreter name SolveIon
+
+interpreter inputLine (solve ion equation) [ (is true) [ (is false)]]
+
+interpreter shortHelp {Solve the ion continuity equation}
+
+interpreter longHelp {Solve the ion continuity equation <> {State} is True/False}
+
+xmlOptional (is true) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Ion,string,True
+
+xmlOptional (is false) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Ion,string,False
+
+

@@ -32,6 +32,7 @@ BC_BJT1DBaseContact(
   const Teuchos::ParameterList& p)
 {
   using Teuchos::RCP;
+  using Teuchos::rcp;
   using PHX::DataLayout;
   using PHX::MDField;
 
@@ -45,7 +46,7 @@ BC_BJT1DBaseContact(
   // note that m_names never has a fd suffix, even if in a frequency domain simulation,
   // since the closure model is evaluated at the time collocation points
   // so, for frequency domain simulations, find basis from the zero-th harmonic
-  Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(3,"","","","_CosH0.000000_"));
+  Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(3,"","","","_CosH"+std::to_string(0.0)+"_"));
 
   // basis
   RCP<const panzer::FieldLibraryBase> fieldLayoutLibrary =
@@ -55,6 +56,16 @@ BC_BJT1DBaseContact(
 
   RCP<PHX::DataLayout> data_layout = basis->functional;
 
+
+  //Set up to write the contact voltage to the parameter library
+  contactVoltage = rcp(new panzer::ScalarParameterEntry<EvalT>);
+  contactVoltage->setRealValue(0);
+  contactVoltageName = p.get<std::string>("Sideset ID")+"_Voltage";
+  contactVoltage = 
+    panzer::createAndRegisterScalarParameter<EvalT>(
+						    std::string(contactVoltageName),
+						    *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+
   // read in user-specified voltage
   user_value = Teuchos::rcp(new panzer::ScalarParameterEntry<EvalT>);
   user_value->setRealValue(0);
@@ -63,16 +74,28 @@ BC_BJT1DBaseContact(
   else if (p.isType<std::string>("Varying Voltage"))
   {
     if (p.get<std::string>("Varying Voltage") == "Parameter")
-      user_value =
-        panzer::createAndRegisterScalarParameter<EvalT>(
-        std::string("Varying Voltage"),
-        *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+      {
+	user_value =
+	  panzer::createAndRegisterScalarParameter<EvalT>(
+							  std::string("Varying Voltage"),
+							  *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+	Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > IAmLoca;
+	std::string locaFlag = contactVoltageName+"IS LOCA";
+	IAmLoca =
+	  panzer::createAndRegisterScalarParameter<EvalT>(
+							  std::string(locaFlag),
+							  *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+	IAmLoca->setValue(1.0);
+      }
     else
       TEUCHOS_TEST_FOR_EXCEPTION(true, std::invalid_argument,
         "BC_BJT1DBaseContact():  Error:  Expecting Varying Voltage value of " \
         "\"Parameter\"; received \"" << p.get<std::string>("Varying Voltage")
         << "\".")
   }
+
+  //Set the parameter library contact voltage to an initial value
+  contactVoltage->setValue(user_value->getValue());
 
   base_doptype = p.get<std::string>("Base Doping Type");
   bUseFD = false;
@@ -138,7 +161,8 @@ evaluateFields(
   typename Traits::EvalData workset)
 {
   ScalarT voltage = user_value->getValue();
-  ScalarT Eref = ref_energy(0,0);
+  contactVoltage->setValue(voltage);
+   ScalarT Eref = ref_energy(0,0);
   ScalarT vScaling = V0;
   ScalarT densScaling = C0;
   ScalarT tempScaling = T0;
@@ -207,6 +231,9 @@ BC_BJT1DBaseContact<EvalT, Traits>::getValidParameters() const
 
   Teuchos::RCP<charon::EmpiricalDamage_Data> dmgdata;
   p->set("empirical damage data", dmgdata);
+
+   //Sideset ID
+  p->set<std::string>("Sideset ID","");
 
   return p;
 }

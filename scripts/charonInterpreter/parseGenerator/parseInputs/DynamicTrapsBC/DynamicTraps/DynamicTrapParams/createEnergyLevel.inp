@@ -1,0 +1,8 @@
+interpreter name EnergyLevel
+
+interpreter inputLine (energy level) = {energyLev}
+
+interpreter shortHelp {The trap energy level in eV measured from the conduction or valence band edge}
+interpreter longHelp {The trap energy level in eV measured from the conduction or valence band edge. Should be always positive.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Energy Level,double,{energyLev}

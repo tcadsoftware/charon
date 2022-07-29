@@ -1,0 +1,9 @@
+interpreter name HoppingDist 
+
+interpreter inputLine (hopping distance) = {dist}
+
+interpreter shortHelp {The hopping distance in cm for the RigidPointIon mobility model}
+
+interpreter longHelp {The hopping distance in cm for the RigidPointIon mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Hopping Distance,double,{dist}

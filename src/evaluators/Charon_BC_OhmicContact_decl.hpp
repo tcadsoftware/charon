@@ -30,6 +30,31 @@ namespace charon {
   public:
     static
     void evaluateOhmicContactBC(const bool& bBJT1DBase, const bool& bUseFD,
+         const bool& bUseRefE, const bool& useEQC, const bool& useHQC, 
+         const Teuchos::ParameterList& incmpl_ioniz,
+         const typename EvalT::ScalarT& voltage,
+         const typename EvalT::ScalarT& Eref,
+         const typename EvalT::ScalarT& vScaling,
+         const typename EvalT::ScalarT& densScaling,
+         const typename EvalT::ScalarT& tempScaling,
+         const typename Traits::EvalData& workset,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& doping,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& acceptor,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& donor,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& intrin_conc,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& elec_effdos,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& hole_effdos,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& eff_affinity,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& eff_bandgap,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& latt_temp,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& eqc,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& hqc,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& potential,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& edensity,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& hdensity);
+
+    static
+    void evaluateOhmicContactBC(const bool& bBJT1DBase, const bool& bUseFD,
          const bool& bUseRefE, const Teuchos::ParameterList& incmpl_ioniz,
          const typename EvalT::ScalarT& voltage,
          const typename EvalT::ScalarT& Eref,
@@ -49,7 +74,8 @@ namespace charon {
          PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& potential,
          PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& edensity,
          PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& hdensity);
-  };
+};
+
 
 
 template<typename EvalT, typename Traits>
@@ -77,6 +103,8 @@ private:
   PHX::MDField<ScalarT,Cell,BASIS> potential;   // scaled, no unit
   PHX::MDField<ScalarT,Cell,BASIS> edensity;
   PHX::MDField<ScalarT,Cell,BASIS> hdensity;
+  PHX::MDField<ScalarT,Cell,BASIS> eqc;
+  PHX::MDField<ScalarT,Cell,BASIS> hqc;
 
   // input
   PHX::MDField<const ScalarT,Cell,BASIS> doping;      // scaled (net doping)
@@ -102,6 +130,8 @@ private:
   int num_basis;
 
   Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > user_value;
+  Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+  std::string contactVoltageName;
   double small_signal_perturbation; // for freq dom, where a small signal is applied about a steady dc bias 
 
   bool bUseFD;
@@ -109,6 +139,12 @@ private:
 
   Teuchos::RCP<const charon::Names> m_names;
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
+
+  // Quantum Correction Parameters
+  bool useEQC = false;
+  bool useHQC = false;
+
+  double initial_voltage = 0.0;
 
 }; // end of class BC_OhmicContact
 

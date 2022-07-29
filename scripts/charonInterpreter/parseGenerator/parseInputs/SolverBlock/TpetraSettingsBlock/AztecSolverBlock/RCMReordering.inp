@@ -1,0 +1,9 @@
+interpreter name RCMReordering
+
+interpreter shortHelp {Turn RCM ordering on or off}
+interpreter longHelp {Turn RCM ordering on or off}
+
+interpreter inputLine (rcm reordering) [ (is on) [ (is off) ]]
+
+xmlOptional (is on) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,RCM Reordering,string,Enabled
+xmlOptional (is off) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,RCM Reordering,string,Disabled

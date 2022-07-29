@@ -7,11 +7,12 @@ start output parameters
       unscale variables is on
 end output parameters
 
-assembly workset = 2000
+assembly workset = 1
+tpetra is on
 
 start Physics Block Semiconductor
       geometry block is silicon
-      standard discretization type is nlp
+      standard discretization type is nlp gfem
       material model is siliconParameter
 end Physics Block Semiconductor
 
@@ -37,8 +38,9 @@ BC is constant for ELECTRIC_POTENTIAL on cathode in silicon at -11.60452
 initial conditions for ELECTRIC_POTENTIAL in Default is equilibrium potential
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

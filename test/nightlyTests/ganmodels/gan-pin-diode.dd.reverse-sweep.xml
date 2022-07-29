@@ -8,6 +8,7 @@
   </ParameterList>
   <ParameterList name="Assembly" >
     <Parameter name="Workset Size" type="int" value="50" />
+    <Parameter name="Use Tpetra" type="bool" value="True" />
   </ParameterList>
   <ParameterList name="Closure Models" >
     <Parameter name="Lattice Temperature" type="double" value="300.0" />
@@ -159,7 +160,7 @@
           <ParameterList name="Stratimikos Linear Solver" >
             <ParameterList name="Stratimikos" >
               <Parameter name="Linear Solver Type" type="string" value="AztecOO" />
-              <Parameter name="Preconditioner Type" type="string" value="Ifpack" />
+              <Parameter name="Preconditioner Type" type="string" value="Ifpack2" />
               <ParameterList name="Linear Solver Types" >
                 <ParameterList name="AztecOO" >
                   <ParameterList name="Forward Solve" >
@@ -197,6 +198,12 @@
                     <Parameter name="fact: drop tolerance" type="double" value="0" />
                     <Parameter name="fact: ilut level-of-fill" type="double" value="1" />
                     <Parameter name="fact: level-of-fill" type="int" value="1" />
+                  </ParameterList>
+                </ParameterList>
+                <ParameterList name="Ifpack2" >
+                  <Parameter name="Prec Type" type="string" value="RILUK" />
+                  <ParameterList name="Ifpack2 Settings" >
+                    <Parameter name="fact: iluk level-of-fill" type="int" value="1" />
                   </ParameterList>
                 </ParameterList>
               </ParameterList>

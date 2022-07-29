@@ -1,0 +1,11 @@
+
+
+interpreter name Value
+
+interpreter inputLine (Value) = {val} 
+
+interpreter shortHelp {Set the relative permittivity value}
+
+interpreter longHelp {Set the relative permittivity value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Relative Permittivity,Value,double,{val}

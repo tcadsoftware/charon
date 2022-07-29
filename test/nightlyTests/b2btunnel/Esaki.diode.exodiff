@@ -1,0 +1,8 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-10
+ELEMENT VARIABLES relative 1.0e-5 floor 1.0e-09
+NODAL VARIABLES relative 1.0e-8
+	ELECTRIC_POTENTIAL   relative 1.0e-5 floor 1.0e-10
+	ELECTRON_DENSITY     relative 1.0e-5 floor 1.0e-10
+	HOLE_DENSITY         relative 1.0e-5 floor 1.0e-10
+

@@ -169,9 +169,13 @@
 
     <ParameterList name="Output">
         <Parameter name="File Name" type="string" value="nmosfet.sg.equ.exo"/>
-         <ParameterList name="Cell Average Vectors">
+        <ParameterList name="Cell Average Vectors">
             <Parameter name="silicon" type="string" value="GRAD_ELECTRIC_POTENTIAL"/>
             <Parameter name="sio2" type="string" value="GRAD_ELECTRIC_POTENTIAL"/>
+        </ParameterList>
+        <ParameterList name="Nodal Quantities">
+            <Parameter name="silicon" type="string" value="Conduction Band,Valence Band"/>
+            <Parameter name="sio2" type="string" value="Conduction Band,Valence Band"/>
         </ParameterList>
     </ParameterList>
 
@@ -315,8 +319,8 @@
             <Parameter name="Tolerance"          type="double" value="1.0"     />
             <Parameter name="Relative Tolerance" type="double" value="1.0e-5"  />
             <Parameter name="Absolute Tolerance" type="double" value="1.0e-8" />
-            <Parameter name="alpha"              type="double" value="0.0"     />
-            <Parameter name="beta"               type="double" value="1.0"     />
+            <Parameter name="Alpha"              type="double" value="0.0"     />
+            <Parameter name="Beta"               type="double" value="1.0"     />
           </ParameterList> <!--Test 1-->
         </ParameterList> <!--Test 0-->
         <ParameterList name="Test 1">

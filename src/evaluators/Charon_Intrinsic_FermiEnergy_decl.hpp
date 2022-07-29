@@ -24,7 +24,6 @@ namespace charon {
  * of degenerate semiconductors," Semicond. Sci. Technol. 9, 364 (1994).
  * Note: the formulation in the reference is for isothermal DD simulations only.
  *
- * For DDLattice, DDIon, and DDIonLattice formulations, Ei is computed as Ei = -q*phi.
  */
 
 template<typename EvalT, typename Traits>
@@ -71,8 +70,6 @@ private:
   PHX::MDField<const ScalarT,Cell,Point> hole_degfactor;
 
   int num_points;
-
-  std::string eqnSetType;
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
 

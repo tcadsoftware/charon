@@ -61,6 +61,9 @@ BCStrategy_Dirichlet_CurrentConstraint(
        << "control name = " << controlName << endl;
   voltageParameter_ =
     accessScalarParameter<EvalT>(controlName, *globalData->pl);
+
+  parameterLibrary_ = globalData->pl;  //This needs to be passed to evaluator to extract contact voltage
+
 } // end of Default Constructor
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -292,7 +295,9 @@ buildAndRegisterEvaluators(
   p.set("Field Library",      pb.getFieldLibraryBase());
   p.set("Names",              names                   );
   p.set("Voltage Control",    voltageParameter_       );
+  p.set("ParamLib", parameterLibrary_ );
   p.set("Scaling Parameters", scaleParams             );
+  p.set("Sideset ID",this->m_bc.sidesetID());
   p.set<bool>("Fermi Dirac",        bUseFD           );
   p.set<bool>("BJT1D Base Contact", bjt1DBaseContact_);
   p.set<bool>("Use Reference Energy", bUseRefE);

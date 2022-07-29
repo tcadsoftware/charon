@@ -1,0 +1,29 @@
+
+interpreter name TimeTrapezoidBC
+
+interpreter inputLine (BC is trapezoid for) {sidesetID} on {geometryBlock} with amplitude = {amplitude} period = {period} rise time = {risetime} fall time = {falltime} [(duty cycle) = {dutycycle} [(dc offset) = {DCoffset} [(delay) = {delay} [(repeat) = {repeat} [(with fermi pinning and contact ion density) = {ionDensity} ]]]]]
+
+
+interpreter shortHelp {Specify a temporally trapezoid voltage applied on a contact.}
+
+interpreter longHelp {Specify a temporally trapezoid voltage applied on a contact . <> sidesetID is the contact name/type <> geometryBlock is the geometry block the contact is attached to <> amplitude is the amplitude of the applied voltage in Volts. <> period is the period of the applied voltage, in s. <> rise time and fall time are the times the voltage takes to rise to amplitude and fall, in s. <> duty cycle is the fraction of the period the pulse occurs in values within [0, 1]. <> DCoffset is the DC voltage applied.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Trapezoid
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Amplitude,double,{amplitude}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Period,double,{period}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Rise Time,double,{risetime}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Fall Time,double,{falltime}
+xmlOptional (duty cycle) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Duty Cycle,double,{dutycycle}
+xmlOptional (dc offset) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,DC Offset,double,{DCoffset}
+xmlOptional (delay) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Delay,double,{delay}
+xmlOptional (repeat) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Number Pulses,int,{repeat}
+
+# Add the BC parameters for the ION_DENSITY
+xmlOptional (with fermi pinning and contact ion density) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Fermi Level Pinning,bool,true
+xmlOptional (with fermi pinning and contact ion density) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Contact Ion Density,double,{ionDensity}
+

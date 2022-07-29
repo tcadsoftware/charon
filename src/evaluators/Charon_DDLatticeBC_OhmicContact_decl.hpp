@@ -84,6 +84,8 @@ private:
   PHX::MDField<const ScalarT,Cell,BASIS> eff_affinity; // [eV]
   PHX::MDField<const ScalarT,Cell,BASIS> eff_bandgap;  // [eV]
 
+  PHX::MDField<const ScalarT,Cell,BASIS> ref_energy;   // [eV]
+
   // scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double V0; // [V]
@@ -91,6 +93,9 @@ private:
   double C0; // [cm^-3]
 
   int num_basis;
+
+  Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+  std::string contactVoltageName;
 
   Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > user_value;
 
@@ -100,6 +105,8 @@ private:
   bool bUseFermiPin;
 
   int ion_charge;
+  double ionDens;
+  double initial_voltage = 0.0;  
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
 

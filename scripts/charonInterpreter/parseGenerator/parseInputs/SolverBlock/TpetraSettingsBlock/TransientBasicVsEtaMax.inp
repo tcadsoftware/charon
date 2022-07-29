@@ -1,0 +1,8 @@
+interpreter name TransientBasicVsEtaMax
+
+interpreter shortHelp {Parameter eta_max for Tempus BasicVS time step control strategy}
+interpreter longHelp {Parameter eta_max for Tempus BasicVS time step control strategy}
+
+interpreter inputLine (basicvs eta max) = {etaMax}
+
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Maximum Value Monitoring Function,double,{etaMax} Priority 5

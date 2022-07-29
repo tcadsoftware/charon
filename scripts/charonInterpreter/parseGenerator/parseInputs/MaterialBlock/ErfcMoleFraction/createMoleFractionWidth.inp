@@ -1,0 +1,16 @@
+
+
+interpreter name MoleFractionWidth
+
+interpreter inputLine (gradient width) = {width} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the range over which the mole fraction ramps from the minimum to maximum values in x, y or z}
+
+interpreter longHelp {Set the range over which the mole fraction ramps from the minimum to maximum values in x, y or z <> {width} is the width of the gradent}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},X Width,double,{width}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Y Width,double,{width}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Z Width,double,{width}
+

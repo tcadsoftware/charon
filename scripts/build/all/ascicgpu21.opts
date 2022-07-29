@@ -1,0 +1,61 @@
+##########################################################################################################
+# Options file to enable kokkos/cuda and openmp support in charon
+##########################################################################################################
+# Required/suggested modules:
+#    sems-env sems-git/2.10.1 sems-cmake/3.19.1 sems-gcc/7.2.0 sems-cuda/10.1 sems-openmpi/4.0.5
+#    sems-hdf5/1.10.6/parallel sems-netcdf/4.7.3/parallel sems-zlib/1.2.8/base sems-boost/1.58.0/base
+# then either
+#    module load sems-python/3.5.2
+# or
+#    module swap sems-python/2.7.9 sems-python/3.5.2
+#
+# Additionally
+#   export OMPI_CXX=<base dir>/tcad-charon/Trilinos/packages/kokkos/bin/nvcc_wrapper
+
+BLAS_LIBRARY_DIRS:PATH=/usr/lib64
+BLAS_LIBRARY_NAMES:STRING="blas"
+
+LAPACK_LIBRARY_DIRS:PATH=/usr/lib64
+LAPACK_LIBRARY_NAMES:STRING="lapack"
+
+Netcdf_INCLUDE_DIRS:PATH=${SEMS_NETCDF_INCLUDE_PATH}
+Netcdf_LIBRARY_DIRS:PATH=${SEMS_NETCDF_LIBRARY_PATH}
+
+TPL_ENABLE_Pnetcdf:BOOL=ON
+Pnetcdf_INCLUDE_DIRS:PATH=${SEMS_NETCDF_INCLUDE_PATH}
+Pnetcdf_LIBRARY_DIRS:PATH=${SEMS_NETCDF_LIBRARY_PATH}
+
+Boost_INCLUDE_DIRS:PATH=${SEMS_BOOST_INCLUDE_PATH}
+Boost_LIBRARY_DIRS:PATH=${SEMS_BOOST_LIBRARY_PATH}
+BoostLib_INCLUDE_DIRS:PATH=${SEMS_BOOST_INCLUDE_PATH}
+BoostLib_LIBRARY_DIRS:PATH=${SEMS_BOOST_LIBRARY_PATH}
+
+CMAKE_INSTALL_PREFIX:PATH=${HOME}/Software/stow/charon
+
+tcad-charon_ENABLE_OpenMP:BOOL=ON
+
+#################################
+# CUDA/GPU settings
+#################################
+TPL_ENABLE_CUDA:BOOL=ON
+TPL_ENABLE_HDF5:BOOL=ON
+
+Sacado_ENABLE_HIERARCHICAL:BOOL=OFF
+Sacado_ENABLE_HIERARCHICAL_DFAD:BOOL=OFF
+Sacado_ENABLE_MEMORY_POOL:BOOL=OFF
+
+Tpetra_ENABLE_CUDA:BOOL=ON
+Tpetra_INST_SERIAL:BOOL=ON
+Tpetra_INST_INT_LONG_LONG:BOOL=ON
+
+# Relocatable code requires a static build
+BUILD_SHARED_LIBS:BOOL=ON
+Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE:BOOL=OFF
+
+Kokkos_ENABLE_CUDA_UVM:BOOL=ON
+Kokkos_ENABLE_CUDA:BOOL=ON
+Kokkos_ENABLE_CUDA_LAMBDA:BOOL=ON
+Kokkos_ENABLE_OPENMP:BOOL=ON
+Kokkos_ENABLE_SERIAL:BOOL=ON
+Kokkos_ARCH_VOLTA70:BOOL=ON
+Kokkos_CUDA_DIR:PATH=/projects/sems/install/rhel7-x86_64/sems/compiler/cuda/10.1/base

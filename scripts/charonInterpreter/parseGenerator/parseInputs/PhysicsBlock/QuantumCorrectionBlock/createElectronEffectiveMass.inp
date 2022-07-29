@@ -1,0 +1,9 @@
+
+interpreter name ElectronEffectiveMass
+
+interpreter inputLine (electron effective mass =) {effMass}
+
+interpreter shortHelp {Specify different electron effective mass from default 1.08 (electron dos effective mass)}
+interpreter longHelp  {Specify different electron effective mass from default 1.08 (electron dos effective mass)}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Effective Mass,double,{effMass}

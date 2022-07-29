@@ -1,6 +1,6 @@
 interpreter name Electron_ah
 
-interpreter inputLine (electron a(high)) = {ah_e}
+interpreter inputLine (electron ahigh) = {ah_e}
 
 interpreter shortHelp {Parameter for van Overstraeten model}
 interpreter longHelp {Parameter for van Overstraeten model}

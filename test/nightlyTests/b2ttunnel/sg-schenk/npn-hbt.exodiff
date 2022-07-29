@@ -4,7 +4,7 @@ ELEMENT VARIABLES relative 1.0e-5 floor 1.0e-12
 NODAL VARIABLES relative 1.0e-8
 	ELECTRIC_POTENTIAL   relative 1.0e-6 floor 1.0e-10
 	ELECTRON_DENSITY1    relative 1.0e-6 floor 1.0e-10
-	ELECTRON_DENSITY2    relative 1.0e-6 floor 1.0e-10
+	ELECTRON_DENSITY2    relative 1.0e-6 floor 2.0e-10
 	HOLE_DENSITY1        relative 1.0e-6 floor 1.0e-10
 	HOLE_DENSITY2        relative 1.0e-6 floor 1.0e-10
 

@@ -1,0 +1,29 @@
+
+interpreter name TimeSinusoidalBC
+
+interpreter inputLine (BC is sinusoidal for) {sidesetID} on {geometryBlock} [(with ampl) = {amplitude1} [(freq) = {frequency1} [(phase) = {phase1} [(plus ampl2) = {amplitude2} [(freq2) = {frequency2} [(phase2) = {phase2} [(and dc offset) = {DCoffset} [ (with fermi pinning and contact ion density) = {ionDensity} ] ]]]]]]]
+
+
+interpreter shortHelp {Specify a temporally sinusoidal voltage applied on a contact.}
+
+interpreter longHelp {Specify a temporally sinusoidal voltage applied on a contact, which can be specified as a superposition of two sinusoids and a DC voltage. <> sidesetID is the contact name/type <> geometryBlock is the geometry block the contact is attached to <> amplitude1 and amplitude2 are the amplitudes of the applied sinusoid voltages in Volts. <> frequency1 and frequency2 are the frequencies of the applied sinusoid voltages, in Hz. <> phase1 and phase2 are the phase shifts of the applied sinusoid voltages in a percentage of 2\pi and so their values are within [0, 1]. <> DCoffset is the DC voltage applied.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Type,string,Dirichlet
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Sideset ID,string,{sidesetID}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Element Block ID,string,{geometryBlock}
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Equation Set Name,string,ALL_DOFS
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS,Strategy,string,Sinusoid
+
+xmlOptional (with ampl) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Amplitude 1,double,{amplitude1}
+xmlOptional (freq) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Frequency 1,double,{frequency1}
+xmlOptional (phase) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Phase Shift 1,double,{phase1}
+
+xmlOptional (plus ampl2) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Amplitude 2,double,{amplitude2}
+xmlOptional (freq2) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Frequency 2,double,{frequency2}
+xmlOptional (phase2) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Phase Shift 2,double,{phase2}
+xmlOptional (and dc offset) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,DC Offset,double,{DCoffset}
+
+# Add the BC parameters for the ION_DENSITY
+xmlOptional (with fermi pinning and contact ion density) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Fermi Level Pinning,bool,true
+xmlOptional (with fermi pinning and contact ion density) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Contact Ion Density,double,{ionDensity}
+

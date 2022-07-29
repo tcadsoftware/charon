@@ -1,0 +1,11 @@
+interpreter name PulseStepDiscretization
+
+interpreter inputLine (Pulse time integrator steps =) {steps}
+
+interpreter shortHelp {Ensure that a certain number of time steps are taken over the lifetime of a radiation pulse}
+
+interpreter longHelp {Ensure that a certain number of time steps are taken over the lifetime of a radiation pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Pulse Time Steps,int,{steps}
+
+

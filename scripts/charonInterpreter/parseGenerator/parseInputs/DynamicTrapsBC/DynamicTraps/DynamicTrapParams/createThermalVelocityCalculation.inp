@@ -1,0 +1,12 @@
+interpreter name ThermalVelocityCalculation
+
+interpreter inputLine (thermal velocity calculation) is [ (mean) [ (root mean square)]]
+
+interpreter shortHelp {The way the thermal velocities are computed}
+interpreter longHelp {The way the thermal velocities are computed. It can as a mean or root mean square. If not specified, the mean is used as default}
+
+xmlOptional (mean) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Thermal Velocity Calculation,string,Mean
+
+xmlOptional (root mean square) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Thermal Velocity Calculation,string,Root Mean Square
+
+

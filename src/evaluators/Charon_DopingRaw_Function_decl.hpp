@@ -21,6 +21,65 @@ using panzer::BASIS;
 
 namespace charon {
 
+
+// Generic Profile Calculator
+class ProfileEvals
+{
+private:
+  int num_dim;
+
+public:
+  ProfileEvals(int dim);
+
+  // evaluate a single-axis linear (x, or y, or z)
+  double evalSingleLinear(const std::string axis, bool& found, 
+			  const double& coord,
+			  const double& min, const double& max, 
+			  const bool& checkAxis);
+  // evaluate linear profile at given (x,y,z)
+  std::vector<double> evalLinearProfile(
+	           const double& x, const double& y,
+		   const double& z, const linearDopingParams& ldp);
+  // evaluate a single-axis gaussian (x, or y, or z)
+  double evalSingleGaussian(const std::string axis, bool& found, 
+			    const double& coord, const double& minProfVal,
+			    const double& maxProfVal, const double& min, 
+			    const double& max, const double& loc,
+			    const double& width, const bool& checkAxis, 
+			    const std::string& dir);
+  // evaluate gaussian profile at given (x,y,z)
+  std::vector<double> evalGaussianProfile(
+	const double& x, const double& y, const double& z, 
+	const gaussianDopingParams& gdp);
+  // evaluate a single-axis erfc (x, or y, or z)
+  double evalSingleErfc(const std::string axis, bool& found, 
+			const double& coord, const double& minProfVal,
+			const double& maxProfVal, const double& min, 
+			const double& max, const double& loc,
+			const double& width, const bool& checkAxis, 
+			const std::string& dir);
+  // evaluate erfc profile at given (x,y,z)
+  std::vector<double> evalErfcProfile(
+        const double& x, const double& y, const double& z, 
+	const erfcDopingParams& edp);
+  // evaluate a single-axis MGauss (x, or y, or z)
+  double evalSingleMGauss(const std::string axis, bool& found, 
+			  const double& coord, const double& minProfVal, 
+			  const double& maxProfVal, const double& min, 
+			  const double& max, const bool& checkErfc,
+			  const double& width, const bool& checkAxis);
+  // evaluate gaussian (=MGauss) profile at given (x,y,z)
+  std::vector<double> evalMGaussProfile(
+	const double& x, const double& y, const double& z, 
+        const mgaussDopingParams& mgdp);
+  // evaluate halo profile
+  std::vector<double> evalHaloProfile(
+        const double& x, const double& y, const double& z, 
+        const haloDopingParams& hdp);
+};
+
+
+
 //! obtain a uniform doping
 template<typename EvalT, typename Traits>
 class DopingRaw_Function
@@ -91,6 +150,10 @@ private:
    const double& minDopVal, const double& maxDopVal,
    const double& min, const double& max, const bool& checkErfc,
    const double& width, const bool& checkAxis);
+
+  //evaluate halo doping
+  std::vector<double> evalHaloDoping(const double& x, const double& y,
+    const double& z, const haloDopingParams& hdp);
 
   // export 2D doping from an external file and map doping values to given (x,y,z) (Note: doping along z-axis is assumed to be homogeneous)
   std::vector<double> evalFile2DDoping(int counter, const double& x, const double& y,
@@ -183,6 +246,8 @@ private:
   std::vector<std::vector<std::vector<double> > > decayPos; 
   std::vector<std::vector<std::vector<double> > >decayWidth; 
   
+  bool sweepingIsOn;
+
   // input
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double C0; // conc. scaling, [cm^-3]
@@ -226,9 +291,12 @@ private:
   std::vector<linearDopingParams> ldp_vec;
   std::vector<erfcDopingParams> edp_vec;
   std::vector<mgaussDopingParams> mgdp_vec;
+  std::vector<haloDopingParams> hdp_vec;
 
   //Homotopy stuff
   Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > user_value;
+
+  Teuchos::RCP<ProfileEvals> prof_eval;
 
 }; // end of class DopingRaw_Function
 

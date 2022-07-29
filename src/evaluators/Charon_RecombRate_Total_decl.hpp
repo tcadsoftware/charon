@@ -51,6 +51,7 @@ private:
   PHX::MDField<const ScalarT,Cell,Point> rad_rate;
   PHX::MDField<const ScalarT,Cell,Point> auger_rate;
   PHX::MDField<const ScalarT,Cell,Point> ava_rate;
+  PHX::MDField<const ScalarT,Cell,Point> bbt_rate;
   PHX::MDField<const ScalarT,Cell,Point> defect_cluster_rate;
   PHX::MDField<const ScalarT,Cell,Point> empirical_defect_rate;
   PHX::MDField<const ScalarT,Cell,Point> ionization_particle_strike_rate;
@@ -72,7 +73,7 @@ private:
   std::size_t basis_index;
   std::string basis_name;
 
-  bool bSRH, bTrapSRH, bRadiative, bAuger, bAvalanche, bOptGen;
+  bool bSRH, bTrapSRH, bRadiative, bAuger, bAvalanche, bOptGen, bBBT;
   bool bDefect, bEmpiricalDefect,bParticleStrike;
   bool isSGCVFEM; 
 

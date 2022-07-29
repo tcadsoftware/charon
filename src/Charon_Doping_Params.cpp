@@ -3,14 +3,24 @@
 #include "Teuchos_TestForException.hpp"
 #include "Teuchos_Assert.hpp"
 
+#include <iostream>
+
 void charon::uniformDopingParams::parseUniform (const Teuchos::ParameterList& plist)
 {
   using Teuchos::ParameterList;
   using std::string;
+  if (plist.isParameter("SweepMe"))
+    if (plist.get<bool>("SweepMe"))
+      {
+	sweepMe = plist.get<bool>("SweepMe");
+      }
+
 
   std::string funcType = plist.get<string>("Function Type");
   dopType = plist.get<string>("Doping Type");
-  dopVal = plist.get<double>("Doping Value");
+  if (not sweepMe)
+    dopVal = plist.get<double>("Doping Value");
+    
   xmin = -1e100, ymin = -1e100, zmin = -1e100;
   xmax =  1e100, ymax =  1e100, zmax =  1e100;
 
@@ -20,6 +30,8 @@ void charon::uniformDopingParams::parseUniform (const Teuchos::ParameterList& pl
   if (plist.isParameter("Ymax"))  ymax = plist.get<double>("Ymax");
   if (plist.isParameter("Zmin"))  zmin = plist.get<double>("Zmin");
   if (plist.isParameter("Zmax"))  zmax = plist.get<double>("Zmax");
+  if (plist.isParameter("Initial Doping Value"))  initialDopVal = plist.get<double>("Initial Doping Value");
+  if (plist.isParameter("Final Doping Value"))    finalDopVal   = plist.get<double>("Final Doping Value");
 }
 
 void charon::gaussianDopingParams::parseGaussian (const Teuchos::ParameterList& plist,
@@ -256,3 +268,81 @@ void charon::mgaussDopingParams::testcoord (const std::string axis,
     checkErfc = plist.isParameter(axis+" ERFC_ON") ? plist.get<bool>(axis+" ERFC_ON") : false;
   }
 }
+
+
+void charon::haloDopingParams::parseHalo (const Teuchos::ParameterList& plist,
+					  const int num_dim)
+{
+  using std::string;
+  using Teuchos::ParameterList;
+
+  dopType = plist.get<string>("Doping Type");
+  dopingVal = 0.0;
+  minDopingVal = 0.0;
+  if (plist.isParameter("Doping Value"))
+    dopingVal = plist.get<double>("Doping Value");
+
+  if (plist.isParameter("Doping Max Value"))
+    dopingVal = plist.get<double>("Doping Max Value");
+
+ if (plist.isParameter("Doping Min Value"))
+    minDopingVal = plist.get<double>("Doping Min Value");
+
+  if (!plist.isParameter("R1"))
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+					 << "Error!  The primary radius R1 must be specified for halo doping.");
+
+  if (!plist.isParameter("R2"))
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+			       << "Error!  The primary radius R2 must be specified for halo doping.");
+
+  r1 = plist.get<double>("R1");
+  r2 = plist.get<double>("R2");
+
+  if (!plist.isParameter("X Center"))
+    x_center = 0.0;
+  else
+    x_center = plist.get<double>("X Center");
+
+  if (!plist.isParameter("Y Center"))
+    y_center = 0.0;
+  else
+    y_center = plist.get<double>("Y Center");
+
+  if (!plist.isParameter("Z Center"))
+    z_center = 0.0;
+  else
+    z_center = plist.get<double>("Z Center");
+
+  if (!plist.isParameter("Rotation"))
+    rotation = 0.0;
+  else
+    rotation = plist.get<double>("Rotation");
+
+  if (!plist.isParameter("Doping Distribution"))
+    {
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+			       << "Error!  You must specify a distribution in the halo.  Uniform or Gaussian.");
+    }
+  else
+    distributionType = plist.get<string>("Doping Distribution");
+
+  if (!plist.isParameter("Width"))
+    width = 0.0;
+  else
+    width = plist.get<double>("Width");
+
+
+}
+
+void charon::haloDopingParams::testcoord (const std::string axis,
+					  const Teuchos::ParameterList& plist)
+{
+  using std::string;
+  using Teuchos::ParameterList;
+ 
+  //Blank for now.  May come back and figure this out later.  :LCM
+
+
+}
+

@@ -1,0 +1,13 @@
+interpreter name SolveHole
+
+interpreter inputLine (solve hole equation) [ (is true) [ (is false)]]
+
+interpreter shortHelp {Solve the hole continuity equation}
+
+interpreter longHelp {Solve the hole continuity equation <> {State} is True/False}
+
+xmlOptional (is true) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Hole,string,True
+
+xmlOptional (is false) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Hole,string,False
+
+

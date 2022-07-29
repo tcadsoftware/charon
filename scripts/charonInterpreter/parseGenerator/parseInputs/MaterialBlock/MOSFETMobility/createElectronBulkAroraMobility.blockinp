@@ -1,0 +1,9 @@
+
+interpreterBlock name ElectronBulkAroraMobility
+
+interpreterBlock (start electron bulk Mobility Arora)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Value,string,MOSFET
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,Value,string,Arora
+

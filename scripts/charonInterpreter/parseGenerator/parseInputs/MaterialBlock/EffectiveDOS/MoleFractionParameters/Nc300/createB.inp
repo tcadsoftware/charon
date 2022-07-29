@@ -1,0 +1,11 @@
+
+
+interpreter name B
+
+interpreter inputLine (b) = {b} 
+
+interpreter shortHelp {Set the Effective DOS Nc300 mole fraction b value}
+
+interpreter longHelp {Set the Effective DOS Nc300 mole fraction b value}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Effective DOS->Mole Fraction Parameters->Nc300,b,double,{b}

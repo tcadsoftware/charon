@@ -8,5 +8,5 @@ interpreter shortHelp {Set the Mu0 value for Shirahata electron model}
 
 interpreter longHelp {Set the Mu0 value for Shirahata electron model}
 
-xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Perpendicular Field Model,Mu0,double,{Mu0}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Perpendicular Field Model,muo,double,{Mu0}
 

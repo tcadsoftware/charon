@@ -10,7 +10,7 @@ xmlOptional (is old slotboom) Charon->Closure Models->{MaterialBlockName}->Intri
 
 xmlOptional (is slotboom) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,Slotboom
 
-xmlOptional (is persson) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,persson
+xmlOptional (is persson) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,Persson
 
 xmlOptional (is harmon) Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,string,Harmon
 

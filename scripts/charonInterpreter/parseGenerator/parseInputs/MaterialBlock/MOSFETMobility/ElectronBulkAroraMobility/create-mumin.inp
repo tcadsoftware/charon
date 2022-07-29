@@ -1,0 +1,9 @@
+interpreter name mumin
+
+interpreter inputLine (mumin) = {muminval}
+
+interpreter shortHelp {Set the mumin value for the Arora mobility model}
+
+interpreter longHelp {Set the mumin value for the Arora mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,mumin,double,{muminval}

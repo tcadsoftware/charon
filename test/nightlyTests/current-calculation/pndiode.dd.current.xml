@@ -20,8 +20,8 @@
         <ParameterList name="Semiconductor">
             <ParameterList>
                 <Parameter name="Type" type="string" value="Drift Diffusion"/> 
-                <Parameter name="Basis Type" type="string" value="HGrad"/> 
-                <Parameter name="Basis Order" type="int" value="1"/> 
+                <Parameter name="Basis Type" type="string" value="HGrad"/>  
+                <Parameter name="Basis Order" type="int" value="1"/>
                 <Parameter name="Integration Order" type="int" value="2"/> 
                 <Parameter name="Model ID" type="string" value="Silicon Parameter"/>  
                 <Parameter name="Prefix" type="string" value=""/>
@@ -88,7 +88,7 @@
             <Parameter name="Equation Set Name" type="string" value="ALL_DOFS"/> 
             <Parameter name="Strategy" type="string" value="Ohmic Contact"/> 
             <ParameterList name="Data">
-                <Parameter name="Voltage" type="double" value="0.6"/>
+                <Parameter name="Voltage" type="double" value="0.7"/>
             </ParameterList>
         </ParameterList>
         
@@ -119,7 +119,7 @@
     </ParameterList>
 
     <ParameterList name="Output">
-        <Parameter name="File Name" type="string" value="result_pndiode_dd_current.exo"/>
+        <Parameter name="File Name" type="string" value="result_pndiode_dd_hocurr.exo"/>
     </ParameterList>
 
     <ParameterList name="Options">

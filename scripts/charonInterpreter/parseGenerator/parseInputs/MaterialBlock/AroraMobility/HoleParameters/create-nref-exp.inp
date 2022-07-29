@@ -2,8 +2,8 @@ interpreter name nrefexp
 
 interpreter inputLine (nrefexp) = {nrefexpval}
 
-interpreter shortHelp {model parameter exponenetial power for N_ref}
+interpreter shortHelp {set the exponent of the doping term in the Arora mobility model}
 
-interpreter longHelp {Arora model parameter exponential power for N_ref}
+interpreter longHelp {set the exponent of the doping term in the Arora mobility model}
 
-xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,nrefexp,double,{nrefexpval}
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,nref_exp,double,{nrefexpval}

@@ -21,7 +21,6 @@ Subtract<EvalT, Traits>::
 Subtract(
   const Teuchos::ParameterList& p)
 {
-  using std::string;
   using Teuchos::RCP;
   using PHX::DataLayout;
   using PHX::MDField;

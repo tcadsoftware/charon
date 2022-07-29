@@ -116,7 +116,7 @@
                   
                     <ParameterList name="Volume Traps">
                        <Parameter name="Total Density" type="double" value="1e15"/> 
-		       <Parameter name="Initial Filling Factor" type="double" value="0.1"/> 
+		       <Parameter name="Initial Filling Factor" type="double" value="0.0"/> 
 		       <Parameter name="Capture Cross Section" type="double" value="1e-13"/>
 		       <Parameter name="Critical Capture Cross Section" type="double" value="0.7e-13"/> 
                     </ParameterList>

@@ -14,6 +14,8 @@ start Physics Block Semiconductor
       auger recombination is off
 end Physics Block Semiconductor
 
+tpetra is on
+
 start Material Block siliconParameter
       material name is Silicon
       relative permittivity = 11.9
@@ -41,8 +43,9 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
 Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

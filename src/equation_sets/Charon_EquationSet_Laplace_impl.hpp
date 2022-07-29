@@ -20,6 +20,8 @@
 #include "Charon_Scaling_Parameters.hpp"
 #include "Charon_PotentialFlux.hpp"
 
+#include "Charon_DisplacementCurrentDensity.hpp"
+#include "Charon_PrevPotentialGrad.hpp"
 
 // ***********************************************************************
 template <typename EvalT>
@@ -124,7 +126,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   // ********************
   // Laplace Equation
   // ********************
-
+/*
   // Transient Operator
   if (this->buildTransientSupport())
   {
@@ -137,7 +139,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       n.res.phi, n.dxdt.phi, *basis, *ir));
     fm.template registerEvaluator<EvalT>(op);
   }
-
+*/
   // Laplacian Operator
   // \int_{\Omega} \lambda2 \epsilon_r \grad_phi \cdot \grad_basis d\Omega
   {
@@ -196,6 +198,32 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       RCP<Evaluator<Traits>> op = rcp(new
 	Integrator_BasisTimesScalar<EvalT, Traits>(EvaluatorStyle::CONTRIBUTES,
         n.res.phi, n.field.ins_htrappedcharge, *basis, *ir, -1));
+      fm.template registerEvaluator<EvalT>(op);
+    }
+  }
+
+  // Computing displacement current density: Jd = -eps*d(grad(psi))/dt at IPs
+  if (this->buildTransientSupport()) {
+    {
+      ParameterList p("Prev Potential Gradient");
+      p.set("Current Name", m_names->field.grad_phi_prev);
+      p.set< RCP<const charon::Names> >("Names", m_names);
+      p.set("Scaling Parameters", scaleParams);
+      p.set("IR", ir);
+      RCP< PHX::Evaluator<panzer::Traits> > op = 
+	rcp(new charon::PrevPotentialGrad<EvalT,panzer::Traits>(p));
+      fm.template registerEvaluator<EvalT>(op); 
+    }
+
+    {
+      ParameterList p("Displacement Current Density");
+      p.set("Current Name", m_names->field.displacement_curr_density);
+      p.set< RCP<const charon::Names> >("Names", m_names);
+      p.set("Scaling Parameters", scaleParams);
+      p.set("IR", ir);
+
+      RCP< PHX::Evaluator<panzer::Traits> > op = 
+	rcp(new charon::DisplacementCurrentDensity<EvalT,panzer::Traits>(p));
       fm.template registerEvaluator<EvalT>(op);
     }
   }

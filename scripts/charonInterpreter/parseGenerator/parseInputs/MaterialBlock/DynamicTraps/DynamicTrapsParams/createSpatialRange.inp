@@ -1,0 +1,19 @@
+
+
+interpreter name SpatialRange
+
+interpreter inputLine (spatial range) is {locMin} to {locMax} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the coordinate range of the trap in x, y or z}
+
+interpreter longHelp {Set the coordinate range of the trap in x, y or z. Use a separate line to define the range for each axis}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},X Min,double,{locMin}
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},X Max,double,{locMax}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Y Min,double,{locMin}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Y Max,double,{locMax}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Z Min,double,{locMin}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Z Max,double,{locMax}
+

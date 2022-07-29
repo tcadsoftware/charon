@@ -1,0 +1,76 @@
+
+Import State File pmos.nlp.exo at index -1
+
+start output parameters
+      Output State File pmos.sg.exo
+end output parameters
+
+concentration scaling=1e15
+lattice temperature=300
+
+start Physics Block channelSemiconductor
+      geometry block is channel
+      standard discretization type is drift diffusion cvfem
+      material model is channelSiliconParameter
+end Physics Block Semiconductor
+
+start Physics Block insulator
+      geometry block is gateoxide
+      standard discretization type is laplace gfem
+      material model is SiO2Parameter
+end Physics Block insulator
+
+start Material Block channelSiliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      start uniform doping named Function1
+          Concentration = 1e17
+          spatial range is -1 to 1 in x
+          spatial range is -1 to 1 in y
+          Type is acceptor
+      end uniform doping named Function1
+
+
+      start MOSFET mobility
+      	    start electron bulk mobility klaassen
+		enable high field mobility
+      	    end electron bulk mobility Klaassen
+	    start electron channel mobility shirahata
+	    	  boundary layer thickness = 0.02
+		  spatial range is 3.0 to 5.55 in x
+		  spatial range is 0.15 to 0.15 in y
+		  theta = 0.05
+	    end electron channel mobility shirahata
+
+      	    start hole bulk mobility klaassen
+		enable high field mobility
+      	    end hole bulk mobility klaassen
+	    start hole channel mobility shirahata
+	    	  boundary layer thickness = 0.02
+		  spatial range is 3.0 to 5.55 in x
+		  spatial range is 0.15 to 0.15 in y
+		  theta = 0.05
+	    end hole channel mobility shirahata
+      end MOSFET mobility
+end Material Block siliconParameter
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in gateoxide is exodus file
+initial conditions for ELECTRIC_POTENTIAL in channel   is exodus file
+
+initial conditions for ELECTRON_DENSITY in channel is exodus file
+
+initial conditions for HOLE_DENSITY in channel is exodus file
+
+BC is ohmic                for body on channel                             fixed at   0.0
+BC is contact on insulator for gate on gateoxide with work function 4.3111 swept from 0.0 to -4.0
+
+start solver block
+      use solver pack 2
+      nonlinear solver tolerance = 1.0e-8
+      max nonlinear iterations = 30
+end solver block

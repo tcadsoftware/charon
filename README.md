@@ -76,7 +76,9 @@ Once you have access to the modules, you'll need to load the following:
 ### Clone the Repositories
 
 Getting all the Charon repositories set up in the right places is mostly
-automated.  First clone this repository with
+automated.  First, make sure you have SSH keys setup on cee-gitlab by following [these instructions](https://cee-gitlab.sandia.gov/help/ssh/README.md#adding-an-ssh-key-to-your-gitlab-account)
+
+Next clone this repository with
 ```bash
 cd <someBaseDirectory>
 git clone git@cee-gitlab.sandia.gov:Charon/tcad-charon
@@ -127,25 +129,24 @@ cd gnu.dbg
 ```
 You can then configure with
 ```
-../../tcad-charon/scripts/build/all/build_charon.py |& tee config$(date +%y%m%d%H%M%S).log
+../../tcad-charon/scripts/build/all/build_charon.py
 ```
 If the configure is successful, you can build with
 ```
-make -j <numProcs> |& tee make$(date +%y%m%d%H%M%S).log
+make -j <numProcs>
 ```
 Assuming the build is successful, you can run the test suite with
 ```
-ctest -j <numProcs> |& tee ctest$(date +%y%m%d%H%M%S).log
+ctest -j <numProcs> -L nightly
+```
+additionally, if you build a debug version you'll want to run ctest like
+```
+ctest -j <numProcs> -L nightly -LE debugexclude
 ```
 
 For futher details on the charon build script, `build_charon.py`, see
 its associated [wiki page](https://cee-gitlab.sandia.gov/Charon/tcad-charon/wikis/Using-the-python-build-script).
 
-> **Note:**  All the `tee` commands simply pipe the output to the screen
-> while also creating a timestamped log file.  If anything goes wrong during
-> the configure, build, or test stages, it can be quite useful to have these
-> log files available.  When submitting a ~"Bug Report", you can simply attach
-> them to the issue.
 
 [↑ Contents](#contents)
 

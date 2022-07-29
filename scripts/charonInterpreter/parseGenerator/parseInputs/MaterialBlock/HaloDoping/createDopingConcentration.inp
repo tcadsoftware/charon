@@ -1,0 +1,13 @@
+
+
+interpreter name DopingConcentration
+
+interpreter inputLine (uniform Concentration) = {dopeVal}
+
+interpreter shortHelp {Set the magnitude of the doping concentration}
+
+interpreter longHelp {Set the magnitude of the doping concentration}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Value,double,{dopeVal}
+
+

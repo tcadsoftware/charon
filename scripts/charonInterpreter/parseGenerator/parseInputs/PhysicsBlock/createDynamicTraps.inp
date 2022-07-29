@@ -1,0 +1,11 @@
+interpreter name DynamicTraps
+
+interpreter inputLine (dynamic traps) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on the dynamic traps model}
+
+interpreter longHelp {Turn on the dynamic traps model <> {State} is On/Off}
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Dynamic Traps,string,On
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Dynamic Traps,string,Off

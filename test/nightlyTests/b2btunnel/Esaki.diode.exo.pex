@@ -1,0 +1,10 @@
+Input FEM file                   = Esaki.diode.exo
+LB file                          = Esaki.diode.exo.nem
+Parallel Results File Base Name  = Esaki.diode
+File Extension for Spread Files  = .exo
+Number of Processors             = 4 
+------------------------------------------------------------
+                Parallel I/O section
+------------------------------------------------------------
+Parallel Disk Info= number=1, offset=1, zeros, nosubdirectory
+Parallel file location = root=/mnt/data2/Project/FAIRDEALGC/Charon/b2bt/Esaki-diode/forNightlyTests/, subdir=.

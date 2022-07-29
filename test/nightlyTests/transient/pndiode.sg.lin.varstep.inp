@@ -13,6 +13,8 @@ start Physics Block Semiconductor
       band gap narrowing is off
 end Physics Block Semiconductor
 
+tpetra is on
+
 start Material Block siliconParameter
       material name is Silicon
       relative permittivity = 11.9
@@ -43,10 +45,14 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
 Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 
 start solver block
-      use transient solver pack 1
-      time integrator final time = 2e-3
-      time integrator variable step size
-      time integrator minimum step size = 1e-4
-      time integrator initial step size = 1e-4
+  start tpetra block
+    problem type is tempus
+    time step size is variable
+    time integrator final time = 2.0e-3
+    time integrator initial step size = 1.0e-4
+    time integrator minimum step size = 1.0e-4
+    time integrator maximum step size = 5.0e-4
+    verbosity level is high
+  end
 end solver block
 

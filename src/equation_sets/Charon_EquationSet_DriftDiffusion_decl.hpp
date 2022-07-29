@@ -49,6 +49,7 @@ namespace charon {
     bool haveSource;
     bool add_source_stab;
     bool addTrapCharge; 
+    bool withDynamicTraps;
 
   };
 

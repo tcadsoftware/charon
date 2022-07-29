@@ -8,6 +8,7 @@ start output parameters
 end output parameters
 
 assembly workset = 50
+tpetra is on
 lattice temperature = 300
 concentration scaling = 4e19
 
@@ -225,10 +226,13 @@ start sweep options
   maximum step size = 0.025
   maximum number of steps = 5
   step size aggressiveness = 0.0
+  return failed on reaching max steps = false
+  hit continuation bound = false
 end sweep options
 
 start solver block
-      use solver pack 5
-      nonlinear solver tolerance = 1.0e-6
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is parameter sweep
+    verbosity level is high
+  end
 end solver block

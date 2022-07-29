@@ -1,10 +1,44 @@
 
 interpreter name TotalDensity
 
-interpreter inputLine (total density) = {Nt}
+interpreter inputLine (total density) [ (=) {Nt} [ (swept from) {Nt1} to {Nt2} ]]
 
 interpreter shortHelp {Sets the total interface trap density for the TID model}
 
 interpreter longHelp {Sets the total interface trap density for the TID model}
 
-xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Total Density,double,{Nt}
+#xmlRequired Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Total Density,double,{Nt}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Total Density Sweep is On,bool,false
+
+
+
+xmlOptional (=) Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Total Density,double,{Nt}
+
+#sweeping
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Total Density Sweep is On,bool,true
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Total Density Sweep,string,Parameter
+
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Initial Total Density,double,{Nt1}
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->TID->Kimpton Model->Interface Traps,Final Total Density,double,{Nt2}
+
+# Modify the solver type from NOX to LOCA
+xmlOptional (swept from) Charon->Solution Control,Piro Solver,string,LOCA
+
+#LOCA Parameters
+xmlOptional (swept from) Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Initial Value,double,0.0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Continuation Parameter,string,Interface Trap Total Density Sweep
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Max Steps,int,1000
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Max Value,double,1.0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Min Value,double,0.0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Compute Eigenvalues,bool,0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,0.05
+
+# Set the parameters block
+xmlOptional (swept from) Charon->Active Parameters,Number of Parameter Vectors,int,1
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Number,int,1
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Interface Trap Total Density Sweep
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,0.0
+#xmlOptional (swept from) use Modifier 0
+

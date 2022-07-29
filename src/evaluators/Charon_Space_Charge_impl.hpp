@@ -45,9 +45,9 @@ Space_Charge(
   this->addEvaluatedField(space_charge);
 
   // add dependent fields
-  elec_density = MDField<ScalarT,Cell,Point>(n.dof.edensity,scalar);
-  hole_density = MDField<ScalarT,Cell,Point>(n.dof.hdensity,scalar);
-  doping = MDField<ScalarT,Cell,Point>(n.field.doping,scalar);
+  elec_density = MDField<const ScalarT,Cell,Point>(n.dof.edensity,scalar);
+  hole_density = MDField<const ScalarT,Cell,Point>(n.dof.hdensity,scalar);
+  doping = MDField<const ScalarT,Cell,Point>(n.field.doping,scalar);
 
   this->addDependentField(elec_density);
   this->addDependentField(hole_density);

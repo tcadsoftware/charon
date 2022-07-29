@@ -1,0 +1,107 @@
+
+import State File "nmosfet.dd.0.1.exp.exo" at index 1
+
+start output parameters
+      output State File nmosfet.dd.exp.gate_sweep.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+      output cell average Variables in silicon for vector "Electron Current Density,Hole Current Density,Displacement Current Density"
+      Output cell average Variables in sio2 for vector "Displacement Current Density"
+      output tabulated transient currents to sweep_current.csv
+end output parameters
+
+
+
+assembly workset = 50
+tpetra is on
+concentration scaling=1e19
+lattice temperature=300
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      # auger recombination is on
+end Physics Block Semiconductor
+
+start Physics Block Insulator
+      geometry block is sio2
+      standard discretization type is laplace cvfem
+      material model is SiO2Parameter
+end Physics Block Insulator
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      # substrate doping
+      start uniform doping named Function1
+        concentration = 4e16
+        type is acceptor
+        spatial range is 0.0 to 1.5 in x
+        spatial range is 0 to 1.0 in y
+      end uniform doping
+
+      # source doping
+      start uniform doping named Function2
+        concentration = 1e20
+        type is donor
+        spatial range is 0.0 to 0.2 in x
+        spatial range is 0.925 to 1.0 in y
+      end uniform doping
+
+      start uniform doping named Function3
+        concentration = 1e20
+        type is donor
+        spatial range is 1.2 to 1.4 in x
+        spatial range is 0.925 to 1.0 in y
+      end uniform doping        
+end Material Block siliconParameter
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File 
+initial conditions for ELECTRON_DENSITY in silicon is Exodus File   
+initial conditions for HOLE_DENSITY in silicon is Exodus File 
+initial conditions for ELECTRIC_POTENTIAL in sio2 is Exodus File 
+
+BC is ohmic for source on silicon fixed at 0
+BC is ohmic for drain on silicon fixed at 0.1
+BC is ohmic for subs on silicon fixed at 0
+BC is contact on insulator for gate on sio2 with work function 4.1 linearly ramped from 0.0 to 0.33 and voltage from 0.0 to 1.0
+
+start dynamic traps bc for inter_trap
+  geometry block is silicon
+    start dynamic traps
+      start trap 1
+        trap type is donor
+        energy distribution is exponential
+        # spatial range is 0.22 to 1.18 in x 
+        trap density = 1e12
+        energy level = 0.5
+	energy width = 0.2
+        electron cross section = 1e-15
+        hole cross section = 1e-15
+        degeneracy factor = 1
+        thermal velocity calculation is mean
+        number of levels = 20
+      end trap 1
+    end dynamic traps
+end dynamic traps bc for inter_trap
+
+
+start solver block
+  start tpetra block
+    problem type is tempus
+    time step size is variable
+    time integrator final time = 0.33
+    time integrator initial step size = 1e-7
+    time integrator minimum step size = 1e-10
+    time integrator maximum step size = 0.1
+    verbosity level is high
+  end
+end solver block
+

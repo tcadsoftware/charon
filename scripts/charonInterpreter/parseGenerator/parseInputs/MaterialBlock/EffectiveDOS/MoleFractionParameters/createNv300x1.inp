@@ -1,0 +1,11 @@
+
+
+interpreter name Nv300x1
+
+interpreter inputLine (nv300 for x at 1 is) {val} 
+
+interpreter shortHelp {Set Nv300 for mole fraction x=1}
+
+interpreter longHelp {Set Nv300 for mole fraction x=1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Effective DOS->Mole Fraction Parameters,Nv300(x=1),double,{val}

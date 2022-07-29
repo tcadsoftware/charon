@@ -66,12 +66,6 @@ for index,lpl in enumerate(localParserList):
             print ("ERROR!! There are duplicate parser names in the <<",sourcePath,">> scope")
             print ("Duplicated name is ",lpl,"\n")
 
-for index,lpkl in enumerate(localParsingKeyList):
-    for lpkl2 in localParsingKeyList[index+1:]:
-        if lpkl == lpkl2:
-            print ("ERROR!! There are duplicate parsing keys in the <<",sourcePath,">> scope")
-            print ("Duplicated parsing key is ",lpkl,"\n")
-
 ############################################################################
 # Check for duplicate block parser names and block parsing keywords in this scope
 ############################################################################

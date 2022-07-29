@@ -1,0 +1,45 @@
+
+Import State File resistor.dd.equ.exo at index 1
+
+tpetra is on
+
+start output parameters
+      Output State File resistorC_linearX.dd.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      SRH recombination is on
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+  material name is Silicon
+  relative permittivity = 11.9
+
+  start uniform doping named Function1
+    spatial range is -1E10 to 1E10 in x
+    spatial range is -1E10 to 1E10 in y
+    Type is donor
+    Concentration = 1e16
+  end uniform doping named Function1
+end Material Block Silicon Parameter
+
+BC is mixed mode via current for anode on silicon as node named vconnectL in netlist resistorC_linearX.cir with initial current 1.0 with initial voltage 3.0
+BC is mixed mode via current for cathode on silicon as node named vconnectR in netlist resistorC_linearX.cir with initial current 1.0 with initial voltage 2.5
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+  start tpetra block
+    problem type is householder constrained steady state
+    verbosity level is high
+    start nonlinear solver wrms block
+      absolute tolerance = 1.0e-10
+      relative tolerance = 1.0e-8
+    end
+  end
+end solver block

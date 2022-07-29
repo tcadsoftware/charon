@@ -53,6 +53,9 @@ private:
   std::string hcurl_basis_name;
   std::size_t hcurl_basis_index;
 
+  // reference edge length
+  double refEdgeLen;
+
   std::string carrType;
 
   // for Edge

@@ -2,8 +2,8 @@ interpreter name exp4
 
 interpreter inputLine (exp4) = {exp4val}
 
-interpreter shortHelp {model parameter exponenetial power for N_ref}
+interpreter shortHelp {The fourth exponent of the temperature ratio for the Arora mobility model.}
 
-interpreter longHelp {Arora model parameter exponential power for N_ref}
+interpreter longHelp {The fourth exponent of the temperature ratio for the Arora mobility model.}
 
 xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility,exp4,double,{exp4val}

@@ -19,9 +19,9 @@
     <ParameterList name="Physics Blocks">
         <ParameterList name="Semiconductor">
             <ParameterList>
-                <Parameter name="Type" type="string" value="SGCVFEM Drift Diffusion"/>
-                <Parameter name="Basis Type" type="string" value="HGrad"/> 
-                <Parameter name="Basis Order" type="int" value="1"/> 
+                <Parameter name="Type" type="string" value="SGCVFEM Drift Diffusion"/> 
+                <Parameter name="Basis Type" type="string" value="HGrad"/>  
+                <Parameter name="Basis Order" type="int" value="1"/>
                 <Parameter name="Integration Order" type="int" value="2"/> 
                 <Parameter name="Model ID" type="string" value="Silicon Parameter"/>  
                 <Parameter name="Prefix" type="string" value=""/>
@@ -32,6 +32,8 @@
                     <Parameter name="SRH" type="string" value="Off" />
                     <Parameter name="Radiative" type="string" value="Off" />
                     <Parameter name="Auger" type="string" value="Off" />
+                    
+                    <Parameter name="Band Gap Narrowing" type="string" value="Off" /> 
                 </ParameterList>
              </ParameterList>
              
@@ -41,6 +43,7 @@
     <ParameterList name="Closure Models">
         <Parameter name="Lattice Temperature" type="double" value="300"/>
         <Parameter name="Concentration Scaling" type="double" value="1e16"/>
+        <Parameter name="Reference Material" type="string" value="Silicon"/>
         
         <ParameterList name="Silicon Parameter">
             <Parameter name="Material Name" type="string" value="Silicon"/>
@@ -65,7 +68,7 @@
             <ParameterList name="Hole Mobility">
                 <Parameter name="Value" type="double" value="500" />
             </ParameterList>
-                        
+
         </ParameterList>
     </ParameterList>
 
@@ -82,8 +85,8 @@
             <Parameter name="Equation Set Name" type="string" value="ALL_DOFS"/> 
             <Parameter name="Strategy" type="string" value="Ohmic Contact"/> 
             <ParameterList name="Data">
-                <Parameter name="Voltage" type="double" value="0.6"/>
-            </ParameterList>
+                <Parameter name="Voltage" type="double" value="0.7"/>
+            </ParameterList> 
         </ParameterList>
         
         <ParameterList>
@@ -101,7 +104,7 @@
     <ParameterList name="Initial Conditions">
         <ParameterList name="silicon">
             <ParameterList name="ELECTRIC_POTENTIAL">
-                <Parameter name="Value" type="string" value="Exodus File"/>
+                <Parameter name="Value" type="string" value="Exodus File"/> 
             </ParameterList>
             <ParameterList name="ELECTRON_DENSITY">
                 <Parameter name="Value" type="string" value="Exodus File"/>
@@ -113,7 +116,7 @@
     </ParameterList>
 
     <ParameterList name="Output">
-        <Parameter name="File Name" type="string" value="result_pndiode_sg_current.exo"/>
+        <Parameter name="File Name" type="string" value="result_pndiode_sg_hocurr.exo"/>
     </ParameterList>
 
     <ParameterList name="Options">
@@ -214,7 +217,7 @@
       <ParameterList name="Full Step">
         <Parameter name="Full Step" type="double" value="1"/>
       </ParameterList>
-      <Parameter name="Method" type="string" value="Full Step"/>
+      <Parameter name="Method" type="string" value="Backtrack"/>
     </ParameterList>
     <Parameter name="Nonlinear Solver" type="string" value="Line Search Based"/>
     <ParameterList name="Printing">
@@ -241,11 +244,11 @@
       <Parameter name="Number of Tests" type="int" value="2"/>
       <ParameterList name="Test 0">
         <Parameter name="Test Type" type="string" value="NormF"/>
-        <Parameter name="Tolerance" type="double" value="1.0e-8"/>
+        <Parameter name="Tolerance" type="double" value="1.0e-9"/>
       </ParameterList>
       <ParameterList name="Test 1">
         <Parameter name="Test Type" type="string" value="MaxIters"/>
-        <Parameter name="Maximum Iterations" type="int" value="30"/>
+        <Parameter name="Maximum Iterations" type="int" value="15"/>
       </ParameterList>
     </ParameterList>
   </ParameterList>

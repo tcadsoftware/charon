@@ -1,0 +1,9 @@
+
+interpreter name ElectronFitParameter
+
+interpreter inputLine (electron fit parameter =) {fitParam}
+
+interpreter shortHelp {Specify different electron fit parameter from default ??}
+interpreter longHelp  {Specify different electron fit parameter from default ??}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Fit Parameter,double,{fitParam}

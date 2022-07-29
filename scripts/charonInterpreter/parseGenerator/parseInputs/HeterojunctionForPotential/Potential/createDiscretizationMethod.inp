@@ -1,0 +1,14 @@
+interpreter name DiscretizationMethod
+
+interpreter inputLine (discretization method) is [ (fem) [ (cvfem) ]]
+
+interpreter shortHelp {Select a discretization method for potential heterointerface} 
+
+interpreter longHelp {Select a discretization method for potential heterointerface, which can be one of fem, cvfem}
+
+xmlOptional (fem) Charon->Boundary Conditions->pot1ANONYMOUS->Data,Discretization Method,string,FEM-SUPG
+xmlOptional (fem) Charon->Boundary Conditions->pot2ANONYMOUS->Data,Discretization Method,string,FEM-SUPG
+
+xmlOptional (cvfem) Charon->Boundary Conditions->pot1ANONYMOUS->Data,Discretization Method,string,CVFEM-SG
+xmlOptional (cvfem) Charon->Boundary Conditions->pot2ANONYMOUS->Data,Discretization Method,string,CVFEM-SG
+

@@ -1,0 +1,9 @@
+interpreter name NitridePermittivity
+
+interpreter inputLine (Nitride Permittivity)
+
+interpreter shortHelp {Sets the relative permittivity for nitrides in this material block}
+
+interpreter longHelp {Sets the relative permittivity for binary and ternary nitrides in this material block}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Relative Permittivity,Value,string,Nitride

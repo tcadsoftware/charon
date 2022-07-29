@@ -1,0 +1,26 @@
+THIS CIRCUIT IS A MOS LEVEL 1 MODEL CMOS INVERTER AND USES A PARASITIC RESISTOR
+
+VDDdev VDD   0 5V
+RIN     IN   1 1K
+VIN1     1   0 4.0V
+R1     VOUT  0 10k
+C2    VOUT   0 0.1p
+
+***********************
+*MN1   VOUT  IN   0   0 CD4012_NMOS L=5u W=175u
+***********************
+vcl   VOUT   0 0.5
+***********************
+
+MP1   VOUT  IN VDD VDD CD4012_PMOS L=5u W=270u
+
+.MODEL cd4012_pmos PMOS
+.MODEL cd4012_nmos NMOS
+
+.DC VIN1 0 5 0.5
+*.PRINT DC V(vout) v(in) i(R1)
+.PRINT DC V(vout) v(in)
+
+.options nonlin nox=1
+.options device debuglevel=-100
+.END

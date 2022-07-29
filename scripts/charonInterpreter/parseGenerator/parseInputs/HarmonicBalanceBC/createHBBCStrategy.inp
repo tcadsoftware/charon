@@ -1,0 +1,16 @@
+
+
+interpreter name HBBCStrategy
+
+interpreter inputLine (type is) [(ohmic) [(contact on insulator) [(with work function) {workFunction}]]]
+
+interpreter shortHelp {Specify the frequency domain boundary condition.}
+
+interpreter longHelp {Specify the frequency domain boundary condition on a particular contact. <> sidesetID is the contact name/type <> geometryBlock is the geometry name the contact is attached to <> bcStrategy can be 'Ohmic' or 'Contact On Insulator'}
+
+### from Ohmic Contact
+xmlOptional (ohmic) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Time Domain Strategy,string,Ohmic Contact
+
+### from Contact On Insulator
+xmlOptional (contact on insulator) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Time Domain Strategy,string,Contact On Insulator
+xmlOptional (with work function) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Work Function,double,{workFunction}

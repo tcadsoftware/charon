@@ -138,14 +138,14 @@ private:
   std::string tau_h_type;
   std::string ls_type;
 
-  bool haveSource;
-  bool add_source_stab; 
-  bool addTrapCharge; 
+  bool haveSource = false;
+  bool add_source_stab = false; 
+  bool addTrapCharge = false; 
   std::string drForce;
 
-  bool withAvaGen;
-  bool withTrapSRH;
-  bool addFixCharge; 
+  bool withAvaGen = false;
+  bool withTrapSRH = false;
+  bool addFixCharge = false; 
   
   // for frequency domain simulations
   std::string m_dof_name_;

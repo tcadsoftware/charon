@@ -8,6 +8,7 @@
 //The following are for Xyce coupling
 
 #cmakedefine ENABLE_XYCE_CLUSTER
+#cmakedefine ENABLE_MIXED_MODE
 #cmakedefine Xyce_NOX_SIZETYPE
 #cmakedefine DINT
 #cmakedefine Xyce_PARALLEL_MPI

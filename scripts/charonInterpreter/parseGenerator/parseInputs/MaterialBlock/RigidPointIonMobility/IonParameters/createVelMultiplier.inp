@@ -1,0 +1,9 @@
+interpreter name VelMultiplier 
+
+interpreter inputLine (velocity multiplier) = {multiplier}
+
+interpreter shortHelp {The unitless velocity multiplier for the RigidPointIon mobility model}
+
+interpreter longHelp {The unitless velocity multiplier for the RigidPointIon mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Velocity Multiplier,double,{multiplier}

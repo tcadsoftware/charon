@@ -1,0 +1,11 @@
+
+
+interpreter name Betax1
+
+interpreter inputLine (beta for x at 1 is) {val} 
+
+interpreter shortHelp {Set band gap beta for mole fraction x=1}
+
+interpreter longHelp {Set band gap beta for mole fraction x=1}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap->Mole Fraction Parameters,beta(x=1),double,{val}

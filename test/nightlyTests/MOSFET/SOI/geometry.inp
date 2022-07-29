@@ -1,0 +1,134 @@
+
+
+#{BPD=4.4881069095e+01}
+#{IDC=4.3154775448e+00}
+#{WEL=6.0194622858e-03}
+#{MUEMAX=7.3616739816e+02}
+#{MUHMAX=4.5000002971e+02}
+#{SED=5.8709578267e+00}
+
+#{WJI=0.004}
+#{HD=5.00e+02}
+#{GCPW=4.0e-02}
+
+
+#{BDP=3.0e-02}
+#{HW=3.000000000000000e-03}
+
+#{MUEMIN=5.0e+01}
+
+#{MUHMIN=5.0e+01}
+
+#{WF=4.15}
+
+#{E1E=6.3e3}
+#{E2E=7.7e5}
+#{Emuo=MUEMAX}
+
+#{E1H=8.0e3}
+#{E2H=3.9e5}
+#{Hmuo=MUHMAX}
+
+#{GS=0.006}
+
+####################################################
+# Set geometric parameters
+####################################################
+
+#{deviceWidth = .200}
+#{substrateDepth = 0.200}
+#{boxDepth = 0.180}
+#{bodyDepth = 0.070}
+
+#{gateContactPolyWidth=GCPW}
+#{gateSpacerWidth=GS}
+#{gateWidth = (gateContactPolyWidth + 2*gateSpacerWidth)}
+#{gateThickness = 0.002}
+#{gateHeight = 0.040}
+#{gateSpacerHeight = (gateHeight - gateThickness)}  #equal to gate contact height
+
+# expendable contact volumes
+#{contactThickness = 0.01}
+#{sourceContactWidth = 0.04}
+#{gateContactWidth = 0.04}
+#{drainContactWidth = 0.04}
+#{subContactWidth = 0.055}                 
+
+# Doping
+#{bodyPDoping = BPD*1e17}
+
+#{sourceWellDoping = 2e20}
+#{sourceExtensionDoping = SED*1e19}
+
+#{drainWellDoping = 2e20}
+#{drainExtensionDoping = SED*1e19}
+
+#{sourceHaloDoping = HD*1e17}
+#{drainHaloDoping = HD*1e17}
+
+#well parameters
+#{wellJunctionImpingement = WJI}
+#{wellDepth = 0.05}
+#{wellExtensionLength = WEL}
+#{wellExtensionDepth = 0.010}
+
+#source well
+#{sourceJunction = -gateContactPolyWidth/2 + wellJunctionImpingement}
+#{sourceDepth = -wellDepth}
+#{sourceExtensionImpingement = sourceJunction+wellExtensionLength}
+#{sourceExtensionDepth = -wellExtensionDepth}
+
+#drain well
+#{drainJunction = gateContactPolyWidth/2 - wellJunctionImpingement}
+#{drainDepth = -wellDepth}
+#{drainExtensionImpingement = drainJunction-wellExtensionLength}
+#{drainExtensionDepth = -wellExtensionDepth}
+
+#{bodyDopingDepth = -BDP}
+
+#halo parameters
+#{haloWidth = HW}
+#{haloDepth = wellExtensionDepth}
+#{haloTopPointY = 0.0015}
+#{subhaloWidth = wellExtensionLength+haloWidth}
+#{subhaloDepth = wellDepth-wellExtensionDepth}
+#{subhaloTopPointY = 1.5*wellExtensionDepth}
+
+#source halo
+#{sourceHaloRight = sourceExtensionImpingement + haloWidth}
+#{sourceHaloLeft = sourceExtensionImpingement}
+#{sourceHaloTop = haloTopPointY}
+#{sourceHaloBottom = haloTopPointY - haloDepth}
+
+#source subhalo
+#{sourceSubHaloRight = sourceJunction + subhaloWidth}
+#{sourceSubHaloLeft = sourceJunction}
+#{sourceSubHaloTop = -subhaloTopPointY}
+#{sourceSubHaloBottom = -wellDepth}
+
+#source basehalo
+#{sourceBaseHaloRight = sourceJunction + subhaloWidth}
+#{sourceBaseHaloLeft = -deviceWidth/2 + (sourceJunction + deviceWidth/2)/2}
+#{sourceBaseHaloTop = -wellDepth}
+#{sourceBaseHaloBottom =  -wellDepth - haloWidth}
+
+
+
+#drain halo
+#{drainHaloRight = drainExtensionImpingement}
+#{drainHaloLeft = drainExtensionImpingement - haloWidth}
+#{drainHaloTop = haloTopPointY}
+#{drainHaloBottom = haloTopPointY - haloDepth}
+
+#drain subhalo
+#{drainSubHaloRight = drainJunction}
+#{drainSubHaloLeft = drainJunction - subhaloWidth}
+#{drainSubHaloTop = -subhaloTopPointY}
+#{drainSubHaloBottom = -wellDepth}
+
+#drain basehalo
+#{drainBaseHaloRight = deviceWidth/2 - (deviceWidth/2 - drainJunction)/2}
+#{drainBaseHaloLeft = drainJunction - subhaloWidth} 
+#{drainBaseHaloTop = -wellDepth}
+#{drainBaseHaloBottom =  -wellDepth - haloWidth}
+

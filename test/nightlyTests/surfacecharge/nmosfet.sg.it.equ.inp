@@ -2,6 +2,7 @@
 Import State File "nmosfet.sg.equ.exo" at index 1
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
       Output State File nmosfet.sg.it.equ.exo
@@ -87,11 +88,8 @@ start surface charge bc for sheet
 end surface charge bc for sheet
 
 start solver block
-      use solver pack 5
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 15
-      ifpack level of fill = 3 
-      aztec tolerance = 1e-6
-      aztec krylov subspace size = 500 
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
-

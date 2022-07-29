@@ -2,7 +2,7 @@
 
 interpreter name InitialConditionsHarmonicBalance
 
-interpreter inputLine (Harmonic Balance Initial Conditions for) {DOF} in {geometryBlock} is [ (Exodus File)[ (default) [(constant) = {constValue} [(uninitialized) ]]]]
+interpreter inputLine (Harmonic Balance Initial Conditions for) {DOF} in {geometryBlock} is [ (Exodus File) [(constant) = {constValue} [(remapped) named {remapDOF} [(DC remapped) [(uninitialized for higher harmonics) ]]]]]
 
 interpreter shortHelp {Specify the source of the initial condition for the degrees of freedom}
 
@@ -13,5 +13,13 @@ xmlOptional (Exodus File) Charon->Initial Conditions->{geometryBlock}->{DOF},Val
 xmlOptional (constant) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,double,{constValue}
 xmlOptional (constant) use Modifier 0
 
-xmlOptional (uninitialized) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Value,string,Frequency Domain Defaults
-xmlOptional (uninitialized) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Maximum harmonic,int,5
+xmlOptional (DC remapped) Charon->Initial Conditions->{geometryBlock}->{DOF}_CosH0.000000_,Value,string,Remap
+xmlOptional (DC remapped) Charon->Initial Conditions->{geometryBlock}->{DOF}_CosH0.000000_,Input DOF Name,string,{DOF}
+xmlOptional (DC remapped) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Value,string,Frequency Domain Defaults
+xmlOptional (DC remapped) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Maximum harmonic,int,5
+
+xmlOptional (remapped) Charon->Initial Conditions->{geometryBlock}->{DOF},Value,string,Remap
+xmlOptional (remapped) Charon->Initial Conditions->{geometryBlock}->{DOF},Input DOF Name,string,{remapDOF}
+
+xmlOptional (uninitialized for higher harmonics) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Value,string,Frequency Domain Defaults
+xmlOptional (uninitialized for higher harmonics) Charon->Initial Conditions->{geometryBlock}->ALL_FD_DOFS,Maximum harmonic,int,5

@@ -2,6 +2,7 @@
 Import State File "oxide.lapl.exo"
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
       Output State File oxide.lapl.bq-.exo
@@ -33,9 +34,8 @@ BC is contact on insulator for top on sio2 with work function 4.8780 fixed at 1.
 BC is contact on insulator for bottom on sio2 with work function 4.8780 fixed at 0.0
 
 start solver block
-      use solver pack 1
-      line search method is backtrack
-      nonlinear solver tolerance = 1e-10
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
-

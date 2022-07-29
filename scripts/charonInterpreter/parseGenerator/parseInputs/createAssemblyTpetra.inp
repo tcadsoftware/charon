@@ -1,0 +1,13 @@
+interpreter name AssemblyTpetra
+
+interpreter inputLine (Tpetra) [ (is on) [ (is off) ]]
+
+interpreter shortHelp {Turn on use of Tpetra}
+
+interpreter longHelp {Turn on use of Tpetra. Default is to use Epetra.}
+
+xmlOptional (is on) Charon->Assembly,Use Tpetra,bool,True
+xmlOptional (is off) Charon->Assembly,Use Tpetra,bool,False
+
+xmlDefault  Charon->Assembly,Use Tpetra,bool,False
+

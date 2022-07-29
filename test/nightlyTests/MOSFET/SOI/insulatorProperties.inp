@@ -1,0 +1,7 @@
+
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = {IDC}
+#      relative permittivity = 8.9
+end Material Block

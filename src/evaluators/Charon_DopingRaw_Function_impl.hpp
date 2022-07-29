@@ -14,7 +14,7 @@
 #include "Panzer_IntegrationRule.hpp"
 #include "Panzer_ParameterLibraryUtilities.hpp"
 #include "Charon_Names.hpp"
-
+#include "lusolve.hpp"
 
 namespace charon {
 
@@ -40,6 +40,10 @@ DopingRaw_Function(
 
   const charon::Names& n =
     *(p.get< Teuchos::RCP<const charon::Names> >("Names"));
+
+  sweepingIsOn = false;
+  if (p.isParameter("SweepingIsOn"))
+    sweepingIsOn = p.get<bool>("SweepingIsOn");
 
   // IP
   RCP<IntegrationRule> ir = p.get< RCP<IntegrationRule> >("IR");
@@ -125,7 +129,6 @@ DopingRaw_Function(
       const ParameterList& funcParamList = Teuchos::getValue<Teuchos::ParameterList>(entry);
       const string funcType = funcParamList.get<string>("Function Type");
        
-
       if (funcType == "File2D")
       {
         DV.resize(DV.size()+1);
@@ -150,7 +153,14 @@ DopingRaw_Function(
         udp_.parseUniform(funcParamList);
         udp_vec.push_back(udp_);
  
-        // resize gauss decay vectors for uniform doping
+	if (udp_.sweepMe)
+	  {
+	    user_value =
+	      panzer::createAndRegisterScalarParameter<EvalT>(
+							      std::string("Doping Value"),
+							      *dopParamList.get<RCP<panzer::ParamLib> >("ParamLib"));
+	  }
+	// resize gauss decay vectors for uniform doping
         udCounter += 1; 
         int udIndex = udCounter-1;
         decayDir[1].resize(udCounter);
@@ -194,6 +204,12 @@ DopingRaw_Function(
         mgdp_.parseMGauss(funcParamList,num_dim);
         mgdp_vec.push_back(mgdp_);
       }
+      else if (funcType == "Halo")
+	{
+	  haloDopingParams hdp_;
+	  hdp_.parseHalo(funcParamList,num_dim);
+	  hdp_vec.push_back(hdp_);
+	}
       else if (funcType == "MMS_RDH_1")
       {
         mms1 = Teuchos::rcp(new charon::MMS_DD_RDH_1_AnalyticFunction(p));
@@ -208,7 +224,7 @@ DopingRaw_Function(
       }
       else
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Invalid doping Function Type!"
-          << "Must be Uniform, Erfc, Gauss/Gaussian, MGauss, "
+          << "Must be Uniform, Erfc, Gauss/Gaussian, MGauss, Halo, "
           << "Linear, File1D, File2D or File3D." << std::endl );
 
     }  // end of if (key.compare(0, 8, "Function") == 0)
@@ -243,6 +259,8 @@ DopingRaw_Function(
         this->addEvaluatedField(donor_raw_basis_wkst[i]);
      }
    }
+
+  prof_eval = rcp(new ProfileEvals(num_dim));
 
 }
 
@@ -568,7 +586,9 @@ evaluateFields(
   typedef typename PHX::MDField<ScalarT,Cell,BASIS>::size_type size_type;
   size_type num_basis = doping_raw_basis.dimension(1);
 
-  double dopeHomotopy = user_value->getRealValue();
+  double dopeHomotopy = 1.0;
+  if (not sweepingIsOn)
+    user_value->getRealValue();
 
   if (!store_wkst_doping)
   {
@@ -589,6 +609,7 @@ evaluateFields(
 
           // evaluate the acceptor and donor doping
           std::vector<double> dopValue = evaluateDoping(x,y,z);
+
           acceptor_raw(cell,ip) = dopeHomotopy*dopValue[0]/C0;
           donor_raw(cell,ip) = dopeHomotopy*dopValue[1]/C0;
           doping_raw(cell,ip) = dopeHomotopy*(dopValue[1] - dopValue[0])/C0;
@@ -648,8 +669,8 @@ evaluateFields(
 //
 ///////////////////////////////////////////////////////////////////////////////
 template<typename EvalT, typename Traits>
-std::vector<double> DopingRaw_Function<EvalT, Traits>::evaluateDoping
-  (const double& x, const double& y, const double& z)
+std::vector<double> DopingRaw_Function<EvalT, Traits>::evaluateDoping(
+  const double& x, const double& y, const double& z)
 {
   using std::string;
   using Teuchos::ParameterList;
@@ -658,37 +679,44 @@ std::vector<double> DopingRaw_Function<EvalT, Traits>::evaluateDoping
   TEUCHOS_ASSERT(!(dopValue.size() > 2));
 
   std::vector<double> tempVal(2, 0.0);
-/*
+  /*
   for (std::size_t i=0; i < udp_vec.size(); ++i)
   {
     tempVal=evalUniformDoping(x,y,z,udp_vec[i]);
       dopValue[0] += tempVal[0];  // acceptor
       dopValue[1] += tempVal[1];  // donor
   }
-*/
+  */
   for (std::size_t i=0; i < gdp_vec.size(); ++i)
   {
     tempVal=evalGaussianDoping(x,y,z,gdp_vec[i]);
-      dopValue[0] += tempVal[0];  // acceptor
-      dopValue[1] += tempVal[1];  // donor
+    dopValue[0] += tempVal[0];  // acceptor
+    dopValue[1] += tempVal[1];  // donor
   }
   for (std::size_t i=0; i < ldp_vec.size(); ++i)
   {
     tempVal=evalLinearDoping(x,y,z,ldp_vec[i]);
-      dopValue[0] += tempVal[0];  // acceptor
-      dopValue[1] += tempVal[1];  // donor
+    dopValue[0] += tempVal[0];  // acceptor
+    dopValue[1] += tempVal[1];  // donor
   }
   for (std::size_t i=0; i < edp_vec.size(); ++i)
   {
     tempVal=evalErfcDoping(x,y,z,edp_vec[i]);
-      dopValue[0] += tempVal[0];  // acceptor
-      dopValue[1] += tempVal[1];  // donor
+    dopValue[0] += tempVal[0];  // acceptor
+    dopValue[1] += tempVal[1];  // donor
   }
   for (std::size_t i=0; i < mgdp_vec.size(); ++i)
   {
     tempVal=evalMGaussDoping(x,y,z,mgdp_vec[i]);
-      dopValue[0] += tempVal[0];  // acceptor
-      dopValue[1] += tempVal[1];  // donor
+    dopValue[0] += tempVal[0];  // acceptor
+    dopValue[1] += tempVal[1];  // donor
+  }
+
+  for (std::size_t i=0; i < hdp_vec.size(); ++i)
+  {
+    tempVal=evalHaloDoping(x,y,z,hdp_vec[i]);
+    dopValue[0] += tempVal[0];  // acceptor
+    dopValue[1] += tempVal[1];  // donor
   }
 
   int fileCounter1D = 0;
@@ -791,6 +819,15 @@ std::vector<double> DopingRaw_Function<EvalT, Traits>::evalUniformDoping
   double xmax = udp.xmax;
   double ymax = udp.ymax;
   double zmax = udp.zmax;
+  double initialDopVal = udp.initialDopVal;
+  double finalDopVal = udp.finalDopVal;
+
+  if (udp.sweepMe)
+    {
+      double fraction = user_value->getRealValue();
+      dopVal = initialDopVal*(1.0-fraction) + finalDopVal*fraction;
+    }
+
 
   if ( (x >= xmin) && (x <= xmax) && (y >= ymin) && (y <= ymax) && (z >= zmin) && (z <= zmax) )
   {
@@ -831,74 +868,7 @@ template<typename EvalT, typename Traits>
 std::vector<double> DopingRaw_Function<EvalT, Traits>::evalGaussianDoping
   (const double& x, const double& y, const double& z, const gaussianDopingParams& gdp)
 {
-  using std::string;
-  using Teuchos::ParameterList;
-
-  std::vector<double> dopValue(2, 0.0);
-  TEUCHOS_ASSERT(!(dopValue.size() > 2));
-
-  const string dopType = gdp.dopType;
-  const double maxVal = gdp.maxVal;
-  const double minVal = gdp.minVal;
-
-  // x direction
-  const string x_dir = gdp.x_dir;
-  const double x_loc = gdp.x_loc;
-  const double x_width = gdp.x_width;
-  const double x_min = gdp.x_min;
-  const double x_max = gdp.x_max;
-  const bool x_checkAxis = gdp.x_checkAxis;
-
-  // y direction
-  const string y_dir = gdp.y_dir;
-  const double y_loc = gdp.y_loc;
-  const double y_width = gdp.y_width;
-  const double y_min = gdp.y_min;
-  const double y_max = gdp.y_max;
-  const bool y_checkAxis = gdp.y_checkAxis;
-
-  // z direction
-  const string z_dir = gdp.z_dir;
-  const double z_loc = gdp.z_loc;
-  const double z_width = gdp.z_width;
-  const double z_min = gdp.z_min;
-  const double z_max = gdp.z_max;
-  const bool z_checkAxis = gdp.z_checkAxis;
-
-  bool found = false;
-  double xGaussVal = 1.0, yGaussVal = 1.0, zGaussVal = 1.0;
-
-  xGaussVal = evalSingleGaussian("X", found, x, minVal, maxVal, x_min, x_max, x_loc, x_width, x_checkAxis, x_dir);
-  if (num_dim == 2)
-    yGaussVal = evalSingleGaussian("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
-  if (num_dim == 3)
-  {
-    yGaussVal = evalSingleGaussian("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
-    zGaussVal = evalSingleGaussian("Z", found, z, minVal, maxVal, z_min, z_max, z_loc, z_width, z_checkAxis, z_dir);
-  }
-
-  // throw exception if NO Gaussian profile is specified
-  if (!found)
-   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Gaussian is specified "
-     << "for doping Function Type of Gauss/Gaussian! At least one Gaussian along "
-     << "x, y, or z must be specified! ");
-
-  // assign value according to Doping Type
-  if (dopType == "Acceptor")
-  {
-    dopValue[0] = maxVal*xGaussVal*yGaussVal*zGaussVal;
-    dopValue[1] = 0.;
-  }
-  else if (dopType == "Donor")
-  {
-    dopValue[0] = 0.;
-    dopValue[1] = maxVal*xGaussVal*yGaussVal*zGaussVal;
-  }
-  else
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
-      << "Invalid Doping Type ! Must be Acceptor or Donor !");
-
-  return dopValue;
+  return prof_eval->evalGaussianProfile(x,y,z,gdp);
 }
 
 
@@ -913,51 +883,8 @@ double DopingRaw_Function<EvalT, Traits>::evalSingleGaussian
    const double& maxDopVal, const double& min, const double& max, const double& loc,
    const double& width, const bool& checkAxis, const std::string& dir)
 {
-  using std::string;
-  using Teuchos::ParameterList;
-
-  // If Gaussian is NOT specified for a certain axis (say X), returns 1.0
-  double gaussVal = 1.0;
-
-  // set gaussVal to 0 when coord is outside [min max] range
-  if ( (coord < min) || (coord > max) )  gaussVal = 0.0;
-
-  //Gaussian is specified along a given axis
-  if (checkAxis)
-  {
-    found = true;  // if a Gaussian is set along an axis, then found = true
-
-    // within [min, max] range
-    if ( (coord >= min) && (coord <= max) )
-    {
-      if (dir == "Both")
-        gaussVal = exp(-log(maxDopVal/minDopVal) * pow((coord-loc)/width, 2.0) );
-      else if (dir == "Positive")
-      {
-        if (coord >= loc)
-          gaussVal = exp(-log(maxDopVal/minDopVal) * pow((coord-loc)/width, 2.0));
-        else
-          gaussVal = 1.0;
-      }
-      else if (dir == "Negative")
-      {
-        if (coord <= loc)
-          gaussVal = exp(-log(maxDopVal/minDopVal) * pow((coord-loc)/width, 2.0));
-        else
-          gaussVal = 1.0;
-      }
-      else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
-          << "Error ! " << axis << " Direction must be either Both, Positive, or Negative !");
-    }
-
-    // If Gaussian is specified for a certain axis but coord is outside [min, max], returns 0.0
-    else
-      gaussVal = 0.0; // 0 outside the [min, max) range
-
-  }  // end of if (plist.isParameter(axis+"Peak Location") ...)
-
-  return gaussVal;
+  return prof_eval->evalSingleGaussian(axis,found,coord,minDopVal,maxDopVal,
+                                      min,max,loc,width,checkAxis,dir);
 }
 
 
@@ -971,74 +898,7 @@ template<typename EvalT, typename Traits>
 std::vector<double> DopingRaw_Function<EvalT, Traits>::evalLinearDoping
   (const double& x, const double& y, const double& z, const linearDopingParams& ldp)
 {
-  using std::string;
-  using Teuchos::ParameterList;
-
-  std::vector<double> dopValue(2, 0.0);
-  TEUCHOS_ASSERT(!(dopValue.size() > 2));
-
-  const string dopType = ldp.dopType;
-  const double startVal = ldp.startVal;
-  const double endVal = ldp.endVal;
-
-  // x direction
-  const double x_min = ldp.x_min;
-  const double x_max = ldp.x_max;
-  const bool x_checkAxis = ldp.x_checkAxis;
-
-  // y direction
-  const double y_min = ldp.y_min;
-  const double y_max = ldp.y_max;
-  const bool y_checkAxis = ldp.y_checkAxis;
-
-  // z direction
-  const double z_min = ldp.z_min;
-  const double z_max = ldp.z_max;
-  const bool z_checkAxis = ldp.z_checkAxis;
-
-  bool found = false;
-  double xLinearVal = 1.0, yLinearVal = 1.0, zLinearVal = 1.0;
-
-  xLinearVal = evalSingleLinear("X", found, x, x_min, x_max, x_checkAxis);
-  if (num_dim == 2)
-    yLinearVal = evalSingleLinear("Y", found, y, y_min, y_max, y_checkAxis);
-  if (num_dim == 3)
-  {
-    yLinearVal = evalSingleLinear("Y", found, y, y_min, y_max, y_checkAxis);
-    zLinearVal = evalSingleLinear("Z", found, z, z_min, z_max, z_checkAxis);
-  }
-
-  // throw exception if NO Linear profile is specified
-  if (!found)
-   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Linear function is specified "
-     << "for doping Function Type of Linear! At least one Linear function along "
-     << "x, y, or z must be specified! ");
-
-  if (xLinearVal>=0.0 && yLinearVal>=0.0 && zLinearVal>=0.0)
-  {
-    // assign value according to Doping Type
-    if (dopType == "Acceptor")
-    {
-      dopValue[0] = (endVal-startVal)*xLinearVal*yLinearVal*zLinearVal+startVal;
-      dopValue[1] = 0.;
-    }
-    else if (dopType == "Donor")
-    {
-      dopValue[0] = 0.;
-      dopValue[1] = (endVal-startVal)*xLinearVal*yLinearVal*zLinearVal+startVal;
-    }
-    else
-      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
-          << "Invalid Doping Type ! Must be Acceptor or Donor !");
-  }
-  else
-  {
-    // The point is outside the Linear definition [min..max] range: doping is not modified
-    dopValue[0] = 0.;
-    dopValue[1] = 0.;
-  }
-
-  return dopValue;
+  return prof_eval->evalLinearProfile(x,y,z,ldp);
 }
 
 
@@ -1049,26 +909,10 @@ std::vector<double> DopingRaw_Function<EvalT, Traits>::evalLinearDoping
 ///////////////////////////////////////////////////////////////////////////////
 template<typename EvalT, typename Traits>
 double DopingRaw_Function<EvalT, Traits>::evalSingleLinear
-  (const std::string /* axis */, bool& found, const double& coord, const double& min,
+  (const std::string axis, bool& found, const double& coord, const double& min,
    const double& max, const bool& checkAxis)
 {
-
-  // If Linear is NOT specified for a certain axis (say X), returns 1.0
-  double LinearVal = 1.0;
-
-  // Linear is specified along a given axis
-  if (checkAxis)
-  {
-    found = true;  // if Linear is set along an axis, then found = true
-
-    // within [min, max] range
-    if ( (coord >= min) && (coord <= max) )
-     LinearVal = (coord-min)/(max-min);
-    else
-     LinearVal = -1.0; // -1 is a flag indicating that the point is outside the [min,max] range
-  }
-
-  return LinearVal;
+  return prof_eval->evalSingleLinear(axis,found,coord,min,max,checkAxis);
 }
 
 
@@ -1082,87 +926,7 @@ template<typename EvalT, typename Traits>
 std::vector<double> DopingRaw_Function<EvalT, Traits>::evalErfcDoping
   (const double& x, const double& y, const double& z, const erfcDopingParams& edp)
 {
-  using std::string;
-  using Teuchos::ParameterList;
-
-  std::vector<double> dopValue(2, 0.0);
-  TEUCHOS_ASSERT(!(dopValue.size() > 2));
-
-  const string dopType = edp.dopType;
-  const double maxVal = edp.maxVal;
-  const double minVal = edp.minVal;
-
-  // x direction
-  const string x_dir = edp.x_dir;
-  const double x_loc = edp.x_loc;
-  const double x_width = edp.x_width;
-  const double x_min = edp.x_min;
-  const double x_max = edp.x_max;
-  const bool x_checkAxis = edp.x_checkAxis;
-
-  // y direction
-  const string y_dir = edp.y_dir;
-  const double y_loc = edp.y_loc;
-  const double y_width = edp.y_width;
-  const double y_min = edp.y_min;
-  const double y_max = edp.y_max;
-  const bool y_checkAxis = edp.y_checkAxis;
-
-  // z direction
-  const string z_dir = edp.z_dir;
-  const double z_loc = edp.z_loc;
-  const double z_width = edp.z_width;
-  const double z_min = edp.z_min;
-  const double z_max = edp.z_max;
-  const bool z_checkAxis = edp.z_checkAxis;
-
-  if ((maxVal < 0.) || (minVal < 0.))
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
-      << "Error ! Gauassian doping Max and Min Values must be greater than 0.");
-
-  bool found = false;
-  double xErfcVal = 1.0, yErfcVal = 1.0, zErfcVal = 1.0;
-
-  xErfcVal = evalSingleErfc("X", found, x, minVal, maxVal, x_min, x_max, x_loc, x_width, x_checkAxis, x_dir);
-  if (num_dim == 2)
-    yErfcVal = evalSingleErfc("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
-  if (num_dim == 3)
-  {
-    yErfcVal = evalSingleErfc("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
-    zErfcVal = evalSingleErfc("Z", found, z, minVal, maxVal, z_min, z_max, z_loc, z_width, z_checkAxis, z_dir);
-  }
-
-  // throw exception if NO Erfc profile is specified
-  if (!found)
-   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Erfc is specified "
-     << "for doping Function Type of Erfc! At least one Erfc profile along "
-     << "x, y, or z must be specified! ");
-
-  if (xErfcVal>=0.0 && yErfcVal>=0.0 && zErfcVal>=0.0)
-  {
-    // assign value according to Doping Type
-    if (dopType == "Acceptor")
-    {
-      dopValue[0] = minVal*pow(maxVal/minVal,xErfcVal*yErfcVal*zErfcVal);
-      dopValue[1] = 0.;
-    }
-    else if (dopType == "Donor")
-    {
-      dopValue[0] = 0.;
-      dopValue[1] = minVal*pow(maxVal/minVal,xErfcVal*yErfcVal*zErfcVal);;
-    }
-    else
-      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
-           << "Invalid Doping Type ! Must be Acceptor or Donor !");
-  }
-  else
-  {
-    // The point is outside the Erfc definition [min..max] range: doping is not modified
-    dopValue[0] = 0.;
-    dopValue[1] = 0.;
-  }
-
-  return dopValue;
+  return prof_eval->evalErfcProfile(x,y,z,edp);
 }
 
 
@@ -1173,38 +937,12 @@ std::vector<double> DopingRaw_Function<EvalT, Traits>::evalErfcDoping
 ///////////////////////////////////////////////////////////////////////////////
 template<typename EvalT, typename Traits>
 double DopingRaw_Function<EvalT, Traits>::evalSingleErfc
-  (const std::string axis, bool& found, const double& coord, const double& /* minDopVal */,
-   const double& /* maxDopVal */, const double& min, const double& max, const double& loc,
+  (const std::string axis, bool& found, const double& coord, const double& minDopVal,
+   const double& maxDopVal, const double& min, const double& max, const double& loc,
    const double& width, const bool& checkAxis, const std::string& dir)
 {
-  using std::string;
-  using Teuchos::ParameterList;
-
-  // If Erfc is NOT specified for a certain axis (say X), returns 1.0
-  double ErfcVal = 1.0;
-
-  // Erfc is specified along a given axis
-  if (checkAxis)
-  {
-    found = true;  // if a Erfc is set along an axis, then found = true
-
-    // within [min, max] range
-    if ( (coord >= min) && (coord <= max) )
-    {
-      if (dir == "Positive")
-        ErfcVal = 0.5*erfc( (coord-loc)/width );
-      else if (dir == "Negative")
-        ErfcVal = 0.5*erfc(-(coord-loc)/width );
-      else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
-          << "Error ! " << axis << " Direction must be Positive or Negative !");
-    }
-    else
-      ErfcVal = -1.0; // -1 is a flag indicating that the point is outside the [min,max] range
-
-  }  // end of if (plist.isParameter(axis+"Bend Location") ...)
-
-  return ErfcVal;
+  return prof_eval->evalSingleErfc(axis,found,coord,minDopVal,maxDopVal,
+                                   min,max,loc,width,checkAxis,dir);
 }
 
 
@@ -1217,71 +955,7 @@ template<typename EvalT, typename Traits>
 std::vector<double> DopingRaw_Function<EvalT, Traits>::evalMGaussDoping
   (const double& x, const double& y, const double& z, const mgaussDopingParams& mgdp)
 {
-  using std::string;
-  using Teuchos::ParameterList;
-
-  std::vector<double> dopValue(2, 0.0);
-  TEUCHOS_ASSERT(!(dopValue.size() > 2));
-
-  const string dopType = mgdp.dopType;
-  const double maxVal = mgdp.maxVal;
-  const double minVal = mgdp.minVal;
-
-  // x direction
-  const double x_width = mgdp.x_width;
-  const double x_min = mgdp.x_min;
-  const double x_max = mgdp.x_max;
-  const bool x_checkErfc = mgdp.x_checkErfc;
-  const bool x_checkAxis = mgdp.x_checkAxis;
-
-  // y direction
-  const double y_width = mgdp.y_width;
-  const double y_min = mgdp.y_min;
-  const double y_max = mgdp.y_max;
-  const bool y_checkErfc = mgdp.y_checkErfc;
-  const bool y_checkAxis = mgdp.y_checkAxis;
-
-  // z direction
-  const double z_width = mgdp.z_width;
-  const double z_min = mgdp.z_min;
-  const double z_max = mgdp.z_max;
-  const bool z_checkErfc = mgdp.z_checkErfc;
-  const bool z_checkAxis = mgdp.z_checkAxis;
-
-  bool found = false;
-  double xMGaussVal = 1.0, yMGaussVal = 1.0, zMGaussVal = 1.0;
-
-  xMGaussVal = evalSingleMGauss("X", found, x, minVal, maxVal, x_min, x_max, x_checkErfc, x_width, x_checkAxis);
-  if (num_dim == 2)
-    yMGaussVal = evalSingleMGauss("Y", found, y, minVal, maxVal, y_min, y_max, y_checkErfc, y_width, y_checkAxis);
-  if (num_dim == 3)
-  {
-    yMGaussVal = evalSingleMGauss("Y", found, y, minVal, maxVal, y_min, y_max, y_checkErfc, y_width, y_checkAxis);
-    zMGaussVal = evalSingleMGauss("Z", found, z, minVal, maxVal, z_min, z_max, z_checkErfc, z_width, z_checkAxis);
-  }
-
-  // throw exception if NO MGauss profile is specified
-  if (!found)
-   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Gaussian is specified "
-     << "for doping Function Type of MGauss! At least one MGauss profile along "
-     << "x, y, or z must be specified! ");
-
-  // assign value according to Doping Type
-  if (dopType == "Acceptor")
-  {
-    dopValue[0] = maxVal*xMGaussVal*yMGaussVal*zMGaussVal;
-    dopValue[1] = 0.;
-  }
-  else if (dopType == "Donor")
-  {
-    dopValue[0] = 0.;
-    dopValue[1] = maxVal*xMGaussVal*yMGaussVal*zMGaussVal;
-  }
-  else
-    TEUCHOS_TEST_FOR_EXCEPTION(true, Teuchos::Exceptions::InvalidParameter, std::endl
-       << "Invalid Doping Type ! Must be Acceptor or Donor !");
-
-  return dopValue;
+  return prof_eval->evalMGaussProfile(x,y,z,mgdp);
 }
 
 
@@ -1291,52 +965,27 @@ std::vector<double> DopingRaw_Function<EvalT, Traits>::evalMGaussDoping
 //
 ///////////////////////////////////////////////////////////////////////////////
 template<typename EvalT, typename Traits>
-double DopingRaw_Function<EvalT, Traits>::evalSingleMGauss
-  (const std::string /* axis */, bool& found, const double& coord,
+double DopingRaw_Function<EvalT, Traits>::evalSingleMGauss(
+   const std::string axis, bool& found, const double& coord,
    const double& minDopVal, const double& maxDopVal,
    const double& min, const double& max, const bool& checkErfc,
    const double& width, const bool& checkAxis)
 {
-  using std::string;
-  using Teuchos::ParameterList;
+  return prof_eval->evalSingleMGauss(axis,found,coord,minDopVal,maxDopVal,
+				     min,max,checkErfc,width,checkAxis);
+}
 
-  // If MGauss is NOT specified for a certain axis (say X), returns 1.0
-  double MGaussVal = 1.0;
 
-  // MGauss is specified along a given axis
-  if (checkAxis)
-  {
-    found = true;  // if a MGauss is set along an axis, then found = true
-
-    if (checkErfc)
-    {
-      // Erfc along this axis
-      MGaussVal = 0.5*(erfc((coord-max)/width)-erfc((coord-min)/width));
-    }
-    else
-    {
-      // Gaussian profile along this axis
-      if (coord < min)
-      {
-        if (minDopVal > 0.0)  // Doping Min Value is given
-          MGaussVal = std::exp(-std::log(maxDopVal/minDopVal) * std::pow((coord-min)/width, 2.0));
-        else
-          MGaussVal = std::exp(-(coord-min)*(coord-min)/width/width);
-      }
-      else if (coord > max)
-      {
-        if (minDopVal > 0.0)  // Doping Min Value is given
-          MGaussVal = std::exp(-std::log(maxDopVal/minDopVal) * std::pow((coord-max)/width, 2.0));
-        else
-          MGaussVal = std::exp(-(coord-max)*(coord-max)/width/width);
-      }
-      else
-        MGaussVal = 1.0;
-    }
-
-  }  // end of if (plist.isParameter(axis+" Width"))
-
-  return MGaussVal;
+///////////////////////////////////////////////////////////////////////////////
+//
+//  evalHaloDoping()
+//
+///////////////////////////////////////////////////////////////////////////////
+template<typename EvalT, typename Traits>
+std::vector<double> DopingRaw_Function<EvalT, Traits>::
+evalHaloDoping(const double& x, const double& y, const double& z, const haloDopingParams& hdp)
+{
+  return prof_eval->evalHaloProfile(x,y,z,hdp);
 }
 
 
@@ -1357,7 +1006,7 @@ double DopingRaw_Function<EvalT, Traits>::evalSingleMGauss
 ///////////////////////////////////////////////////////////////////////////////
 template<typename EvalT, typename Traits>
 std::vector<double> DopingRaw_Function<EvalT, Traits>::evalFile2DDoping
-(int fileCounter, const double& x, const double& y, const double& /* z */, const Teuchos::ParameterList& plist)
+(int fileCounter, const double& x, const double& y, const double& z, const Teuchos::ParameterList& plist)
 {
   using Teuchos::ParameterList;
   using std::string;
@@ -1448,8 +1097,9 @@ std::vector<double> DopingRaw_Function<EvalT, Traits>::evalFile2DDoping
 //
 ///////////////////////////////////////////////////////////////////////////////
 template<typename EvalT, typename Traits>
-std::vector<double> DopingRaw_Function<EvalT, Traits>::evalFile3DDoping
-(int fileCounter, const double& x, const double& y, const double& z, const Teuchos::ParameterList& plist)
+std::vector<double> DopingRaw_Function<EvalT, Traits>::evalFile3DDoping(
+      int fileCounter, const double& x, const double& y, 
+      const double& z, const Teuchos::ParameterList& plist)
 {
   using Teuchos::ParameterList;
   using std::string;
@@ -1800,6 +1450,666 @@ double DopingRaw_Function<EvalT, Traits>::evalGaussDecayFactor(int type,
  
   return decayFactor;  
 }
+
+
+
+
+////////////////////////////////////////////////////////////////////
+
+// Generic Profile Calculator
+ProfileEvals::ProfileEvals(int dim) {
+  num_dim = dim;
+}
+
+
+// evaluate a single-axis linear (x, or y, or z)
+double ProfileEvals::evalSingleLinear(
+                          const std::string axis, bool& found, 
+			  const double& coord, const double& min, 
+                          const double& max, const bool& checkAxis) {
+  // If Linear is NOT specified for a certain axis (say X), returns 1.0
+  double LinearVal = 1.0;
+
+  // Linear is specified along a given axis
+  if (checkAxis)
+  {
+    found = true;  // if Linear is set along an axis, then found = true
+
+    // within [min, max] range
+    if ( (coord >= min) && (coord <= max) )
+     LinearVal = (coord-min)/(max-min);
+    else
+     LinearVal = -1.0; // -1 is a flag indicating that the point is outside the [min,max] range
+  }
+
+  return LinearVal;
+}
+
+
+// evaluate linear profile at given (x,y,z)
+std::vector<double> ProfileEvals::evalLinearProfile(
+	           const double& x, const double& y,
+		   const double& z, const linearDopingParams& ldp) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  std::vector<double> profValue(2, 0.0);
+  TEUCHOS_ASSERT(!(profValue.size() > 2));
+
+  const string profType = ldp.dopType;
+  const double startVal = ldp.startVal;
+  const double endVal = ldp.endVal;
+
+  // x direction
+  const double x_min = ldp.x_min;
+  const double x_max = ldp.x_max;
+  const bool x_checkAxis = ldp.x_checkAxis;
+
+  // y direction
+  const double y_min = ldp.y_min;
+  const double y_max = ldp.y_max;
+  const bool y_checkAxis = ldp.y_checkAxis;
+
+  // z direction
+  const double z_min = ldp.z_min;
+  const double z_max = ldp.z_max;
+  const bool z_checkAxis = ldp.z_checkAxis;
+
+  bool found = false;
+  double xLinearVal = 1.0, yLinearVal = 1.0, zLinearVal = 1.0;
+
+  xLinearVal = evalSingleLinear("X", found, x, x_min, x_max, x_checkAxis);
+  if (num_dim == 2)
+    yLinearVal = evalSingleLinear("Y", found, y, y_min, y_max, y_checkAxis);
+  if (num_dim == 3)
+  {
+    yLinearVal = evalSingleLinear("Y", found, y, y_min, y_max, y_checkAxis);
+    zLinearVal = evalSingleLinear("Z", found, z, z_min, z_max, z_checkAxis);
+  }
+
+  // throw exception if NO Linear profile is specified
+  if (!found)
+   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Linear function is specified "
+     << "for doping Function Type of Linear! At least one Linear function along "
+     << "x, y, or z must be specified! ");
+
+  if (xLinearVal>=0.0 && yLinearVal>=0.0 && zLinearVal>=0.0)
+  {
+    // assign value according to Doping Type
+    if (profType == "Acceptor")
+    {
+      profValue[0] = (endVal-startVal)*xLinearVal*yLinearVal*zLinearVal+startVal;
+      profValue[1] = 0.;
+    }
+    else if (profType == "Donor")
+    {
+      profValue[0] = 0.;
+      profValue[1] = (endVal-startVal)*xLinearVal*yLinearVal*zLinearVal+startVal;
+    }
+    else
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+          << "Invalid Profile Type ! Must be Acceptor or Donor !");
+  }
+  else
+  {
+    // The point is outside the Linear definition [min..max] range: doping is not modified
+    profValue[0] = 0.;
+    profValue[1] = 0.;
+  }
+
+  return profValue;
+
+}
+
+
+// evaluate a single-axis gaussian (x, or y, or z)
+double ProfileEvals::evalSingleGaussian(
+			  const std::string axis, bool& found, 
+			  const double& coord, const double& minProfVal,
+			  const double& maxProfVal, const double& min, 
+			  const double& max, const double& loc,
+			  const double& width, const bool& checkAxis, 
+			  const std::string& dir) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  // If Gaussian is NOT specified for a certain axis (say X), returns 1.0
+  double gaussVal = 1.0;
+
+  // set gaussVal to 0 when coord is outside [min max] range
+  if ( (coord < min) || (coord > max) )  gaussVal = 0.0;
+
+  //Gaussian is specified along a given axis
+  if (checkAxis)
+  {
+    found = true;  // if a Gaussian is set along an axis, then found = true
+
+    // within [min, max] range
+    if ( (coord >= min) && (coord <= max) )
+    {
+      if (dir == "Both")
+        gaussVal = exp(-log(maxProfVal/minProfVal) * pow((coord-loc)/width, 2.0) );
+      else if (dir == "Positive")
+      {
+        if (coord >= loc)
+          gaussVal = exp(-log(maxProfVal/minProfVal) * pow((coord-loc)/width, 2.0));
+        else
+          gaussVal = 1.0;
+      }
+      else if (dir == "Negative")
+      {
+        if (coord <= loc)
+          gaussVal = exp(-log(maxProfVal/minProfVal) * pow((coord-loc)/width, 2.0));
+        else
+          gaussVal = 1.0;
+      }
+      else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+          << "Error ! " << axis << " Direction must be either Both, Positive, or Negative !");
+    }
+
+    // If Gaussian is specified for a certain axis but coord is outside [min, max], returns 0.0
+    else
+      gaussVal = 0.0; // 0 outside the [min, max) range
+
+  }  // end of if (plist.isParameter(axis+"Peak Location") ...)
+
+  return gaussVal;
+}
+
+
+// evaluate gaussian profile at given (x,y,z)
+std::vector<double> ProfileEvals::evalGaussianProfile(
+	const double& x, const double& y, const double& z, 
+	const gaussianDopingParams& gdp) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  std::vector<double> profValue(2, 0.0);
+  TEUCHOS_ASSERT(!(profValue.size() > 2));
+
+  const string profType = gdp.dopType;
+  const double maxVal = gdp.maxVal;
+  const double minVal = gdp.minVal;
+
+  // x direction
+  const string x_dir = gdp.x_dir;
+  const double x_loc = gdp.x_loc;
+  const double x_width = gdp.x_width;
+  const double x_min = gdp.x_min;
+  const double x_max = gdp.x_max;
+  const bool x_checkAxis = gdp.x_checkAxis;
+
+  // y direction
+  const string y_dir = gdp.y_dir;
+  const double y_loc = gdp.y_loc;
+  const double y_width = gdp.y_width;
+  const double y_min = gdp.y_min;
+  const double y_max = gdp.y_max;
+  const bool y_checkAxis = gdp.y_checkAxis;
+
+  // z direction
+  const string z_dir = gdp.z_dir;
+  const double z_loc = gdp.z_loc;
+  const double z_width = gdp.z_width;
+  const double z_min = gdp.z_min;
+  const double z_max = gdp.z_max;
+  const bool z_checkAxis = gdp.z_checkAxis;
+
+  bool found = false;
+  double xGaussVal = 1.0, yGaussVal = 1.0, zGaussVal = 1.0;
+
+  xGaussVal = evalSingleGaussian("X", found, x, minVal, maxVal, x_min, x_max, x_loc, x_width, x_checkAxis, x_dir);
+  if (num_dim == 2)
+    yGaussVal = evalSingleGaussian("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
+  if (num_dim == 3)
+  {
+    yGaussVal = evalSingleGaussian("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
+    zGaussVal = evalSingleGaussian("Z", found, z, minVal, maxVal, z_min, z_max, z_loc, z_width, z_checkAxis, z_dir);
+  }
+
+  // throw exception if NO Gaussian profile is specified
+  if (!found)
+   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Gaussian is specified "
+     << "for profile Function Type of Gauss/Gaussian! At least one Gaussian along "
+     << "x, y, or z must be specified! ");
+
+  // assign value according to Doping Type
+  if (profType == "Acceptor")
+  {
+    profValue[0] = maxVal*xGaussVal*yGaussVal*zGaussVal;
+    profValue[1] = 0.;
+  }
+  else if (profType == "Donor")
+  {
+    profValue[0] = 0.;
+    profValue[1] = maxVal*xGaussVal*yGaussVal*zGaussVal;
+  }
+  else
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+      << "Invalid Profile Type ! Must be Acceptor or Donor !");
+  return profValue;
+}
+
+
+// evaluate a single-axis erfc (x, or y, or z)
+double ProfileEvals::evalSingleErfc(
+	 const std::string axis, bool& found, 
+	 const double& coord, const double& /* minProfVal */,
+	 const double& /* maxProfVal */, const double& min, 
+	 const double& max, const double& loc,
+	 const double& width, const bool& checkAxis, 
+	 const std::string& dir) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  // If Erfc is NOT specified for a certain axis (say X), returns 1.0
+  double ErfcVal = 1.0;
+
+  // Erfc is specified along a given axis
+  if (checkAxis)
+  {
+    found = true;  // if a Erfc is set along an axis, then found = true
+
+    // within [min, max] range
+    if ( (coord >= min) && (coord <= max) )
+    {
+      if (dir == "Positive")
+        ErfcVal = 0.5*erfc( (coord-loc)/width );
+      else if (dir == "Negative")
+        ErfcVal = 0.5*erfc(-(coord-loc)/width );
+      else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+          << "Error ! " << axis << " Direction must be Positive or Negative !");
+    }
+    else
+      ErfcVal = -1.0; // -1 is a flag indicating that the point is outside the [min,max] range
+
+  }  // end of if (plist.isParameter(axis+"Bend Location") ...)
+
+  return ErfcVal;
+}
+
+
+// evaluate erfc profile at given (x,y,z)
+std::vector<double> ProfileEvals::evalErfcProfile(
+        const double& x, const double& y, const double& z, 
+	const erfcDopingParams& edp) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  std::vector<double> profValue(2, 0.0);
+  TEUCHOS_ASSERT(!(profValue.size() > 2));
+
+  const string profType = edp.dopType;
+  const double maxVal = edp.maxVal;
+  const double minVal = edp.minVal;
+
+  // x direction
+  const string x_dir = edp.x_dir;
+  const double x_loc = edp.x_loc;
+  const double x_width = edp.x_width;
+  const double x_min = edp.x_min;
+  const double x_max = edp.x_max;
+  const bool x_checkAxis = edp.x_checkAxis;
+
+  // y direction
+  const string y_dir = edp.y_dir;
+  const double y_loc = edp.y_loc;
+  const double y_width = edp.y_width;
+  const double y_min = edp.y_min;
+  const double y_max = edp.y_max;
+  const bool y_checkAxis = edp.y_checkAxis;
+
+  // z direction
+  const string z_dir = edp.z_dir;
+  const double z_loc = edp.z_loc;
+  const double z_width = edp.z_width;
+  const double z_min = edp.z_min;
+  const double z_max = edp.z_max;
+  const bool z_checkAxis = edp.z_checkAxis;
+
+  if ((maxVal < 0.) || (minVal < 0.))
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+      << "Error ! Erfc profile Max and Min Values must be greater than 0.");
+
+  bool found = false;
+  double xErfcVal = 1.0, yErfcVal = 1.0, zErfcVal = 1.0;
+
+  xErfcVal = evalSingleErfc("X", found, x, minVal, maxVal, x_min, x_max, x_loc, x_width, x_checkAxis, x_dir);
+  if (num_dim == 2)
+    yErfcVal = evalSingleErfc("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
+  if (num_dim == 3)
+  {
+    yErfcVal = evalSingleErfc("Y", found, y, minVal, maxVal, y_min, y_max, y_loc, y_width, y_checkAxis, y_dir);
+    zErfcVal = evalSingleErfc("Z", found, z, minVal, maxVal, z_min, z_max, z_loc, z_width, z_checkAxis, z_dir);
+  }
+
+  // throw exception if NO Erfc profile is specified
+  if (!found)
+   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Erfc is specified "
+     << "for profile Function Type of Erfc! At least one Erfc profile along "
+     << "x, y, or z must be specified! ");
+
+  if (xErfcVal>=0.0 && yErfcVal>=0.0 && zErfcVal>=0.0)
+  {
+    // assign value according to Doping Type
+    if (profType == "Acceptor")
+    {
+      profValue[0] = minVal*pow(maxVal/minVal,xErfcVal*yErfcVal*zErfcVal);
+      profValue[1] = 0.;
+    }
+    else if (profType == "Donor")
+    {
+      profValue[0] = 0.;
+      profValue[1] = minVal*pow(maxVal/minVal,xErfcVal*yErfcVal*zErfcVal);;
+    }
+    else
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+           << "Invalid Doping Type ! Must be Acceptor or Donor !");
+  }
+  else
+  {
+    // The point is outside the Erfc definition [min..max] range: doping is not modified
+    profValue[0] = 0.;
+    profValue[1] = 0.;
+  }
+
+  return profValue;
+}
+
+
+// evaluate a single-axis MGauss (x, or y, or z)
+double ProfileEvals::evalSingleMGauss(
+		 const std::string axis, bool& found, 
+		 const double& coord, const double& minProfVal, 
+		 const double& maxProfVal, const double& min, 
+		 const double& max, const bool& checkErfc,
+		 const double& width, const bool& checkAxis) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  // If MGauss is NOT specified for a certain axis (say X), returns 1.0
+  double MGaussVal = 1.0;
+
+  // MGauss is specified along a given axis
+  if (checkAxis)
+  {
+    found = true;  // if a MGauss is set along an axis, then found = true
+
+    if (checkErfc)
+    {
+      // Erfc along this axis
+      MGaussVal = 0.5*(erfc((coord-max)/width)-erfc((coord-min)/width));
+    }
+    else
+    {
+      // Gaussian profile along this axis
+      if (coord < min)
+      {
+        if (minProfVal > 0.0)  // Profile Min Value is given
+          MGaussVal = std::exp(-std::log(maxProfVal/minProfVal) * std::pow((coord-min)/width, 2.0));
+        else
+          MGaussVal = std::exp(-(coord-min)*(coord-min)/width/width);
+      }
+      else if (coord > max)
+      {
+        if (minProfVal > 0.0)  // Profile Min Value is given
+          MGaussVal = std::exp(-std::log(maxProfVal/minProfVal) * std::pow((coord-max)/width, 2.0));
+        else
+          MGaussVal = std::exp(-(coord-max)*(coord-max)/width/width);
+      }
+      else
+        MGaussVal = 1.0;
+    }
+
+  }  // end of if (plist.isParameter(axis+" Width"))
+
+  return MGaussVal;
+
+}
+
+
+// evaluate gaussian (=MGauss) profile at given (x,y,z)
+std::vector<double> ProfileEvals::evalMGaussProfile(
+	const double& x, const double& y, const double& z, 
+        const mgaussDopingParams& mgdp) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  std::vector<double> profValue(2, 0.0);
+  TEUCHOS_ASSERT(!(profValue.size() > 2));
+
+  const string profType = mgdp.dopType;
+  const double maxVal = mgdp.maxVal;
+  const double minVal = mgdp.minVal;
+
+  // x direction
+  const double x_width = mgdp.x_width;
+  const double x_min = mgdp.x_min;
+  const double x_max = mgdp.x_max;
+  const bool x_checkErfc = mgdp.x_checkErfc;
+  const bool x_checkAxis = mgdp.x_checkAxis;
+
+  // y direction
+  const double y_width = mgdp.y_width;
+  const double y_min = mgdp.y_min;
+  const double y_max = mgdp.y_max;
+  const bool y_checkErfc = mgdp.y_checkErfc;
+  const bool y_checkAxis = mgdp.y_checkAxis;
+
+  // z direction
+  const double z_width = mgdp.z_width;
+  const double z_min = mgdp.z_min;
+  const double z_max = mgdp.z_max;
+  const bool z_checkErfc = mgdp.z_checkErfc;
+  const bool z_checkAxis = mgdp.z_checkAxis;
+
+  bool found = false;
+  double xMGaussVal = 1.0, yMGaussVal = 1.0, zMGaussVal = 1.0;
+
+  xMGaussVal = evalSingleMGauss("X", found, x, minVal, maxVal, x_min, x_max, x_checkErfc, x_width, x_checkAxis);
+  if (num_dim == 2)
+    yMGaussVal = evalSingleMGauss("Y", found, y, minVal, maxVal, y_min, y_max, y_checkErfc, y_width, y_checkAxis);
+  if (num_dim == 3)
+  {
+    yMGaussVal = evalSingleMGauss("Y", found, y, minVal, maxVal, y_min, y_max, y_checkErfc, y_width, y_checkAxis);
+    zMGaussVal = evalSingleMGauss("Z", found, z, minVal, maxVal, z_min, z_max, z_checkErfc, z_width, z_checkAxis);
+  }
+
+  // throw exception if NO MGauss profile is specified
+  if (!found)
+   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error! No Gaussian is specified "
+     << "for doping Function Type of MGauss! At least one MGauss profile along "
+     << "x, y, or z must be specified! ");
+
+  // assign value according to Doping Type
+  if (profType == "Acceptor")
+  {
+    profValue[0] = maxVal*xMGaussVal*yMGaussVal*zMGaussVal;
+    profValue[1] = 0.;
+  }
+  else if (profType == "Donor")
+  {
+    profValue[0] = 0.;
+    profValue[1] = maxVal*xMGaussVal*yMGaussVal*zMGaussVal;
+  }
+  else
+    TEUCHOS_TEST_FOR_EXCEPTION(true, Teuchos::Exceptions::InvalidParameter, std::endl
+       << "Invalid Doping Type ! Must be Acceptor or Donor !");
+
+  return profValue;
+}
+
+
+// evaluate halo profile
+std::vector<double> ProfileEvals::evalHaloProfile(
+        const double& x, const double& y, const double& z, 
+        const haloDopingParams& hdp) {
+  using std::string;
+  using Teuchos::ParameterList;
+
+  std::vector<double> profValue(2, 0.0);
+  TEUCHOS_ASSERT(!(profValue.size() > 2));
+
+  const string profType = hdp.dopType;
+  const double profileVal = hdp.dopingVal;
+  const double minProfileVal = hdp.minDopingVal;
+  const std::string distributionType = hdp.distributionType;
+
+  // x direction
+  const double x_center = hdp.x_center;
+  //const bool x_checkAxis = hdp.x_checkAxis;
+
+  // y direction
+  const double y_center = hdp.y_center;
+  //const bool y_checkAxis = hdp.y_checkAxis;
+
+  // z direction
+  const double z_center = hdp.z_center;
+  //const bool z_checkAxis = hdp.z_checkAxis;
+
+  //rotation and critical radii
+  const double r1 = hdp.r1;
+  const double r2 = hdp.r2;
+  const double r3 = 1e10;
+  const double rotation = hdp.rotation;
+
+  //Gaussian parameters
+  const double width = hdp.width;
+
+  //It is presently assumend that rotation will be around the z axis.
+  //Halo is usually created by ion implantation, so the doping is constant within and zero without
+
+  //Translate for center
+  double x_loc_c = x-x_center;
+  double y_loc_c = y-y_center;
+  double z_loc_c = z-z_center;
+  
+  //Rotate
+  //Convert rotation angle from degrees to radians
+  double pi = acos(-1.0);
+  double angle = pi*rotation/180.0;
+
+  //Map the coordinates into the reference through rotation.
+  double x_loc =  x_loc_c*cos(-angle) + y_loc_c*sin(-angle);
+  double y_loc = -x_loc_c*sin(-angle) + y_loc_c*cos(-angle);
+  double z_loc = z_loc_c;
+
+  double functionEvalX = (x_loc)*(x_loc)/(r1*r1);
+  double functionEvalY = (y_loc)*(y_loc)/(r2*r2);
+  double functionEvalZ = (z_loc)*(z_loc)/(r3*r3);
+
+  double functionEval = functionEvalX + functionEvalY + functionEvalZ;
+
+  double profMag = 0.0;
+  if (functionEval <= 1.0)
+    {
+      profMag = profileVal;
+      std::vector<std::vector<double> > a;
+      std::vector<double> b;
+      double minDist = 0.0;
+
+      std::string xdir,ydir,zdir;
+      bool found=true;
+
+      if (distributionType == "Gaussian")
+	{
+	  std::vector<std::vector<double> > a;
+	  std::vector<double> b;
+	  std::vector<double> x;
+	  x.resize(3);
+	  if (x_loc >= 0)
+	    x[0] = r1;
+	  else
+	    x[0] = -r1;
+	  if (y_loc >=0)
+	    x[1] = r2;
+	  else
+	    x[1] = -r2;
+	  x[2] = 0.0;
+	  b.resize(3,0.);
+	  a.resize(3);
+	  for (size_t i=0 ; i<a.size() ; ++i)
+	    a[i].resize(a.size());
+	  
+	  //Iterate
+	  int itnmax = 20;
+	  int itn = 0;
+	  double crit = 1e-8;
+	  double res = 0.0;
+	  
+	  while (itn < itnmax)
+	    {
+	      //RHS
+	      b[0] = -( 2.0*(x[0] - x_loc) + x[2] * 2.0 * x[0] /(r1*r1));
+	      b[1] = -( 2.0*(x[1] - y_loc) + x[2] * 2.0 * x[1] /(r2*r2));
+	      b[2] = -(  (x[0])*(x[0]) /(r1*r1) + (x[1])*(x[1]) /(r2*r2) - 1.0);
+	      
+	      res = sqrt(b[0]*b[0] + b[1]*b[1] + b[2]*b[2]);
+	      minDist = sqrt((x[0] - x_loc) * (x[0] - x_loc)  + (x[1] - y_loc) * (x[1] - y_loc) );
+	      if (res < crit) break;
+	      
+	      //Matrix 
+	      a[0][0] = 2.0 + 2.0*x[2]/r1/r1;
+	      a[0][1] = 0.0;
+	      a[0][2] = 2.0 * x[0] / r1/r1;
+	      a[1][0] = 0.0;
+	      a[1][1] = 2.0 + 2.0*x[2]/r2/r2;
+	      a[1][2] = 2.0 * x[1] / r2/r2;
+	      a[2][0] = 2.0 * x[0] /r1/r1;
+	      a[2][1] = 2.0 * x[1] /r2/r2;
+	      a[2][2] = 0.0;
+	      
+	      int success = lusolve(a,3,b);
+	      if (success == 1)
+		for (size_t i=0 ; i<b.size() ; ++i)
+		  x[i] += b[i];
+	      ++itn;
+	    }
+	  
+	  x.clear();
+	  b.clear();
+	  for(size_t i=0 ; i<a.size() ; ++i)
+	    a[i].clear();
+	  a.clear();
+	  
+	  std::string dir = "Positive";
+	  double coord = 0.0;
+	  if (minDist < width)
+	    {
+	      coord = 1.0 - minDist/width;
+	      if (coord < 0) coord = 0.0;
+	    }
+	  double gauss = evalSingleGaussian("X",found,coord,minProfileVal,profileVal,0,1,0.0,1.0,found,dir);
+	  profMag = profileVal*gauss + (1-gauss)*minProfileVal;
+
+	}
+
+      else if(distributionType == "Uniform")
+	profMag = profileVal;
+    }
+
+  // assign value according to Profile Type
+  if (profType == "Acceptor")
+  {
+    profValue[0] = profMag;
+    profValue[1] = 0.;
+  }
+  else if (profType == "Donor")
+  {
+    profValue[0] = 0.;
+    profValue[1] = profMag;
+  }
+  else
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, std::endl
+      << "Invalid Profile Type ! Must be Acceptor or Donor !");
+
+  return profValue;
+}
+
+
+
 
 } // namespace charon
 

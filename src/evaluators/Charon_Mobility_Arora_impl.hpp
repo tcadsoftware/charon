@@ -82,12 +82,37 @@ Mobility_Arora(
   initMobilityParams(matName, mobParamList);
 
   // Evaluated field
+/*
   if (carrType == "Electron")
     mobility = MDField<ScalarT,Cell,Point>(n.field.elec_mobility, output_dl);
   else if (carrType == "Hole")
     mobility = MDField<ScalarT,Cell,Point>(n.field.hole_mobility, output_dl);
   this->addEvaluatedField(mobility);
+*/
+  bool compoundMobility = false;
 
+  if(mobParamList.isParameter("Compound Mobility"))
+    if(mobParamList.get<std::string>("Compound Mobility") == "On")
+      compoundMobility = true;
+
+  if(compoundMobility)
+  {
+    // Evaluated field
+    if (carrType == "Electron")
+      mobility = MDField<ScalarT,Cell,Point>(n.field.elec_arora_mobility, output_dl);
+    else if (carrType == "Hole")
+      mobility = MDField<ScalarT,Cell,Point>(n.field.hole_arora_mobility, output_dl);
+  }
+  else
+  {
+    // Evaluated field
+    if (carrType == "Electron")
+      mobility = MDField<ScalarT,Cell,Point>(n.field.elec_mobility, output_dl);
+    else if (carrType == "Hole")
+      mobility = MDField<ScalarT,Cell,Point>(n.field.hole_mobility, output_dl);
+  }
+  this->addEvaluatedField(mobility);
+  
   // Scaling parameters
   scaleParams = p.get< RCP<charon::Scaling_Parameters> >("Scaling Parameters");
   Mu0 = scaleParams->scale_params.Mu0;
@@ -286,6 +311,9 @@ Mobility_Arora<EvalT, Traits>::getValidParameters() const
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);
 
+  // For compound mobility--often mosfet
+  p->sublist("Mobility ParameterList").set<std::string>("Compound Mobility", "Off");
+     
   return p;
 }
 

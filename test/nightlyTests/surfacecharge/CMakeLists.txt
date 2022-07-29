@@ -4,6 +4,7 @@ INCLUDE(TribitsAddAdvancedTest)
 SET(testName charon_mp_surfacecharge_dd)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -20,10 +21,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=surfacecharge.dd.hfmob.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "surfacecharge.dd.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "surfacecharge.dd.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -45,6 +47,7 @@ ENDIF()
 SET(testName charon_mp_surfacecharge_sg)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -61,10 +64,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=surfacecharge.sg.hfmob.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "surfacecharge.sg.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "surfacecharge.sg.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -86,6 +90,7 @@ ENDIF()
 SET(testName charon_mp_interfacecharge_dd)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -103,6 +108,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.ifqm.nlp.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -110,10 +116,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_4 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.ifqm.dd.equ.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_5 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "nmosfet.ifqm.dd.equ.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "nmosfet.ifqm.dd.equ.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_6 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -135,6 +142,7 @@ ENDIF()
 SET(testName charon_mp_interfacecharge_sg)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -152,6 +160,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.ifqp.nlp.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -159,10 +168,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_4 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.ifqp.sg.equ.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_5 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "nmosfet.ifqp.sg.equ.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "nmosfet.ifqp.sg.equ.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_6 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -184,6 +194,7 @@ ENDIF()
 SET(testName charon_mp_surfacetrap_sg)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -204,6 +215,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.nlp.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -211,6 +223,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_4 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.sg.equ.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_5 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -218,6 +231,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_6 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.sg.it.equ.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_7 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -225,10 +239,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_8 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.sg.it.loca.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_9 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "nmosfet.sg.it.loca.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "nmosfet.sg.it.loca.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_10 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -242,7 +257,7 @@ TRIBITS_ADD_ADVANCED_TEST(
   ADDED_TEST_NAME_OUT ${testName}_CREATED
   )
 IF (${testName}_CREATED)
-  SET_PROPERTY(TEST Charon_charon_mp_surfacetrap_sg PROPERTY LABELS surfacetrap_sg nightly)
+  SET_PROPERTY(TEST Charon_charon_mp_surfacetrap_sg PROPERTY LABELS surfacetrap_sg nightly debugexclude)
 ENDIF()
 
 
@@ -250,6 +265,7 @@ ENDIF()
 SET(testName charon_mp_surfacerecomb_sg)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -266,10 +282,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.sg.sr.equ.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "nmosfet.sg.sr.equ.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "nmosfet.sg.sr.equ.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -291,6 +308,7 @@ ENDIF()
 SET(testName charon_mp_surfacetrap_dd)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -307,10 +325,11 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=nmosfet.dd.it.a1e11.equ.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX NOEXESUFFIX
-    ARGS  "-auto" "nmosfet.dd.it.a1e11.equ.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "nmosfet.dd.it.a1e11.equ.exo.4."
     NUM_MPI_PROCS 1
 
   TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
@@ -324,7 +343,5 @@ TRIBITS_ADD_ADVANCED_TEST(
   ADDED_TEST_NAME_OUT ${testName}_CREATED
   )
 IF (${testName}_CREATED)
-  SET_PROPERTY(TEST Charon_charon_mp_surfacetrap_dd PROPERTY LABELS surfacetrap_dd nightly)
+  SET_PROPERTY(TEST Charon_charon_mp_surfacetrap_dd PROPERTY LABELS surfacetrap_dd nightly debugexclude)
 ENDIF()
-
-

@@ -1,0 +1,114 @@
+import state file "si-diode.dd.gau.exo"
+
+start output parameters
+      Output State File si-diode.dd.gau.forward.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration,Conduction Band,Space Charge,Valence Band,Trap SRH Recombination,Total Recombination"
+end output parameters
+
+assembly workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling=1e19
+
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem 
+      material model is siliconParameter
+      srh recombination is off
+      trap srh is on
+      radiative recombination is off
+      auger recombination is off
+end Physics block semiconductor
+
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e18
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 1.0 to 2.1 in y	    
+      end uniform doping named Function1
+
+      start uniform doping named Function2
+      	    type is donor
+            concentration = 2.5e16
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 0.0 to 1.0 in y	    
+      end uniform doping named Function2
+
+      fixed mobility for electrons is 1000.0
+      fixed mobility for holes is 500.0
+
+      start trap srh
+        start trap 0
+          trap type is acceptor
+          energy distribution is gaussian
+          energy level = 0.54
+          trap density = 1e13
+          energy width = 0.2
+	  # confine acceptor traps to n-region
+          spatial range is 0.0 to 1.0 in x 
+          spatial range is 0.0 to 1.0 in y
+          start hole tunneling parameters
+            model is none
+            cross section = 1.1e-14
+          end
+          start electron tunneling parameters
+            model is none
+            cross section = 1.7e-16 
+          end
+        end trap 0
+
+        start trap 1
+          trap type is donor
+          energy distribution is gaussian
+          energy level = 0.35
+          trap density = 1e13
+          energy width = 0.2
+	  # confine donor traps to n-region
+          spatial range is 0.0 to 1.0 in x 
+	  spatial range is 1.0 to 2.0 in y
+          start electron tunneling parameters
+            model is none
+            cross section = 6.3e-15 
+          end
+          start hole tunneling parameters
+            model is none
+            cross section = 2.4e-15
+          end
+        end trap 1
+      end trap srh
+end material block siliconParameter
+
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is exodus file
+initial conditions for ELECTRON_DENSITY in silicon is exodus file
+initial conditions for HOLE_DENSITY in silicon is exodus file
+
+
+BC is ohmic for anode on silicon swept from 0.0 to 1.5
+BC is ohmic for cathode on silicon fixed at 0.0
+
+
+
+start sweep options
+  continuation method is natural
+  initial step size = 0.01
+  maximum number of steps = 10000
+  step size aggressiveness = 0.2
+  predictor method is secant
+end sweep options
+
+start solver block
+  start tpetra block
+    problem type is parameter sweep
+    verbosity level is high
+  end
+end solver block
+
+
+

@@ -1,0 +1,140 @@
+import state file "sige_resist_erfc_msh.exo"
+
+start output parameters
+      output state file sige_resist_erfc.nlp.exo
+      output cell average variables in si(1-x)ge(x) for scalar "Doping,Conduction Band,Valence Band,Band Gap,xMoleFraction,Relative Permittivity,Electron Effective DOS,Hole Effective DOS"
+end output parameters
+
+
+
+assembly workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling=1e19
+
+
+
+start physics block semiconductor
+      geometry block is si(1-x)ge(x)
+      standard discretization type is nlp gfem 
+      material model is semicParameter
+end Physics block semiconductor
+
+
+
+start material block semicParameter
+      material name is Si(1-x)Ge(x)
+      reference material is Si
+
+      start erfc mole fraction named Function1
+             gradient center = 0.5 in x
+	     gradient width = 0.5 in x
+	     direction is Negative in x
+             spatial range is 0.0 to 1.0 in x
+             spatial range is 0.0 to 0.5 in y
+             x mole fraction range is 0.001 to 1.0 
+      end     
+
+      start uniform doping named Function1
+      	    type is donor
+            concentration = 1e19
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 0.0 to 0.6 in y	    
+      end uniform doping named Function1
+
+      fixed mobility for electrons is 1000.0
+      fixed mobility for holes is 500.0
+
+      start carrier lifetime
+      	    electron lifetime is constant = 3e-5
+	    hole lifetime is constant = 1e-5 
+      end carrier lifetime
+
+      start band gap
+            temperature dependence is on
+	    start mole fraction parameters
+	      start Eg300
+                b = 0.0
+                c = 0.0
+              end Eg300
+	      start Chi300
+                b = 0.0
+                c = 0.0
+              end Chi300
+	      start alpha
+                b = 0.0
+                c = 0.0
+              end alpha
+              start beta
+                b = 0.0
+                c = 0.0
+              end beta
+              eg300 for x at 0 is 1.08
+	      eg300 for x at 1 is 0.7437
+	      chi300 for x at 0 is 4.17
+	      chi300 for x at 1 is 4.0
+	      alpha for x at 0 is 4.73e-4
+	      alpha for x at 1 is 4.77e-4
+              beta for x at 0 is 636.0
+	      beta for x at 1 is 235.0
+            end mole fraction parameters
+      end band gap
+
+      start relative permittivity
+      	    value = 11.8
+            start mole fraction parameters
+	      start value
+                b = 0.0
+                c = 0.0
+              end value
+	      value for x at 0 is 11.8
+	      value for x at 1 is 16.0
+	    end mole fraction parameters
+      end relative permittivity
+
+      start effective DOS
+      	    start mole fraction parameters
+              start Nc300
+                b = 0.0
+                c = 0.0
+              end Nc300
+	      start Nv300
+                b = 0.0
+                c = 0.0
+              end Nv300
+	      start Nc_F
+                b = 0.0
+                c = 0.0
+              end Nc_F
+	      start Nv_F
+                b = 0.0
+                c = 0.0
+              end Nv_F
+	      Nc300 for x at 0 is 2.8e19
+	      Nc300 for x at 1 is 1.92e19
+              Nv300 for x at 0 is 1.04e19
+	      Nv300 for x at 1 is 8.2e18
+              Nc_F for x at 0 is 1.5
+	      Nc_F for x at 1 is 1.5
+              Nv_F for x at 0 is 1.5
+	      Nv_F for x at 1 is 1.5
+	    end mole fraction parameters
+      end effective DOS
+end material block semicParameter
+
+
+
+initial conditions for ELECTRIC_POTENTIAL in si(1-x)ge(x) is Equilibrium Potential
+
+
+
+BC is ohmic for left on si(1-x)ge(x) fixed at 0
+BC is ohmic for right on si(1-x)ge(x) fixed at 0
+
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block

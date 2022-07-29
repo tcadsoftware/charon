@@ -6,6 +6,8 @@
 
 #include "NOX_Abstract_PrePostOperator.H"
 #include "NOX_Solver_LineSearchBased.H"
+#include "Panzer_GlobalData.hpp"
+#include "Charon_PanzerParameterExtractor.hpp"
 
 namespace charon {
 
@@ -31,6 +33,7 @@ public:
                              bool writeToScreen,
                              bool writeToFile,
                              std::string const& outFilename,
+			     Teuchos::RCP<panzer::ParamLib> const& parameterLibrary,
                              bool isLOCASolver,
                              bool writeOnSolverFailure);
 
@@ -67,12 +70,22 @@ private:
    */
   Teuchos::RCP<Thyra::ModelEvaluator<double> > full_me;
 
+
   bool write_to_screen;
   bool write_to_file;
   std::string out_filename;
+  Teuchos::RCP<panzer::ParamLib> parameterLibrary_;
   bool out_file_header_written;
   bool loca_solver;
   bool write_on_solver_failure;
+  bool loca_householder_solver;
+
+  //Add vector of global contact voltages to write to exodus
+  std::map<std::string,double> contactVoltages_;
+  Teuchos::RCP<panzerParameterExtractor>  pPE;
+  std::vector<int> cvPermutation;
+  std::vector<std::string> cvNames;
+  int cvToWrite;
 
 };
 

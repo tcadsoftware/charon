@@ -1,6 +1,6 @@
 interpreter name Hole_bh
 
-interpreter inputLine (hole b(high)) = {bh_h}
+interpreter inputLine (hole bhigh) = {bh_h}
 
 interpreter shortHelp {Parameter for van Overstraeten model}
 interpreter longHelp {Parameter for van Overstraeten model}

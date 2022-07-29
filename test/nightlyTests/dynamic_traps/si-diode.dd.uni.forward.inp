@@ -1,0 +1,110 @@
+import state file "si-diode.dd.uni.ini.exo"
+
+start output parameters
+      Output State File si-diode.dd.uni.forward.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration,Space Charge,Conduction Band,Valence Band,Dynamic Traps eRecombination,Dynamic Traps hRecombination,Electron Trapped Charge,Hole Trapped Charge,Trapped Charge"
+      output cell average variables in silicon for vector "Electron Current Density,Hole Current Density, Displacement Current Density"
+      output tabulated transient currents to current_forward.csv
+end output parameters
+
+assembly workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling=1e19
+
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem 
+      material model is siliconParameter
+      srh recombination is off
+      radiative recombination is off
+      auger recombination is off
+      dynamic traps is on
+end Physics block semiconductor
+
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e18
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 1.0 to 2.1 in y	    
+      end uniform doping named Function1
+
+      start uniform doping named Function2
+      	    type is donor
+            concentration = 2.5e16
+      	    spatial range is 0.0 to 1.1 in x
+    	    spatial range is 0.0 to 1.0 in y	    
+      end uniform doping named Function2
+
+      fixed mobility for electrons is 1000.0
+      fixed mobility for holes is 500.0
+
+      start carrier lifetime
+      	    electron lifetime is constant = 1e-9
+	    hole lifetime is constant = 1e-9 
+      end carrier lifetime
+
+      start dynamic traps
+      	    start trap 1
+	    	  trap type is acceptor
+		  energy distribution is uniform
+            	  energy level = 0.54
+          	  trap density = 1e13
+                  energy width = 0.2
+          	  degeneracy factor = 2.0
+		  electron cross section = 1.7e-16
+		  hole cross section = 1.1e-14
+		  # confine acceptor traps to n-region
+		  spatial range is 0.0 to 1.0 in x 
+		  spatial range is 0.0 to 1.0 in y
+                  thermal velocity calculation is mean
+                  number of levels = 20
+            end trap 1
+
+            start trap 2
+	    	  trap type is donor
+                  energy distribution is uniform
+            	  energy level = 0.35
+          	  trap density = 1e13
+                  energy width = 0.2
+          	  degeneracy factor = 0.5
+		  electron cross section = 6.3e-15
+		  hole cross section = 2.4e-15
+		  # confine donor traps to p-region
+		  spatial range is 0.0 to 1.0 in x 
+		  spatial range is 1.0 to 2.0 in y
+                  thermal velocity calculation is mean
+                  number of levels = 20
+            end trap 2
+      end dynamic traps
+end material block siliconParameter
+
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is exodus file
+initial conditions for ELECTRON_DENSITY in silicon is exodus file
+initial conditions for HOLE_DENSITY in silicon is exodus file
+
+
+
+BC is linear ramp for anode on silicon with time from 0.0 to 3.0 and voltage from 0.0 to 3.0
+BC is ohmic for cathode on silicon fixed at 0.0
+
+
+start solver block
+  start tpetra block
+    problem type is tempus
+    time step size is variable
+    time integrator final time = 3.0
+    time integrator initial step size = 0.0001
+    time integrator minimum step size = 1e-6
+    time integrator maximum step size = 0.1
+    verbosity level is high
+  end
+end solver block
+

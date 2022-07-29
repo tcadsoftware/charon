@@ -132,21 +132,21 @@ EquationSet_DDLattice(const Teuchos::RCP<Teuchos::ParameterList>& params,
       );
     Teuchos::setStringToIntegralParameter<int>(
       "SUPG Stabilization",
-      "Off",
+      "On",
       "Enable or disable SUPG stabilization in the continuity equation(s)",
       Teuchos::tuple<std::string>("On","Off"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
       "Tau_E",
-      "None",
+      "Tanh",
       "Determine the Tau_E model in the Electron equation",
       Teuchos::tuple<std::string>("None","Linear","Tanh"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
       "Tau_H",
-      "None",
+      "Tanh",
       "Determines the Tau_H model in the Hole equation",
       Teuchos::tuple<std::string>("None","Linear","Tanh"),
       &opt
@@ -552,140 +552,6 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     fm.template registerEvaluator<EvalT>(op);
   }
 
-/*
-  // Electron Velocity on which Electron Peclet Number depends
-  {
-    ParameterList p("Electron Velocity");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Carrier Type", "Electron");
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::FEM_Velocity<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Instantiate the Effective_Velocity evaluator
-  {
-    ParameterList p("Electron Effective Velocity");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Carrier Type", "Electron");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::Effective_Velocity<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Stabilization: Residual R_e
-  {
-    ParameterList p("Electron Stabilized Residual");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Carrier Type", "Electron");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::PDE_Residual_DD<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Electron Peclet number, always make it available
-  {
-    ParameterList p("Electron Peclet Number");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Length Scale", ls_type);
-    p.set("Carrier Type", "Electron");
-    p.set("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::SUPG_Peclet<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Stabilization: Tau_E
-  if (tau_e_type == "None")
-  {
-    // When tau_e_type = "NONE", SUPG stabilization must be OFF.
-    TEUCHOS_ASSERT(supg_stab == "Off");
-  }
-  else if (tau_e_type == "Linear")
-  {
-    ParameterList p("TauE");
-    p.set("IR", ir);
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("Add Source Stabilization", add_source_stab);
-    p.set("Carrier Type", "Electron");
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::SUPG_Tau_Linear<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-
-    // should not be used for DDLattice since we did not compute the linear tau using
-    // the effective velocity, which is also the reason that includeSoret is not used here.
-  }
-  else if (tau_e_type == "Tanh")
-  {
-    ParameterList p("TauE");
-    p.set("IR", ir);
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("Add Source Stabilization", add_source_stab);
-    p.set("Carrier Type", "Electron");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::SUPG_Tau_Tanh<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-  else
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Invalid Tau_E model is specified !" );
-
-  // SUPG stabilization
-  if (supg_stab == "On")
-  {
-    // electron convection stab.
-    {
-      ParameterList p("Electron SUPG Convection Residual");
-      p.set("Residual Name", n.res.edensity + n.op.supg_conv);
-      p.set("Flux Name", n.field.elec_velocity);
-      p.set("Basis", basis);
-      p.set("IR", ir);
-      p.set("Multiplier", 1.0);
-
-      Teuchos::RCP<std::vector<std::string> > fms = Teuchos::rcp(new std::vector<std::string>);
-      fms->push_back(n.field.tau_stab_e);
-      fms->push_back(n.field.R_e);
-      p.set< Teuchos::RCP<const std::vector<std::string> > >("Field Multipliers",fms);
-
-      RCP< PHX::Evaluator<panzer::Traits> > op =
-        rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
-      fm.template registerEvaluator<EvalT>(op);
-    }
-
-    // source term stab.
-    if (add_source_stab)
-    {
-      ParameterList p("Electron SUPG Source Residual");
-      p.set("Residual Name", n.res.edensity + n.op.supg_src);
-      p.set("Value Name", n.field.R_e);
-      p.set("Basis", basis);
-      p.set("IR", ir);
-      p.set("Multiplier", -1.0);
-
-      Teuchos::RCP<std::vector<std::string> > fms = Teuchos::rcp(new std::vector<std::string>);
-      fms->push_back(n.field.recomb_deriv_e);
-      fms->push_back(n.field.tau_stab_e);
-      p.set< Teuchos::RCP<const std::vector<std::string> > >("Field Multipliers",fms);
-
-      RCP< PHX::Evaluator<panzer::Traits> > op =
-        rcp(new panzer::Integrator_BasisTimesScalar<EvalT,panzer::Traits>(p));
-      fm.template registerEvaluator<EvalT>(op);
-    }
-  }
-*/
-
   if ((discMethod == "FEM-SUPG") && (supg_stab == "On"))
     eqnSetDDIonLatt->computeSUPGStabResidual(fm, fl, user_data, m_names, ir, basis, ls_type, tau_e_type, add_source_stab, "Electron", 0, includeSoret);
 
@@ -820,137 +686,6 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       n.res.hdensity, n.field.total_recomb, *basis, *ir));
     fm.template registerEvaluator<EvalT>(op);
   }
-
-/*
-  // Hole Velocity on which Hole Peclet Number depends
-  {
-    ParameterList p("Hole Velocity");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Carrier Type", "Hole");
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::FEM_Velocity<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Instantiate the Effective_Velocity evaluator
-  {
-    ParameterList p("Hole Effective Velocity");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Carrier Type", "Hole");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::Effective_Velocity<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Stabilization: Residual R_h
-  {
-    ParameterList p("Hole Stabilized Residual");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Carrier Type", "Hole");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::PDE_Residual_DD<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Hole Peclet number, always make it available
-  {
-    ParameterList p("Hole Peclet Number");
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("IR", ir);
-    p.set("Length Scale", ls_type);
-    p.set("Carrier Type", "Hole");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::SUPG_Peclet<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-
-  // Stabilization: Tau_H
-  if (tau_h_type == "None")
-  {
-    // When tau_h_type = "NONE", SUPG stabilization must be OFF.
-    TEUCHOS_ASSERT(supg_stab == "Off");
-  }
-  else if (tau_h_type == "Linear")
-  {
-    ParameterList p("TauH");
-    p.set("IR", ir);
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("Add Source Stabilization", add_source_stab);
-    p.set("Carrier Type", "Hole");
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::SUPG_Tau_Linear<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-  else if (tau_h_type == "Tanh")
-  {
-    ParameterList p("TauH");
-    p.set("IR", ir);
-    p.set<RCP<const charon::Names> >("Names", m_names);
-    p.set("Add Source Stabilization", add_source_stab);
-    p.set("Carrier Type", "Hole");
-    p.set<bool>("Include Soret Effect", includeSoret);
-
-    RCP< PHX::Evaluator<panzer::Traits> > op =
-      rcp(new charon::SUPG_Tau_Tanh<EvalT,panzer::Traits>(p));
-    fm.template registerEvaluator<EvalT>(op);
-  }
-  else
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Invalid Tau_H model is specified !" );
-
-  // SUPG stabilization
-  if (supg_stab == "On")
-  {
-    // hole convection stab.
-    {
-      ParameterList p("Hole SUPG Convection Residual");
-      p.set("Residual Name", n.res.hdensity+n.op.supg_conv);
-      p.set("Flux Name", n.field.hole_velocity);
-      p.set("Basis", basis);
-      p.set("IR", ir);
-      p.set("Multiplier", 1.0);
-
-      Teuchos::RCP<std::vector<std::string> > fms = Teuchos::rcp(new std::vector<std::string>);
-      fms->push_back(n.field.tau_stab_h);
-      fms->push_back(n.field.R_h);
-      p.set< Teuchos::RCP<const std::vector<std::string> > >("Field Multipliers",fms);
-
-      RCP< PHX::Evaluator<panzer::Traits> > op =
-        rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
-      fm.template registerEvaluator<EvalT>(op);
-    }
-
-    // source term stab.
-    if (add_source_stab)
-    {
-      ParameterList p("Hole SUPG Source Residual");
-      p.set("Residual Name", n.res.hdensity + n.op.supg_src);
-      p.set("Value Name", n.field.R_h);
-      p.set("Basis", basis);
-      p.set("IR", ir);
-      p.set("Multiplier", -1.0);
-
-      Teuchos::RCP<std::vector<std::string> > fms = Teuchos::rcp(new std::vector<std::string>);
-      fms->push_back(n.field.recomb_deriv_h);
-      fms->push_back(n.field.tau_stab_h);
-      p.set< Teuchos::RCP<const std::vector<std::string> > >("Field Multipliers",fms);
-
-      RCP< PHX::Evaluator<panzer::Traits> > op =
-        rcp(new panzer::Integrator_BasisTimesScalar<EvalT,panzer::Traits>(p));
-      fm.template registerEvaluator<EvalT>(op);
-    }
-  }
-*/
 
   if ((discMethod == "FEM-SUPG") && (supg_stab == "On"))
     eqnSetDDIonLatt->computeSUPGStabResidual(fm, fl, user_data, m_names, ir, basis, ls_type, tau_h_type, add_source_stab, "Hole", 0, includeSoret);

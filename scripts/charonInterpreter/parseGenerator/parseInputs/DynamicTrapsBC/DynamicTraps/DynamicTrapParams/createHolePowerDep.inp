@@ -1,0 +1,8 @@
+interpreter name HolePowerDep
+
+interpreter inputLine (hole electric field power dependency) = {value}
+
+interpreter shortHelp {The trap hole field-dependent cross section power dependency exponent}
+interpreter longHelp {The trap hole field-dependent cross section power dependency exponent, a positive number}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Hole Electric Field Power Dependency,double,{value}

@@ -1,0 +1,9 @@
+interpreter name ReturnFailedOnReachingMaxSteps
+
+interpreter inputLine (return failed on reaching max steps) = {returnfailedval}
+
+interpreter shortHelp {If false, the LOCA stepper will return converged when it hits the maximum number of steps even if the final time is not achieved.}
+
+interpreter longHelp {If false, the LOCA stepper will return converged when it hits the maximum number of steps even if the final time is not achieved. Set this to false if you want to force the solver to take a fixed number of time steps and stop as converged. This is useful for continuation problems with bifurcations and for unit tests that use exodiff for solution comparisons for a fixed number of steps.}
+
+xmlRequired Charon->Solution Control->LOCA->Stepper,Return Failed on Reaching Max Steps,bool,{returnfailedval} priority 5

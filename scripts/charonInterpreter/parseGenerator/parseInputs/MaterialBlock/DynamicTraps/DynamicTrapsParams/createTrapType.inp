@@ -1,0 +1,10 @@
+interpreter name TrapType
+
+interpreter inputLine (trap type) is [ (donor) [ (acceptor) ]]
+
+interpreter shortHelp {The type of this trap}
+interpreter longHelp {The type of this trap which is either donor or acceptor}
+
+xmlOptional (donor) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Trap Type,string,Donor
+
+xmlOptional (acceptor) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Trap Type,string,Acceptor

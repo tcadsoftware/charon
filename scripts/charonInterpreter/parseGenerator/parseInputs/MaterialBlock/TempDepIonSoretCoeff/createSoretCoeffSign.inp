@@ -1,0 +1,11 @@
+interpreter name SorefCoeffSign 
+
+interpreter inputLine (soret coeff sign) is [(positive) [(negative)]]
+
+interpreter shortHelp {The soret coefficient sign for the TempDep ion soret coefficient model}
+
+interpreter longHelp {The soret coefficient sign for the TempDep ion soret coefficient model}
+
+xmlOptional (positive) Charon->Closure Models->{MaterialBlockName}->Ion Soret Coefficient,Soret Coefficient Sign,string,Positive
+
+xmlOptional (negative) Charon->Closure Models->{MaterialBlockName}->Ion Soret Coefficient,Soret Coefficient Sign,string,Negative

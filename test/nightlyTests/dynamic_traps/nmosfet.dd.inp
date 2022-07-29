@@ -1,0 +1,79 @@
+
+Import State File "nmosfet.nlp.exo" at index 1
+
+Assembly workset = 50
+tpetra is on
+
+start output parameters
+      Output State File nmosfet.dd.exo
+      Output cell average Variables in silicon for vector "GRAD_ELECTRIC_POTENTIAL"
+      Output cell average Variables in sio2 for vector "GRAD_ELECTRIC_POTENTIAL"
+end output parameters
+
+concentration scaling=1e19
+lattice temperature=300
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem
+      material model is siliconParameter
+      srh recombination is on
+      # auger recombination is on
+end Physics Block Semiconductor
+
+start Physics Block Insulator
+      geometry block is sio2
+      standard discretization type is laplace cvfem
+      material model is SiO2Parameter
+end Physics Block Insulator
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      # substrate doping
+      start uniform doping named Function1
+        concentration = 4e16
+        type is acceptor
+        spatial range is 0.0 to 1.5 in x
+        spatial range is 0 to 1.0 in y
+      end uniform doping
+
+      # source doping
+      start uniform doping named Function2
+        concentration = 1e20
+        type is donor
+        spatial range is 0.0 to 0.2 in x
+        spatial range is 0.925 to 1.0 in y
+      end uniform doping
+
+      start uniform doping named Function3
+        concentration = 1e20
+        type is donor
+        spatial range is 1.2 to 1.4 in x
+        spatial range is 0.925 to 1.0 in y
+      end uniform doping      
+end Material Block siliconParameter
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File 
+initial conditions for ELECTRON_DENSITY in silicon is Equilibrium Density 
+initial conditions for HOLE_DENSITY in silicon is Equilibrium Density 
+initial conditions for ELECTRIC_POTENTIAL in sio2 is Exodus File 
+
+BC is ohmic for source on silicon fixed at 0
+BC is ohmic for drain on silicon fixed at 0
+BC is ohmic for subs on silicon fixed at 0
+BC is contact on insulator for gate on sio2 with work function 4.1 fixed at 0
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block
+

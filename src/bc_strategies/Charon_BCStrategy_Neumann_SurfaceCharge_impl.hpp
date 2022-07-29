@@ -404,9 +404,15 @@ charon::BCStrategy_Neumann_SurfaceCharge<EvalT>::getValidParameters() const
     trapPL.sublist(subListName, false, "Sublist defining the parameters for one type of trap");
 
     // trap related parameters
-    trapPL.sublist(subListName).set<double>("Trap Energy", 0.0, "Trap energy level measured from the mid-band gap in [eV], + for above, - for below");
-    trapPL.sublist(subListName).set<double>("Trap Density", 0.0, "Trap density in [cm^-3]");
-    trapPL.sublist(subListName).set<string>("Trap Type", "", "Either Acceptor (0 if unoccupied and -1 if occupied, electron capture) or Donor (0 if unoccupied and +1 if occupied, hole capture)");
+    trapPL.sublist(subListName).set<double>("Trap Energy", 0.0, 
+	"Trap energy level measured from the mid-band gap in [eV], + for above, - for below");
+    trapPL.sublist(subListName).set<double>("Trap Density", 0.0, "Trap density in [cm^-2] or [cm^-2 eV^-1]");
+    trapPL.sublist(subListName).set<string>("Trap Type", "", 
+       "Either Acceptor (0 if unoccupied and -1 if occupied, electron capture) or Donor (0 if unoccupied and +1 if occupied, hole capture)");
+    trapPL.sublist(subListName).set<string>("Energy Distribution", "", "Energy distribution type");
+    trapPL.sublist(subListName).set<double>("Energy Width", 0.0, "Distribution energy width [eV]");
+    trapPL.sublist(subListName).set<int>("Number of Levels", 20, 
+		  "Number of discrete energy levels for continuous a distribution");
     trapPL.sublist(subListName).set<double>("Electron Cross Section", 0.0, "Electron capture cross section in [cm^2]");
     trapPL.sublist(subListName).set<double>("Hole Cross Section", 0.0, "Hole capture cross section in [cm^2]");
   }

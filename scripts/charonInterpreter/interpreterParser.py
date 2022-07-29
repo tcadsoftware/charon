@@ -33,15 +33,19 @@ class interpreterParser:
         self.verbosity = verbosity
         self.parserLibraryObjectPointer.append(self.parsersLibrary)
         ## Proceed through each line and query the parsers for a match.
+        self.specialInformation = []
         self.tempPL = []
         self.tempPr = []
+        self.tempSI = []
         self.parameterListReplacements = []
         self.parameterListReplacementValues = []
         self.PLModifiers = []
         self.setErrorCode = False
         self.inCommentBlock = False
+        suggestedSyntax = []
         tokenizer = charonTokenize()
         for line in interpreterLines:
+            suggestedSyntax.clear()
             lineTokens = line.split() 
             if len(lineTokens) != 0:           # ignore blank lines
                 if self.verbosity >= 10:
@@ -61,17 +65,19 @@ class interpreterParser:
                         continue
 
                            
-                if lineTokens[0][0] != "#" and self.inCommentBlock == False:    # ignore # commented lines
+                if lineTokens[0][0] != "#" and lineTokens[0][0] !="$" and self.inCommentBlock == False:    # ignore # and $ commented lines
                     #check line keys first
                     self.isItHere = False
                     self.parserObjectPointer = None
-                    (self.isItHere,self.parserObjectPointer) = self.parserLibraryObjectPointer[-1].isThisMyLine(tokenizer,line)
+                    (self.isItHere,self.parserObjectPointer,suggestedSyntax) = self.parserLibraryObjectPointer[-1].isThisMyLine(tokenizer,line)
                     if self.isItHere == True:
                         if len(self.tempPL) != 0:
-                            self.tempPL[:] = []  #I really hate this.  Python 3 would be so much better
+                            self.tempPL.clear()
                         if len(self.tempPr) != 0:
-                            self.tempPr[:] = []  #I really hate this.  Python 3 would be so much better
-                        (self.tempPL,self.tempPr) = self.parserObjectPointer.generateXML(tokenizer,line)
+                            self.tempPr.clear()
+                        if len(self.tempSI) != 0:
+                            self.tempSI.clear()
+                        (self.tempPL,self.tempPr,self.tempSI) = self.parserObjectPointer.generateXML(tokenizer,line)
                         self.checkForModifiers(self.parserObjectPointer.getName())
                         if self.verbosity >= 20:
                             print (line.strip()," returns the following PLs")
@@ -86,6 +92,7 @@ class interpreterParser:
                         self.replaceReplacements()
                         self.parameterLists.extend(self.tempPL)
                         self.parameterListsPriority.extend(self.tempPr)
+                        self.specialInformation.extend(self.tempSI)
                         continue
  
 
@@ -95,14 +102,11 @@ class interpreterParser:
                         if self.verbosity >= 10:
                             print ("Entering block ",self.parserObjectPointer.getName())
                         self.parserLibraryObjectPointer.append(self.tempPLPointer)
-                        #print (line,"Entering block ",self.parserLibraryObjectPointer[-1].getName())
 
                         (self.tempPLR,self.tempPLRV) = self.parserObjectPointer.generateBulkReplacements(tokenizer,line)
                         self.searchAndReplaceReplacements()
                         (self.tempPL,self.tempPr) = self.parserObjectPointer.generateXML(line)
-                        #print self.tempPL
                         self.replaceReplacements()
-                        #print self.tempPL
 
                         self.parameterLists.extend(self.tempPL)
                         self.parameterListsPriority.extend(self.tempPr)
@@ -115,15 +119,35 @@ class interpreterParser:
 
                     if self.isItHere == False and line.split()[0].lower() != "end":
                         self.setErrorCode = True
-                        print ("Something has gone wrong. \n I can't find a parser for \n",line)
+                        print ("\nI can't find a parser for:  \n\n    ",line.strip())
+                        if len(suggestedSyntax) == 0:
+                            print("\nand I have no recommendations for you.")
+                        else:
+                            print("\nbut I do have the following suggestions:\n")
+                            for sS in suggestedSyntax:
+                                printString = sS+"\n\n"
+                                print(printString)
 
             if self.setErrorCode == True:
-                print ("An error condition has been set.  Terminate interpreter.")
+                print ("\nAn error condition has been set.  Terminate interpreter.")
                 quit()
 
         #Run through the modifiers if there are any
         plModifier = modifierLibrary()
         plModifier.executeModifiers(self.PLModifiers,self.parameterLists)
+
+        #Ensures that all bools are lower case true or false
+        for pLIndex,pll in enumerate(self.parameterLists):
+            findString = ["true","false"]
+            if "bool" in pll:
+                for fS in findString:
+                    if fS in pll.lower():
+                        commaIndex = pll.rfind(',')
+                        index = pll.lower().find(fS,commaIndex-1,len(pll))
+                        if index != -1:
+                            foundString = pll[index:index+len(fS)]
+                            pll = pll.replace(foundString,fS)
+                            self.parameterLists[pLIndex] = pll
 
         paramList = self.constructXMLParameterList()
 
@@ -142,6 +166,7 @@ class interpreterParser:
 
         #self.createGraph()
 
+        return self.specialInformation
 
 
 
@@ -192,7 +217,8 @@ class interpreterParser:
                         pLTokens = temp
                                  
                     try: 
-                        localParamList.insertParameterWithListCreation(pLTokens[0].split("->"),pLTokens[1],pLTokens[2],pLTokens[3],0)
+                        if "->" in pLTokens[0]:
+                            localParamList.insertParameterWithListCreation(pLTokens[0].split("->"),pLTokens[1],pLTokens[2],pLTokens[3],0)
                     except IndexError:
                         print ("bad index in line ",self.parameterLists[lPLP])
                         sys.exit(1)

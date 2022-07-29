@@ -1,0 +1,10 @@
+
+interpreter name Read2DSpaceFile
+
+interpreter inputLine (read 2d spatial file from) {filename} 
+
+interpreter shortHelp {Read the 2D space dependent factor from a tabulated file}
+
+interpreter longHelp {Read the 2D space dependent factor from a tabulated file that contains x (um), y (um), and unitless factor. This factor is a multiplication factor to the time dependent optical generation rate.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Space File2D,string,{filename}

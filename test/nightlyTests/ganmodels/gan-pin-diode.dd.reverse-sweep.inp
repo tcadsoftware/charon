@@ -6,6 +6,7 @@ start output parameters
 end output parameters
 
 Assembly Workset = 50
+Tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e19
 
@@ -137,12 +138,8 @@ start sweep options
 end sweep options
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-10
-      max nonlinear iterations = 30
-      line search method is full step
-      aztec max iterations = 500
-      aztec tolerance = 1e-12
-      aztec Krylov subspace size = 200
-      ifpack level of fill = 1
+  start tpetra block
+    problem type is parameter sweep
+    verbosity level is high
+  end
 end solver block

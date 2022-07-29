@@ -35,13 +35,12 @@ if [ "$#" -eq "1" ]
 then
   if [ "$1" = "heavy" ]
   then
-    BLDSCRIPTARG="${BLDSCRIPTARG} --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
     SITEDESC="chama heavy"
     TRACK="Heavy"
     LARG="^heavy$"
   elif [ "$1" = "xyce" ]
   then
-    BLDSCRIPTARG="${BLDSCRIPTARG} -f chama-with-xyce-tri-libs.opts --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
+    BLDSCRIPTARG="${BLDSCRIPTARG} -f chama-with-xyce-tri-libs.opts"
     SITEDESC="chama xyce coupled heavy"
     TRACK="XyceCoupledHeavy"
     LARG="^xycecoupledheavy$"
@@ -155,7 +154,6 @@ then
 
   # set up for a coupled build
   BLDSCRIPTARG="-f chama.opts -f chama-with-xyce-tri-libs.opts -f chama-xyce-cluster.opts"
-  BLDSCRIPTARG="${BLDSCRIPTARG} --cmake-options=-DENABLE_HEAVY_TESTS:BOOL=ON"
 
   # Clean out the charon build directory for a fresh start during the
   # coupled build

@@ -8,6 +8,7 @@ ANONYMOUS:
       File Name: gan-diode.dd.reverse-sweep0.exo
   Assembly: 
     Workset Size: 50
+    Use Tpetra: true
   Closure Models: 
     Lattice Temperature: 3.00000000000000000e+02
     Concentration Scaling: 1.00000000000000000e+19
@@ -131,7 +132,7 @@ ANONYMOUS:
           Stratimikos Linear Solver: 
             Stratimikos: 
               Linear Solver Type: AztecOO
-              Preconditioner Type: Ifpack
+              Preconditioner Type: Ifpack2
               Linear Solver Types: 
                 AztecOO: 
                   Forward Solve: 
@@ -162,6 +163,10 @@ ANONYMOUS:
                     'fact: drop tolerance': 0.00000000000000000e+00
                     'fact: ilut level-of-fill': 1.00000000000000000e+00
                     'fact: level-of-fill': 1
+                Ifpack2:
+                  Prec Type: RILUK
+                  Ifpack2 Settings: 
+                    'fact: iluk level-of-fill': 1
       Line Search: 
         Method: Full Step
         Full Step: 

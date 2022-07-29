@@ -1,12 +1,45 @@
 
-
 interpreter name DopingConcentration
 
-interpreter inputLine (Concentration) = {concentration}
+interpreter inputLine Concentration [ (=) {concentration} [ (swept from) {concentration1} to {concentration2} ]]
 
 interpreter shortHelp {set the magnitude of the dopant concentration}
 
 interpreter longHelp {set the magnitude of the dopant concentration <> concentration is the numerical value in 1/cm^3}
 
-xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Value,double,{concentration}
+#xmlRequired Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Value,double,{concentration}
+
+
+#Fixed
+xmlOptional (=) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Value,double,{concentration}
+
+#Swept
+# Set the data parameter to a string
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->Doping,SweepingIsOn,bool,true
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Value,string,Parameter
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},SweepMe,bool,true
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Initial Doping Value,double,{concentration1}
+xmlOptional (swept from) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Final Doping Value,double,{concentration2}
+
+# Modify the solver type from NOX to LOCA
+xmlOptional (swept from) Charon->Solution Control,Piro Solver,string,LOCA
+
+#LOCA Parameters
+xmlOptional (swept from) Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Initial Value,double,0.0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Continuation Parameter,string,Doping Value
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Max Steps,int,1000
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Max Value,double,1.0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Min Value,double,0.0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Stepper,Compute Eigenvalues,bool,0
+xmlOptional (swept from) Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,0.05
+
+# Set the parameters block
+xmlOptional (swept from) Charon->Active Parameters,Number of Parameter Vectors,int,1
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Number,int,1
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Doping Value
+xmlOptional (swept from) Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,0.0
+
+
+
 

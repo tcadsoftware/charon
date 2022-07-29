@@ -35,6 +35,8 @@
 // FEM vector field evaluators
 #include "Charon_FEM_ElectricField.hpp"
 #include "Charon_FEM_CurrentDensity.hpp"
+#include "Charon_DisplacementCurrentDensity.hpp"
+#include "Charon_PrevPotentialGrad.hpp"
 #include "Charon_FEM_Velocity.hpp"
 
 
@@ -124,6 +126,13 @@ EquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& params,
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
+      "Band2Band Tunneling",
+      "Off",
+      "Determines if users want to include Band2Band tunneling generation in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On", "Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
       "Driving Force",
       "EffectiveField",
       "Determines driving force for different models in the continuity equation(s)",
@@ -153,21 +162,21 @@ EquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& params,
       );
     Teuchos::setStringToIntegralParameter<int>(
       "SUPG Stabilization",
-      "Off",
+      "On",
       "Enable or disable SUPG stabilization in the continuity equation(s)",
       Teuchos::tuple<std::string>("On","Off"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
       "Tau_E",
-      "None",
+      "Tanh",
       "Determine the Tau_E model in the Electron equation",
       Teuchos::tuple<std::string>("None","Linear","Tanh"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
       "Tau_H",
-      "None",
+      "Tanh",
       "Determines the Tau_H model in the Hole equation",
       Teuchos::tuple<std::string>("None","Linear","Tanh"),
       &opt
@@ -222,6 +231,13 @@ EquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& params,
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
+      "Dynamic Traps",
+      "Off",
+      "Determine if users want to include Trap SRH recombination in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On","Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
       "Add Trap Charge",
       "False",
       "Determine if users want to include the srh trap charge in the Poisson equation",
@@ -243,10 +259,12 @@ EquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& params,
     const std::string& rad_recomb = params->sublist("Options").get<std::string>("Radiative");
     const std::string& auger_recomb = params->sublist("Options").get<std::string>("Auger");
     const std::string& ava_gen = params->sublist("Options").get<std::string>("Avalanche");
+    const std::string& bbt_gen = params->sublist("Options").get<std::string>("Band2Band Tunneling");
     const std::string& defect_cluster_recomb = params->sublist("Options").get<std::string>("Defect Cluster");
     const std::string& empirical_defect_recomb = params->sublist("Options").get<std::string>("Empirical Defect");
     const std::string& ionization_particle_strike = params->sublist("Options").get<std::string>("Particle Strike");
     const std::string& trap_srh_recomb = params->sublist("Options").get<std::string>("Trap SRH");
+    const std::string& dynamic_traps_recomb = params->sublist("Options").get<std::string>("Dynamic Traps");
     const std::string& add_trap_charge = params->sublist("Options").get<std::string>("Add Trap Charge");
     const std::string& opt_gen = params->sublist("Options").get<std::string>("Optical Generation"); 
 
@@ -257,13 +275,16 @@ EquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& params,
     if ((srh_recomb == "On") || (rad_recomb == "On") || (auger_recomb == "On") ||
         (trap_srh_recomb == "On") || (ava_gen == "On") || (opt_gen == "On") || 
         (defect_cluster_recomb == "On") || (empirical_defect_recomb == "On") ||
-        (ionization_particle_strike == "On"))
+        (ionization_particle_strike == "On") || (dynamic_traps_recomb == "On") ||
+        (bbt_gen == "On") )
     {
       TEUCHOS_ASSERT((solveElectron == "True") && (solveHole == "True"));
       haveSource = true;
     }
     else
       haveSource = false;  // NO recomb./gen. model
+
+    withDynamicTraps = (haveSource && dynamic_traps_recomb == "On") ? true : false;
 
     supg_stab = params->sublist("Options").get<std::string>("SUPG Stabilization");
     tau_e_type = params->sublist("Options").get<std::string>("Tau_E");
@@ -276,7 +297,8 @@ EquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& params,
       if ((srh_recomb == "On") || (rad_recomb == "On") || (auger_recomb == "On") ||
           (trap_srh_recomb == "On") || (ava_gen == "On") || (opt_gen == "On") || 
           (defect_cluster_recomb == "On") || (empirical_defect_recomb == "On") ||
-          (ionization_particle_strike == "On"))
+          (ionization_particle_strike == "On") || (dynamic_traps_recomb == "On") ||
+          (bbt_gen == "On") )
         add_source_stab = true;
       else
         add_source_stab = false;
@@ -475,6 +497,45 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
         n.res.phi, n.field.trap_srh_charge, *basis, *ir, -1));
       fm.template registerEvaluator<EvalT>(op);
     }
+
+    // Add the trap charges located at IPs of finite elements to the Poisson source residual
+    // The trap charges are computed in charon::DynamicTraps_Recombination
+    if (withDynamicTraps && !this->isFreqDom)
+    {
+      RCP<Evaluator<Traits>> op = rcp(new
+        Integrator_BasisTimesScalar<EvalT, Traits>(EvaluatorStyle::CONTRIBUTES,
+        n.res.phi, n.field.trapped_charge, *basis, *ir, -1));
+      fm.template registerEvaluator<EvalT>(op);
+    }
+
+    {
+      // Computing displacement current density: Jd = -eps*d(grad(psi))/dt at IPs
+      if (this->buildTransientSupport()) {
+	{
+	  ParameterList p("Prev Potential Gradient");
+	  p.set("Current Name", m_names->field.grad_phi_prev);
+	  p.set< RCP<const charon::Names> >("Names", m_names);
+	  p.set("Scaling Parameters", scaleParams);
+	  p.set("IR", ir);
+	  RCP< PHX::Evaluator<panzer::Traits> > op = 
+	    rcp(new charon::PrevPotentialGrad<EvalT,panzer::Traits>(p));
+	  fm.template registerEvaluator<EvalT>(op); 
+	}
+
+	{
+	  ParameterList p("Displacement Current Density");
+	  p.set("Current Name", m_names->field.displacement_curr_density);
+	  p.set< RCP<const charon::Names> >("Names", m_names);
+	  p.set("Scaling Parameters", scaleParams);
+	  p.set("IR", ir);
+
+	  RCP< PHX::Evaluator<panzer::Traits> > op = 
+	    rcp(new charon::DisplacementCurrentDensity<EvalT,panzer::Traits>(p));
+	  fm.template registerEvaluator<EvalT>(op);
+	}
+      }
+    }
+
   }
 
 
@@ -525,6 +586,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     fm.template registerEvaluator<EvalT>(op);
    }
 
+
    // The convection (or advection, drift) - diffusion residual
    {
     ParameterList p("Electron Convection Diffusion Residual");
@@ -549,6 +611,14 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     RCP<Evaluator<Traits>> op = rcp(new
       Integrator_BasisTimesScalar<EvalT, Traits>(EvaluatorStyle::CONTRIBUTES,
       n.res.edensity, n.field.total_recomb, *basis, *ir));
+    fm.template registerEvaluator<EvalT>(op);
+  }
+
+  if (withDynamicTraps && !this->isFreqDom)
+  {
+    RCP<Evaluator<Traits>> op = rcp(new
+      Integrator_BasisTimesScalar<EvalT, Traits>(EvaluatorStyle::CONTRIBUTES,
+      n.res.edensity, n.field.dynamic_traps_erecomb, *basis, *ir));
     fm.template registerEvaluator<EvalT>(op);
   }
 
@@ -762,6 +832,14 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     RCP<Evaluator<Traits>> op = rcp(new
       Integrator_BasisTimesScalar<EvalT, Traits>(EvaluatorStyle::CONTRIBUTES,
       n.res.hdensity, n.field.total_recomb, *basis, *ir));
+    fm.template registerEvaluator<EvalT>(op);
+  }
+
+  if (withDynamicTraps && !this->isFreqDom)
+  {
+    RCP<Evaluator<Traits>> op = rcp(new
+      Integrator_BasisTimesScalar<EvalT, Traits>(EvaluatorStyle::CONTRIBUTES,
+      n.res.hdensity, n.field.dynamic_traps_hrecomb, *basis, *ir));
     fm.template registerEvaluator<EvalT>(op);
   }
 

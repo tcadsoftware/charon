@@ -97,7 +97,7 @@ that work can actually start on it.  Make sure you include enough detail in the
 description such that another team member could attempt the work without having
 to ask too many questions.
 
-The issue templates include a table for calculating an issue's weight. 
+The issue templates include a table for calculating an issue's weight.
 Experience suggests that a weight of six to eight is a reasonable amount of
 work for a two to three week period.  Larger issues should likely be broken
 down by creating sub-issues that are more bite-size.  Once an issue is small

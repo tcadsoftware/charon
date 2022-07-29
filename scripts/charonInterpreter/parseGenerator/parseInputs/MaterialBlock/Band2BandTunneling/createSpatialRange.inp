@@ -1,0 +1,17 @@
+interpreter name SpatialRange
+
+interpreter inputLine (spatial range) is {locMin} to {locMax} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the coordinate range of the band-to-band tunneling model in x, y or z}
+
+interpreter longHelp {Set the coordinate range of the band-to-band tunneling model in x, y or z}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Xmin,double,{locMin}
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Xmax,double,{locMax}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Ymin,double,{locMin}
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Ymax,double,{locMax}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Zmin,double,{locMin}
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Zmax,double,{locMax}
+

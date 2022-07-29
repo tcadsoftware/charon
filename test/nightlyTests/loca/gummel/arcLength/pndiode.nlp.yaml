@@ -9,6 +9,7 @@ ANONYMOUS:
     silicon: Semiconductor
   Assembly:
     Workset Size: 2000
+    Use Tpetra: true
   Physics Blocks:
     Semiconductor:
       child0:
@@ -121,8 +122,14 @@ ANONYMOUS:
                       Block Size: 1
                       Num Blocks: 20
                       Flexible Gmres: false
-              Preconditioner Type: Ifpack
+              Preconditioner Type: Ifpack2
               Preconditioner Types:
+
+                Ifpack2:
+                  Prec Type: RILUK
+                  Ifpack2 Settings:
+                    'fact: iluk level-of-fill': 1
+                    
                 Ifpack:
                   Overlap: 1
                   Prec Type: ILU

@@ -3,6 +3,7 @@
 #define CHARON_NOX_OBSERVER_FACTORY_HPP
 
 #include "Panzer_STK_NOXObserverFactory.hpp"
+#include "Panzer_GlobalData.hpp"
 #include "NOX_PrePostOperator_Vector.H"
 #include "Teuchos_RCP.hpp"
 #include "Teuchos_ParameterList.hpp"
@@ -13,9 +14,10 @@
 #include "Charon_Scaling_Parameters.hpp"
 
 // Concrete nox observers
-#include "Charon_NOXObserver_EpetraToExodus.hpp"
-#include "Charon_NOXObserver_EpetraOutput.hpp"
+#include "Charon_NOXObserver_EorTpetraToExodus.hpp"
+#include "Charon_NOXObserver_EorTpetraOutput.hpp"
 #include "Charon_NOXObserver_WriteResponses.hpp"
+#include "Charon_PanzerParameterExtractor.hpp"
 
 namespace charon {
 
@@ -32,6 +34,8 @@ namespace charon {
 
     Teuchos::RCP<std::map<std::string,double> > const& scaleFactors_;
 
+    Teuchos::RCP<panzer::ParamLib> parameterLibrary_;
+
     //! Store Response names for pretty printing of currents, etc...
     std::vector<std::string> responseNames_;
 
@@ -45,10 +49,12 @@ namespace charon {
 
     NOXObserverFactory(const Teuchos::RCP<panzer::ResponseLibrary<panzer::Traits> > & stkIOResponseLibrary,
                        Teuchos::RCP<std::map<std::string,double> > const& scaleFactors,
+		       Teuchos::RCP<panzer::ParamLib> const& parameterLibrary,
                        bool isLOCASolver,
                        bool writeOnSolveFail)
       : stkIOResponseLibrary_(stkIOResponseLibrary),
         scaleFactors_(scaleFactors),
+	parameterLibrary_(parameterLibrary),
         isLOCASolver_(isLOCASolver),
         writeOnSolveFail_(writeOnSolveFail) {}
 
@@ -72,14 +78,15 @@ namespace charon {
       // solution output has been canceled
       if (this->getParameterList()->get<std::string>("Write Solution to Exodus File") == "ON") {
         Teuchos::RCP<NOX::Abstract::PrePostOperator> solution_writer =
-          Teuchos::rcp(new charon::NOXObserver_EpetraToExodus(mesh,
-                                                              lof,
-                                                              stkIOResponseLibrary_,
-                                                              scaleFactors_,
-                                                              writeOnSolveFail_,
-                                                              responseNames_,
-                                                              fullModelEvaluator_,
-                                                              this->getParameterList()->get<bool>("Output Responses")));
+          Teuchos::rcp(new charon::NOXObserver_EorTpetraToExodus(mesh,
+                                                                 lof,
+                                                                 stkIOResponseLibrary_,
+                                                                 scaleFactors_,
+                                                                 writeOnSolveFail_,
+                                                                 responseNames_,
+                                                                 fullModelEvaluator_,
+								 parameterLibrary_,
+                                                                this->getParameterList()->get<bool>("Output Responses")));
         observer->pushBack(solution_writer);
       }
 
@@ -88,7 +95,7 @@ namespace charon {
         TEUCHOS_ASSERT(epetraDOFManager!=Teuchos::null);
 
         Teuchos::RCP<NOX::Abstract::PrePostOperator> linear_sys_writer
-          = rcp(new charon::NOXObserver_EpetraOutput());
+          = rcp(new charon::NOXObserver_EorTpetraOutput());
 
         observer->pushBack(linear_sys_writer);
       }
@@ -107,6 +114,7 @@ namespace charon {
                                                               true,
                                                               true,
                                                               responseFileName,
+							      parameterLibrary_,
                                                               isLOCASolver_,
                                                               writeOnSolveFail_));
         observer->pushBack(response_writer);

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -xe
 #
 # Typical cron entries:
 #
@@ -53,16 +53,17 @@ fi
 module purge
 module add sems-env
 
-MODLIST="sems-devpack-intel/17.0.1 \
-sems-cmake \
+MODLIST="sems-intel/19.0.5 \
+sems-openmpi/4.0.2 \
+sems-python/3.5.2 \
+sems-netcdf/4.4.1/exo \
+sems-cmake/3.12.2 \
 sems-git/2.10.1"
+
 for mod in ${MODLIST}
 do
   module load ${mod}
 done
-module unload sems-python/2.7.9 
-module load sems-python
-
 
 PROC_COUNT="60"
 export MAKEFLAGS="-j${PROC_COUNT}"
@@ -95,8 +96,10 @@ then
   fi
 
   mkdir -p ${BASETESTDIR}/${TESTDIR}
-  cd ${BASETESTDIR}
+else
+  mkdir -p ${BASETESTDIR}/${TESTDIR}
 fi
+cd ${BASETESTDIR}
 
 EXTRAOPTS=""
 if [ "x${BTYPE}" = "xDBG" ]
@@ -120,7 +123,7 @@ ctest ${EXTRAOPTS} -j${PROC_COUNT} -S ${BASETESTDIR}/scripts/ctest_regression.cm
       -DTYPE:STRING=${BTYPE} \
       -DPROCESSORCOUNT:INT=${PROC_COUNT} \
       -DDISTRIB:STRING="RHEL_7.x" \
-      -DCOMPILER:STRING="SEMS_OpenMPI_1.10_Intel_17.x" \
+      -DCOMPILER:STRING="SEMS_OpenMPI_4.0_Intel_19.x" \
       -DBASETESTDIR:STRING="${BASETESTDIR}" \
       -DTRIBRANCH:STRING="develop" \
       -DBSCRIPTARGS:STRING="-f cee-intel.opts" \

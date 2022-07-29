@@ -1,0 +1,9 @@
+interpreter name MinIonDens 
+
+interpreter inputLine (min ion density) = {mindens} 
+
+interpreter shortHelp {Set the minimum ion density in 1/cm^3 for the LinearIonDep thermal conductivity model}
+
+interpreter longHelp {Set the minimum ion density in 1/cm^3 for the LinearIonDep thermal conductivity model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Minimum Ion Density,double,{mindens}

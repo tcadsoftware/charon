@@ -1,0 +1,53 @@
+
+Import State File "pmoscap.exo"
+
+Assembly workset = 50
+tpetra is on
+
+start output parameters
+      Output State File pmoscap.nlp.4K.exo
+end output parameters
+
+concentration scaling=1e14
+lattice temperature = 4.0
+
+start Physics Block Semiconductor
+      geometry block is psilicon
+      standard discretization type is nlp cvfem
+      use fermi dirac
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Physics Block Insulator
+      geometry block is sio2
+      standard discretization type is laplace gfem
+      material model is SiO2Parameter
+end Physics Block Insulator1
+
+start Material Block siliconParameter
+      material name is Silicon
+      start uniform doping named Function1
+        concentration = 1e14
+        type is acceptor
+      end uniform doping
+end Material Block siliconParameter
+
+start Material Block SiO2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end Material Block
+
+initial conditions for ELECTRIC_POTENTIAL in psilicon is Equilibrium Potential
+initial conditions for ELECTRIC_POTENTIAL in sio2 is uninitialized
+
+BC is ohmic for substrate on psilicon fixed at 0
+BC is contact on insulator for gate on sio2 with work function 4.05 fixed at 0.5
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    maximum number nonlinear iterations = 50
+  end
+end solver block
+

@@ -1,6 +1,6 @@
 interpreter name Electron_bh
 
-interpreter inputLine (electron b(high)) = {bh_e}
+interpreter inputLine (electron bhigh) = {bh_e}
 
 interpreter shortHelp {Parameter for van Overstraeten model}
 interpreter longHelp {Parameter for van Overstraeten model}

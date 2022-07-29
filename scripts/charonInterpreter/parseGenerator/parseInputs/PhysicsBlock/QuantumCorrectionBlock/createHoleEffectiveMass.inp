@@ -1,0 +1,9 @@
+
+interpreter name HoleEffectiveMass
+
+interpreter inputLine (hole effective mass =) {effMass}
+
+interpreter shortHelp {Specify different hole effective mass from default 0.81 (hole dos effective mass)}
+interpreter longHelp  {Specify different hole effective mass from default 0.81 (hole dos effective mass)}
+
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Effective Mass,double,{effMass}

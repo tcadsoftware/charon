@@ -34,6 +34,9 @@ namespace charon {
 
     Teuchos::RCP<charon::Names>  m_names;
 
+    //options
+    std::string UseFD="False";
+
   };
 
 }

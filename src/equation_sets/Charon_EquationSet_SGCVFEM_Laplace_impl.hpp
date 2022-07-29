@@ -23,6 +23,9 @@
 #include "Charon_Integrator_SubCVFluxDotNorm.hpp"
 #include "Charon_Integrator_SubCVNodeScalar.hpp"
 
+#include "Charon_DisplacementCurrentDensity.hpp"
+#include "Charon_PrevPotentialGrad.hpp"
+
 
 // ***********************************************************************
 template <typename EvalT>
@@ -213,6 +216,32 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     }
   }
 
+  // Computing displacement current density: Jd = -eps*d(grad(psi))/dt at IPs
+  if (this->buildTransientSupport()) {
+    {
+      ParameterList p("Prev Potential Gradient");
+      p.set("Current Name", m_names->field.grad_phi_prev);
+      p.set< RCP<const charon::Names> >("Names", m_names);
+      p.set("Scaling Parameters", scaleParams);
+      p.set("IR", ir);
+      RCP< PHX::Evaluator<panzer::Traits> > op = 
+	rcp(new charon::PrevPotentialGrad<EvalT,panzer::Traits>(p));
+      fm.template registerEvaluator<EvalT>(op); 
+    }
+
+    {
+      ParameterList p("Displacement Current Density");
+      p.set("Current Name", m_names->field.displacement_curr_density);
+      p.set< RCP<const charon::Names> >("Names", m_names);
+      p.set("Scaling Parameters", scaleParams);
+      p.set("IR", ir);
+
+      RCP< PHX::Evaluator<panzer::Traits> > op = 
+	rcp(new charon::DisplacementCurrentDensity<EvalT,panzer::Traits>(p));
+      fm.template registerEvaluator<EvalT>(op);
+    }
+  }
+ 
   // Use a sum operator to form the overall residual for the equation
   // - this way we avoid loading each operator separately into the
   // global residual and Jacobian

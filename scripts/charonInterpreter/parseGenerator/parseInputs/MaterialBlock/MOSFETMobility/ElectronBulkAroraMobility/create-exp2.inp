@@ -1,0 +1,9 @@
+interpreter name exp2
+
+interpreter inputLine (exp2) = {exp2val}
+
+interpreter shortHelp {The second exponent of the temperature ratio for the Arora mobility model.}
+
+interpreter longHelp {The second exponent of the temperature ratio for the Arora mobility model.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility->Bulk Mobility,exp2,double,{exp2val}

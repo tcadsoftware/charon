@@ -1,0 +1,8 @@
+interpreter name maxLinearIterations
+
+interpreter shortHelp {Set the maximum linear iterations}
+interpreter longHelp {Set the maximum linear iterations}
+
+interpreter inputLine (max iterations = {maxLinearIter}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve,Max Iterations,int,{maxLinearIter}

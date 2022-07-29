@@ -1,0 +1,25 @@
+interpreter name DrivingForce 
+
+interpreter inputLine (driving force) is [(effective field) [(grad potential) [(grad quasi fermi) [(effective field parallel Jtot) [(effective field parallel J) [(grad potential parallel Jtot) [(grad potential parallel J)]  ] ] ] ] ] ] 
+
+interpreter shortHelp {Set the driving force model for the band2band tunneling local model}
+
+interpreter longHelp {Set the driving force model for the band2band tunneling local  model}
+
+xmlOptional (effective field)  Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,EffectiveField
+
+xmlOptional (grad potential) Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,GradPotential
+
+xmlOptional (grad quasi fermi)  Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,GradQuasiFermi
+
+xmlOptional (effective field parallel Jtot)  Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,EffectiveFieldParallelJtot
+
+xmlOptional (effective field parallel J)  Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,EffectiveFieldParallelJ
+
+xmlOptional (grad potential parallel Jtot)  Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,GradPotentialParallelJtot
+
+xmlOptional (grad potential parallel J)  Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Driving Force,string,GradPotentialParallelJ
+
+
+
+

@@ -13,6 +13,8 @@ start Physics Block Semiconductor
       material model is siliconParameter
 end Physics Block Semiconductor
 
+tpetra is on
+
 start Material Block siliconParameter
       material name is Silicon
       relative permittivity = 11.9
@@ -67,8 +69,9 @@ initial conditions for ELECTRON_DENSITY in silicon is Equilibrium density
 initial conditions for HOLE_DENSITY in silicon is Equilibrium density
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

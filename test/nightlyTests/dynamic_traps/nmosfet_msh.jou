@@ -1,0 +1,199 @@
+undo on
+graphics mode wireframe
+
+
+
+################################################
+# Geometry definition
+################################################
+
+# The depth isn't used so use a value that looks reasonable visually
+#{zsize = 16.0}
+
+# gate oxide
+#{goxDY = 0.050}
+#{goxDX = 1.00}
+
+# source 
+#{sourceDX = 0.2}
+#{sourceDY = 0.075}
+
+# drain 
+#{drainDX = 0.2}
+#{drainDY = 0.075}
+
+# silicon body
+#{bodyDX = goxDX + sourceDX + drainDX}
+#{bodyDY = 1.0}
+
+
+
+################################################
+# Geometry 
+################################################
+
+# gate oxide 
+create brick x {goxDX} y {goxDY} z {zsize}
+volume 1 rename "gox"
+
+# substrate under gate 
+create brick x {goxDX} y {sourceDY} z {zsize}
+volume 2 rename "subs"
+move vertex 11 location vertex 4
+
+# substrate under gate 
+create brick x {goxDX} y {bodyDY-sourceDY} z {zsize}
+volume 3 rename "subs1"
+move vertex 19 location vertex 12
+
+# substrate source
+create brick x {sourceDX} y {sourceDY} z {zsize}
+volume 4 rename "subs_s"
+move vertex 26 location vertex 11
+
+# substrate source
+create brick x {sourceDX} y {bodyDY-sourceDY} z {zsize}
+volume 5 rename "subs_s1"
+move vertex 35 location vertex 28
+
+# substrate drain
+create brick x {drainDX} y {drainDY} z {zsize}
+volume 6 rename "subs_d"
+move vertex 43 location vertex 10
+
+# substrate drain
+create brick x {drainDX} y {bodyDY-drainDY} z {zsize}
+volume 7 rename "subs_d1"
+move vertex 51 location vertex 44
+
+imprint all
+merge all
+
+# Move everything to positive coordinate values
+move vertex 36 location x 0 y 0 z 0 include_merged
+
+split curve 38 fraction 0.95 from vertex 27
+split curve 40 fraction 0.95 from vertex 28
+split curve 52 fraction 0.95 from vertex 36
+
+split curve 62 fraction 0.95 from vertex 42
+split curve 64 fraction 0.95 from vertex 41
+split curve 76 fraction 0.95 from vertex 49
+
+imprint all
+merge all
+
+
+###############################################
+## Boundary conditions
+################################################
+
+sideset 1 curve 2 
+sideset 1 name "gate"
+
+sideset 2 curve 91 92 28 99 100
+sideset 2 name "subs"
+
+sideset 3 curve 86 
+sideset 3 name "source"
+
+sideset 4 curve 93
+sideset 4 name "drain"
+
+sideset 5 curve 4
+sideset 5 name "inter_trap"
+
+
+
+################################################
+## Mesh
+################################################
+
+#{goxDY_fine = 0.001}
+#{goxDY_coarse = 0.005}
+#{goxDX_coarse = 0.1}
+#{goxDX_fine = 0.01}
+# oxide 
+curve 2 4 scheme dualbias fine size {goxDX_fine} coarse size {goxDX_coarse}
+curve 3 scheme bias fine size {goxDY_fine} coarse size {goxDY_coarse} start vertex 4
+curve 1 scheme bias fine size {goxDY_fine} coarse size {goxDY_coarse} start vertex 1
+surface 1 scheme map
+mesh surface 1
+
+# source 
+#{sDY_fine = 0.002}
+#{sDY_coarse = 0.005}
+#{sDX_coarse = 0.1}
+#{sDX_fine = 0.01}
+curve 86 scheme bias fine size {sDX_fine} coarse size {sDX_coarse} start vertex 57
+curve 87 scheme bias fine size {sDX_fine} coarse size {sDX_coarse} start vertex 58
+curve 85 88 interval size {sDX_fine}
+curve 15 scheme bias fine size {sDY_fine} coarse size {sDY_coarse} start vertex 4
+surface 19 scheme map
+mesh surface 19
+
+# drain
+#{dDY_fine = 0.002}
+#{dDY_coarse = 0.005}
+#{dDX_coarse = 0.1}
+#{dDX_fine = 0.01}
+curve 96 scheme bias fine size {dDX_fine} coarse size {dDX_coarse} start vertex 62
+curve 93 scheme bias fine size {dDX_fine} coarse size {dDX_coarse} start vertex 61
+curve 94 95 interval size {dDX_fine}
+curve 13 scheme bias fine size {dDY_fine} coarse size {dDY_coarse} start vertex 1
+surface 31 scheme map
+mesh surface 31
+
+# channel
+curve 16 4 scheme dualbias fine size {goxDX_fine} coarse size {goxDX_coarse}
+curve 15 scheme bias fine size {sDY_fine} coarse size {sDY_coarse} start vertex 4
+curve 13 scheme bias fine size {dDY_fine} coarse size {dDY_coarse} start vertex 1
+surface 7 scheme map
+mesh surface 7
+
+#{bodyDY_fine = sDY_coarse}
+#{bodyDY_coarse = 0.05}
+# body
+curve 16 28 scheme dualbias fine size {goxDX_fine} coarse size {goxDX_coarse}
+curve 25 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 9
+curve 27 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 12
+surface 13 scheme map
+mesh surface 13
+
+# source-body
+curve 87 scheme bias fine size {sDX_fine} coarse size {sDX_coarse} start vertex 58
+curve 91 scheme bias fine size {sDX_fine} coarse size {sDX_coarse} start vertex 60
+curve 88 92 interval size {dDX_fine}
+curve 51 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 28
+curve 27 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 12
+surface 25 scheme map
+mesh surface 25
+
+# drain-body
+curve 100 scheme bias fine size {sDX_fine} coarse size {sDX_coarse} start vertex 64
+curve 96 scheme bias fine size {sDX_fine} coarse size {sDX_coarse} start vertex 62
+curve 95 99 interval size {dDX_fine}
+curve 25 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 9
+curve 73 scheme bias fine size {bodyDY_fine} coarse size {bodyDY_coarse} start vertex 41
+surface 37 scheme map
+mesh surface 37
+
+#############################
+
+
+
+
+
+################################################
+# Element blocks
+################################################
+
+block 1 surface 1 
+block 1 element type quad4
+block 1 name "sio2"
+
+block 2 surface 7 13 19 25 31 37
+block 2 element type quad4
+block 2 name "silicon"
+
+export mesh 'nmosfet_msh.exo' dimension 2 overwrite

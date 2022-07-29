@@ -2,8 +2,8 @@ interpreter name nref
 
 interpreter inputLine (nref) = {nrefval}
 
-interpreter shortHelp {model parameter N_ref}
+interpreter shortHelp {Set the nref value for the Arora mobility model}
 
-interpreter longHelp {Arora model parameter N_ref}
+interpreter longHelp {set the nref value for the Arora mobility model}
 
 xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,nref,double,{nrefval}

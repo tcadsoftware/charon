@@ -11,6 +11,7 @@
 #include "Panzer_CommonArrayFactories.hpp"
 
 #include "Shards_CellTopology.hpp"
+#include "Intrepid2_HGRAD_LINE_C1_FEM.hpp"
 
 #include "Charon_Names.hpp"
 
@@ -72,6 +73,12 @@ EFFPG_DDIonLattice_CurrentDensity(
   RCP<DataLayout> edge_scalar = cellTopoInfo->edge_scalar;
   num_edges = edge_scalar->dimension(1);
   cellType = cellTopoInfo->getCellTopology();
+
+  // Get reference edge length
+  Intrepid2::Basis_HGRAD_LINE_C1_FEM<PHX::Device> lineBasis;
+  Kokkos::DynRankView<double,PHX::Device> dofCoords("dofCoords",2,1);
+  lineBasis.getDofCoords(dofCoords);
+  refEdgeLen = dofCoords(1,0)-dofCoords(0,0);
 
   // Determine if want to include the \grad_T contribution
   bTempGrad = true;  // default
@@ -150,6 +157,7 @@ EFFPG_DDIonLattice_CurrentDensity(
 
   std::string name = "EFFPG_DDIonLattice_Current_Density";
   this->setName(name);
+
 }
 
 
@@ -226,27 +234,28 @@ evaluateFields(
       // get average mobility at the center of the edge
       const ScalarT& edgeMob = mobility(cell,edge);
 
-      // get the band gap narrowing in unit of eV
-      // ScalarT dEg0 = bandgap(cell,node0) - effbandgap(cell,node0);
-      // ScalarT dEg1 = bandgap(cell,node1) - effbandgap(cell,node1);
-
-      // compute the effective potential (scaled)
-      // ScalarT effPot0 = electric_potential(cell,node0) ;
-      // ScalarT effPot1 = electric_potential(cell,node1) ;
-      // The following effPot calculation was added on 12/05/2017 by Suzey Gao
-      // ScalarT effPot0 = -intrin_fermi(cell,node0)/V0 + factor * dEg0;
-      // ScalarT effPot1 = -intrin_fermi(cell,node1)/V0 + factor * dEg1;
-      ScalarT effPot0 = -intrin_fermi(cell,node0)/V0 ;
-      ScalarT effPot1 = -intrin_fermi(cell,node1)/V0 ;
-
       // get the lattice temperature
       const ScalarT& latt0 = latt_temp(cell,node0);
       const ScalarT& latt1 = latt_temp(cell,node1);
 
       // compute average velocity at the center of the edge (parallel to the edge)
       ScalarT barEdgeVel = 0;
+
       if ( (carrType == "Electron") || (carrType == "Hole") )
       {
+        // get the band gap narrowing in unit of eV
+        // ScalarT dEg0 = bandgap(cell,node0) - effbandgap(cell,node0);
+        // ScalarT dEg1 = bandgap(cell,node1) - effbandgap(cell,node1);
+
+        // compute the effective potential (scaled)
+        // ScalarT effPot0 = electric_potential(cell,node0) ;
+        // ScalarT effPot1 = electric_potential(cell,node1) ;
+        // The following effPot calculation was added on 12/05/2017 by Suzey Gao
+        // ScalarT effPot0 = -intrin_fermi(cell,node0)/V0 + factor * dEg0;
+        // ScalarT effPot1 = -intrin_fermi(cell,node1)/V0 + factor * dEg1;
+        ScalarT effPot0 = -intrin_fermi(cell,node0)/V0 ;
+        ScalarT effPot1 = -intrin_fermi(cell,node1)/V0 ;
+
         barEdgeVel = edgeMob*(effPot1-effPot0) /edgeLen - diffSign*edgeMob*(latt1 - latt0) /edgeLen;
 
         // Note that the barEdgeVel computed above should be the negative of the coefficient of the carrier density in the DDLattice equations.
@@ -272,12 +281,18 @@ evaluateFields(
       }
 
       // loop over integration points and set current density
+      //
+      // In this stabilized formulation edge values are mapped to the interior
+      // of the element using HCurl basis functions. In order for the values
+      // to scale properly with the definitions of the HCurl and HGrad basis
+      // functions in Intrepid2 as of 11/2020 we must divide by the reference
+      // edge length. 
       for (int ip = 0; ip < num_ips; ++ip)
       {
         for (int dim = 0; dim < num_dims; ++dim)
         {
           current_density(cell, ip, dim) += ( carrier_density(cell,node1)*edgeCoef1 - carrier_density(cell,node0)*edgeCoef0 ) *
-                                            ( workset.bases[hcurl_basis_index])->basis_vector(cell, edge, ip, dim);
+                                            ( workset.bases[hcurl_basis_index])->basis_vector(cell, edge, ip, dim)/refEdgeLen;
         }
       }
 

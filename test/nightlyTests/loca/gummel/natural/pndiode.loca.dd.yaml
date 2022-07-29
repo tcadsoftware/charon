@@ -10,6 +10,7 @@ ANONYMOUS:
     silicon: Semiconductor
   Assembly:
     Workset Size: 50
+    Use Tpetra: true
   Physics Blocks:
     Semiconductor:
       child0:
@@ -86,6 +87,7 @@ ANONYMOUS:
   Options:
     Write Volume Assembly Graphs: false
     Volume Assembly Graph Prefix: charon_
+    Output Timings: false
   Solution Control:
     Piro Solver: LOCA
     Compute Sensitivities: false
@@ -97,15 +99,15 @@ ANONYMOUS:
         Method: Constant
       Stepper:
         Continuation Method: Natural
-        Initial Value: 0.00000000000000000e+00
+        Initial Value: 0.0
         Continuation Parameter: Varying Voltage
         Max Steps: 20
-        Max Value: 1.00000000000000000e+00
-        Min Value: 0.00000000000000000e+00
+        Max Value: 1.0
+        Min Value: 0.0
         Compute Eigenvalues: false
       Step Size:
-        Initial Step Size: 1.00000000000000006e-01
-        Aggressiveness: 0.00000000000000000e+00
+        Initial Step Size: 0.1
+        Aggressiveness: 0.0
     NOX:
       Direction:
         Method: Newton
@@ -125,31 +127,26 @@ ANONYMOUS:
                       Size of Krylov Subspace: 200
                       Output Frequency: 10
                     Max Iterations: 300
-                    Tolerance: 9.99999999999999980e-13
-                Belos:
-                  Solver Type: Block GMRES
-                  Solver Types:
-                    Block GMRES:
-                      Convergence Tolerance: 9.99999999999999980e-13
-                      Output Frequency: 10
-                      Output Style: 1
-                      Verbosity: 33
-                      Maximum Iterations: 100
-                      Block Size: 1
-                      Num Blocks: 20
-                      Flexible Gmres: false
-              Preconditioner Type: Ifpack
+                    Tolerance: 1.0e-12
+              Preconditioner Type: Ifpack2
+
               Preconditioner Types:
+
+                Ifpack2:
+                  Prec Type: RILUK
+                  Ifpack2 Settings:
+                    'fact: iluk level-of-fill': 1
+
                 Ifpack:
                   Overlap: 1
                   Prec Type: ILU
                   Ifpack Settings:
-                    'fact: drop tolerance': 0.00000000000000000e+00
-                    'fact: ilut level-of-fill': 1.00000000000000000e+00
+                    'fact: drop tolerance': 0.0
+                    'fact: ilut level-of-fill': 1.0
                     'fact: level-of-fill': 1
       Line Search:
         Full Step:
-          Full Step: 1.00000000000000000e+00
+          Full Step: 1.0
         Method: Full Step
       Nonlinear Solver: Line Search Based
       Printing:
@@ -172,21 +169,20 @@ ANONYMOUS:
         Combo Type: OR
         Number of Tests: 2
         Test 0:
-          Test Type: NormF
-          Tolerance: 1.00000000000000004e-10
+          Test Type: Combo
+          Combo Type: AND
+          Number of Tests: 2
+          Test 0:
+            Test Type: NormF
+            Tolerance: 1.0e-8
+          Test 1:
+            Test Type: NormWRMS
+            Tolerance: 1.0
+            Relative Tolerance: 1.0e-12
+            Absolute Tolerance: 1.0e-16
+            alpha: 0.0
+            beta: 1.0
         Test 1:
           Test Type: MaxIters
           Maximum Iterations: 30
-    Rythmos:
-      Num Time Steps: 10
-      Final Time: 1.00000000000000006e-01
-      Stepper Type: Backward Euler
-      Rythmos Stepper:
-        VerboseObject:
-          Verbosity Level: medium
-      Stratimikos: { }
-      Rythmos Integration Control: { }
-      Rythmos Integrator:
-        VerboseObject:
-          Verbosity Level: medium
 ...

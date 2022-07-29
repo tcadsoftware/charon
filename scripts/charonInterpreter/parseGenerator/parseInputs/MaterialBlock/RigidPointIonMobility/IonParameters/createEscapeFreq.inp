@@ -1,0 +1,9 @@
+interpreter name EscapeFreq 
+
+interpreter inputLine (escape frequency) = {freq}
+
+interpreter shortHelp {The escape frequency in Hz for the RigidPointIon mobility model}
+
+interpreter longHelp {The escape frequency in Hz for the RigidPointIon mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Escape Frequency,double,{freq}

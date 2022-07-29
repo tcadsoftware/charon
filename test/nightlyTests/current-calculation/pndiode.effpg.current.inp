@@ -2,10 +2,11 @@
 Import State File result_pndiode_equ.exo at index 1
 
 start output parameters
-      Output State File result_pndiode_effpg_current.exo
+      Output State File result_pndiode_effpg_hocurr.exo
 end output parameters
 
 Assembly Workset = 50
+tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e16
 
@@ -35,7 +36,7 @@ start Material Block siliconParameter
       fixed mobility for holes is 500
 end Material Block siliconParameter
 
-BC is ohmic for anode on silicon fixed at 0.6
+BC is ohmic for anode on silicon fixed at 0.7
 BC is ohmic for cathode on silicon fixed at 0.0
 
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
@@ -43,8 +44,8 @@ initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 initial Conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1.0e-9
-      max nonlinear iterations = 15
-      line search method is backtrack
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

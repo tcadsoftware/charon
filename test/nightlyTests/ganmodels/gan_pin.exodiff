@@ -1,5 +1,13 @@
 COORDINATES absolute 1.0e-14
-TIME STEPS absolute 1.0e-14
+
+# Time steps are really continuation steps and they can vary from
+# platform to platform. Right now if the final step number is more or
+# less than 10 away from the "gold" result then an error will be
+# flagged. So the if the gold has 63 continuation steps and the run to
+# be compared takes 74 steps this will fail, whereas if the compared
+# takes 72 steps it will pass, assuming it passes other tests. Note that
+# only the last step is compared during exodiff for this test.
+TIME STEPS absolute 10.1
 GLOBAL VARIABLES 
 	 ContinuationParameter relative 1.0e-3
 	 cathode_gan_Current relative 1.0e-3 floor 1.25e-06

@@ -1,0 +1,26 @@
+interpreter name TransientTimeStepping
+
+interpreter shortHelp {Time of time stepping to perform.}
+interpreter longHelp {Time of time stepping to perform.}
+
+interpreter inputLine (time step size is) [ (fixed at) {fixStepSize} [ (variable) ]]
+
+# rythmos
+xmlOptional (fixed at) Charon->Solution Control->Rythmos->Rythmos Integration Control,Take Variable Steps,bool,false
+xmlOptional (fixed at) Charon->Solution Control->Rythmos->Rythmos Integration Control,Fixed dt,double,{fixStepSize}
+
+xmlOptional (variable) Charon->Solution Control->Rythmos->Rythmos Integration Control,Take Variable Steps,bool,true
+xmlOptional (variable) Charon->Solution Control->Rythmos,Stepper Type,string,BDF
+xmlOptional (variable) Charon->Solution Control->Rythmos,Step Control Strategy Type,string,ImplicitBDFRamping
+
+# tempus
+xmlOptional (fixed at) Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Strategy Type,string,Constant
+xmlOptional (fixed at)  Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Initial Time Step,double,{fixStepSize}
+
+xmlOptional (variable) Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Strategy Type,string,Basic VS
+
+xmlOptional (variable) Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Reduction Factor,double,0.2
+xmlOptional (variable) Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Amplification Factor,double,1.5
+
+xmlOptional (variable) Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Minimum Value Monitoring Function,double,0.15
+xmlOptional (variable)  Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Maximum Value Monitoring Function,double,1.50

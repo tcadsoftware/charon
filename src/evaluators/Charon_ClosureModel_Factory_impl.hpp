@@ -40,6 +40,9 @@
 #include "Charon_BandGap_TempDep.hpp"
 #include "Charon_Intrinsic_FermiEnergy.hpp"
 #include "Charon_CondVale_Band.hpp"
+#include "Charon_BandGap_Nitride.hpp"
+#include "Charon_Permittivity_Nitride.hpp"
+#include "Charon_Relative_Permittivity.hpp"
 
 // Intrinsic conc models
 #include "Charon_IntrinsicConc_Default.hpp"
@@ -48,6 +51,7 @@
 #include "Charon_IntrinsicConc_Slotboom.hpp"
 #include "Charon_IntrinsicConc_Harmon.hpp"
 #include "Charon_EffectiveDOS_Simple.hpp"
+#include "Charon_EffectiveDOS_Nitride.hpp"
 
 // Mobility models
 #include "Charon_Mobility_Default.hpp"
@@ -72,6 +76,8 @@
 #include "Charon_SRHLifetime_Function.hpp"
 #include "Charon_RecombRate_SRH.hpp"
 #include "Charon_RecombRate_TrapSRH.hpp"
+#include "Charon_RecombRate_DynamicTraps.hpp"
+#include "Charon_QuasiFermiLevels.hpp"
 #include "Charon_RecombRate_Defect_Cluster.hpp"
 #include "Charon_RecombRate_Empirical_Defect.hpp"
 #include "Charon_RecombRate_Radiative.hpp"
@@ -88,6 +94,7 @@
 #include "Charon_Avalanche_CrowellSze.hpp"
 #include "Charon_Ionization_ParticleStrike.hpp"
 #include "Charon_KimptonTID.hpp"
+#include "Charon_Band2Band_Tunneling_Local.hpp"
 
 // Initial conditions
 #include "Charon_IC_Equilibrium_Density.hpp"
@@ -118,6 +125,8 @@
 // Comparison of computed to analytic results
 #include "Charon_AnalyticComparison.hpp"
 #include "Charon_MMS_AnalyticSolutions.hpp"
+#include "Charon_NormCalculation.hpp" //NEW ADDITION
+#include "Charon_ManufacturedSolution.hpp" //NEW ADDITION
 
 // Miscellaneous
 #include "Charon_FEM_GradNegPotential.hpp"
@@ -129,12 +138,14 @@
 #include "Charon_ThermodiffCoeff_Default.hpp"
 #include "Charon_ThermodiffCoeff_Custom.hpp"
 #include "Charon_Vector.hpp"
+#include "Charon_Initial_PotentialGrad.hpp"
 
 // Panzer
 #include "Panzer_BasisIRLayout.hpp"
 #include "Panzer_CellTopologyInfo.hpp"
 #include "Panzer_Constant.hpp"
 #include "Panzer_DOF.hpp"
+#include "Panzer_DOFGradient.hpp"
 #include "Panzer_GlobalStatistics.hpp"
 #include "Panzer_IntegrationRule.hpp"
 #include "Panzer_STK_GatherFields.hpp"
@@ -172,16 +183,28 @@
   typedef panzer::IntegrationRule IR;
 #define CHARON_USINGS_ETC_DEFINE_NAMES                                        \
   CHARON_USINGS_ETC_DEFINE_NONE                                               \
-  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");
+  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");    \
+  const RCP<const Names>& inp_names =                                         \
+    Teuchos::rcp(new const charon::Names(1,names->prefix(),                   \
+                 names->discfields(),names->discsuffix()));
 #define CHARON_USINGS_ETC_DEFINE_BIRL_NAMES                                   \
   CHARON_USINGS_ETC_DEFINE_BIRL                                               \
-  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");
+  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");    \
+  const RCP<const Names>& inp_names =                                         \
+    Teuchos::rcp(new const charon::Names(1,names->prefix(),                   \
+                 names->discfields(),names->discsuffix()));
 #define CHARON_USINGS_ETC_DEFINE_IR_NAMES                                     \
   CHARON_USINGS_ETC_DEFINE_IR                                                 \
-  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");
+  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");    \
+  const RCP<const Names>& inp_names =                                         \
+    Teuchos::rcp(new const charon::Names(1,names->prefix(),                   \
+                 names->discfields(),names->discsuffix()));
 #define CHARON_USINGS_ETC_DEFINE_BIRL_IR_NAMES                                \
   CHARON_USINGS_ETC_DEFINE_BIRL_IR                                            \
-  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");
+  const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");    \
+  const RCP<const Names>& inp_names =                                         \
+    Teuchos::rcp(new const charon::Names(1,names->prefix(),                   \
+                 names->discfields(),names->discsuffix()));                   \
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -213,6 +236,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
   }
   const string& modelName(models.name());
   const ParameterList& myModels(models.sublist(modelId));
+ 
 
   // **************************************************************************
   // Build and Register Charon Parameters->Closure Models.
@@ -236,6 +260,9 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     Material_Properties& matProperty = Material_Properties::getInstance();
     const string& matName(myModels.get<string>("Material Name"));
     matProperty.validateMaterialName(matName);
+   
+    // setup mole fraction materials
+    setupMoleFraction(myModels);
 
     // Make sure charon::Names is available.
     if (not defaults.isType<RCP<const charon::Names>>("Names"))
@@ -252,6 +279,11 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         return evaluators;
     }
     const RCP<const Names>& names = defaults.get<RCP<const Names>>("Names");
+    const RCP<const Names>& inp_names = 
+      Teuchos::rcp(new const charon::Names(1,names->prefix(),names->discfields(),names->discsuffix()));
+    // Note for harmonic balance support: 
+    // when referring to input deck naming, use inp_names
+    // when referring to evaluated field names, use names; these fields will have the _TPi_ suffix required to perform HB
 
     // Obtain information on the input equation set
     const ParameterList& iesParams(defaults.sublist("Options"));
@@ -274,12 +306,12 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
       bgn = iesParams.get<string>("Band Gap Narrowing");
     if (bgn == "On")
     {
-      if (not myModels.isSublist(names->field.intrin_conc))
+      if (not myModels.isSublist(inp_names->field.intrin_conc))
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
           "Error! Intrinsic Concentration MUST be specified when Band Gap "   \
           "Narrowing = On");
       const ParameterList& niParamList(
-        myModels.sublist(names->field.intrin_conc));
+        myModels.sublist(inp_names->field.intrin_conc));
       if (niParamList.isType<double>("Value"))
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
           "Error! Intrinsic Concentration Value MUST be string when Band "    \
@@ -386,15 +418,17 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
       withIonizDon = true;
     } // end of "Check the Incomplete Ionization Donor sublist".
 
-    // determine the driving force for Avalanche and TrapSRH models
+    // determine the driving force for Avalanche, TrapSRH, and B2BT models
     string drForce("EffectiveField");
     if (iesParams.isParameter("Driving Force"))
       drForce = iesParams.get<string>("Driving Force");
+
+    // driving force checking for Avalanche model
     if (iesParams.isParameter("Avalanche") and
       iesParams.get<string>("Avalanche") == "On") {
       // when the avalanche model is turned on, check if its driving force is the same
       // with the one in Physics section
-      if (not myModels.isSublist(names->field.avalanche_rate)) {
+      if (not myModels.isSublist(inp_names->field.avalanche_rate)) {
         // in this case the default ava model will the created with a
         // default driving force
         if (drForce != "EffectiveField")
@@ -403,7 +437,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
             "Driving Force");
       } else {
         // retrieve avalanche model params
-        const ParameterList& ava_param_def = myModels.sublist(names->field.avalanche_rate);
+        const ParameterList& ava_param_def = myModels.sublist(inp_names->field.avalanche_rate);
         if (not ava_param_def.isParameter("Driving Force")) {
           // default driving force for Ava model
           if (drForce != "EffectiveField")
@@ -430,6 +464,38 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
       }
     }
 
+    // determine the driving force for Band2Band Tunneling models
+    if (iesParams.isParameter("Band2Band Tunneling") and
+        iesParams.get<string>("Band2Band Tunneling") == "On") 
+    {
+      // when the Band2Band Tunneling model is turned on, check if its driving force is consistent
+      // with the one in Physics section
+      if (myModels.isSublist(names->field.bbt_rate)) 
+      {
+        // retrieve Band2Band Tunneling model params
+        const ParameterList& bbt_param_def = myModels.sublist(names->field.bbt_rate);
+        
+        if (not bbt_param_def.isType<string>("Driving Force"))
+            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+            "Error! Band2Band Tunneling model Driving Force must be a string");
+
+        // check if Band2Band Tunneling model driving force coincide with the one in Physics block
+        std::map<string, string> drForces_bbt = {
+          {"GradQuasiFermi", "GradQuasiFermi"},
+          {"EffectiveField", "EffectiveField"},
+          {"GradPotential", "GradPotential"},
+          {"EffectiveFieldParallelJ", "EffectiveField"},
+          {"EffectiveFieldParallelJtot", "EffectiveField"},
+          {"GradPotentialParallelJ", "GradPotential"},
+          {"GradPotentialParallelJtot", "GradPotential"}
+        };
+
+        if (drForces_bbt[bbt_param_def.get<string>("Driving Force")] != drForce)
+           TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+           "Error! Driving Force in Physics Block must coincide with Band2Band Tunneling model Driving Force");
+      }
+    }
+
     // Check if Band Gap and Electron Affinity are given in the input xml.
     bool isBandGap(false), isTempDepBG(false), isAffinity(false);
     if (myModels.isSublist("Band Gap"))
@@ -453,6 +519,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     string FDFormula("Schroeder");
     if (iesParams.isParameter("FD Formula"))
       FDFormula = iesParams.get<string>("FD Formula");
+
 
     // Check if eqnSetType = Lattice and Heat Generation = Analytic.
     bool isHGAnalytic(false);
@@ -577,6 +644,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
           (key == names->key.radiative_recombination        )  or
           (key == names->key.auger_recombination            )  or
           (key == names->key.trap_srh_recombination         )  or
+	  (key == names->key.dynamic_traps_recombination    )  or
           (key == names->key.defect_cluster_recombination   )  or
           (key == names->key.empirical_defect_recombination )  or
           (key == names->key.particle_strike                )  or
@@ -588,7 +656,8 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
       if (key != names->key.material_name)
       {
 	//std::cout << "The frequency domain suffix is currently: '" << m_fd_suffix << "'" << std::endl;
-	//std::cout << "The current key_pure value is: '" << key_pure << "' and the modified current key value is: '" << key << "'." << std::endl; 
+	//std::cout << "The current key_pure value is: '" << key_pure 
+        //          << "' and the modified current key value is: '" << key << "'." << std::endl; 
         //std::cout << "For reference, 'names->field.doping' has value: " << names->field.doping << std::endl;
         const Teuchos::ParameterEntry& entry(modelIt->second);
         const ParameterList& plist(Teuchos::getValue<ParameterList>(entry));
@@ -597,19 +666,45 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         {
           // Constant Relative Permittivity is specified (unitless, no
           // scaling).
-          if (key == names->field.rel_perm)
+          if (key == names->field.rel_perm) {
+            /*
             found = createConstant(evaluators, defaults, names->field.rel_perm,
               plist.get<double>("Value"));
+	    */
+	    if (!matProperty.hasMoleFracDependence(matName)) {
+	      found = createConstant(evaluators, defaults, names->field.rel_perm,
+				     plist.get<double>("Value"));
+ 	    } else {
+	      // with mole dependence
+	      found = createRelPermittivity(evaluators, defaults, matName, myModels);
+	    }
+	  }
 
           // Constant Band Gap is specified (in [eV], no scaling).
           if (key == names->field.band_gap)
+          {
             found = createConstant(evaluators, defaults, names->field.band_gap,
               plist.get<double>("Value"));
+        
+            // set eff_band_gap to band_gap for insulators
+            const string matType(matProperty.getMaterialType(matName));
+            if (matType == "Insulator")
+              found &= createConstant(evaluators, defaults, names->field.eff_band_gap,
+                plist.get<double>("Value"));
+          }
 
           // Constant Electron Affinity is specified (in [eV], no scaling).
           if (key == names->field.affinity)
+          {
             found = createConstant(evaluators, defaults, names->field.affinity,
               plist.get<double>("Value"));
+
+            // set eff_affinity to affinity for insulators
+            const string matType(matProperty.getMaterialType(matName)); 
+            if (matType == "Insulator")
+              found &= createConstant(evaluators, defaults, names->field.eff_affinity,
+                plist.get<double>("Value"));
+          }
 
           // Constant Intrinsic Concentration is specified.
           if (key == names->field.intrin_conc)
@@ -649,6 +744,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
           matProperty.setPropertyValue(matName, key_pure, propertyValue);
           // freqDom note: we use the unsuffixed key_pure (instead of key) to grab the name from the PL
         } // end of if (plist.isType<double>("Value"))
+
         if (plist.isType<string>("Value"))
         {
           const string value(plist.get<string>("Value"));
@@ -672,6 +768,11 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
             createDOF(evaluators, defaults, key, ir);
           }
 
+
+          // Save Initial GRAD_ELECTRIC_POTENTIAL to a Phalanx field
+          else if ((key == names->dof.phi) and (value == "Initial PotentialGrad"))
+            found = createInitialPotentialGrad(evaluators, defaults, userData, cvfem_data);  
+
           //*******************************************************************
           // Instantiate doping related evaluators
           //*******************************************************************
@@ -690,8 +791,17 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
 	    }
 
           //*******************************************************************
+          // Instantiate Permittivity related evaluators
+          //*******************************************************************
+          else if ((key == names->field.rel_perm) and (value == "Nitride"))
+            found = createPermittivityNitride(evaluators, defaults, matName, myModels);
+          //*******************************************************************
           // Instantiate band structure related evaluators
           //*******************************************************************
+
+          // Build the BandGap_Nitride evaluator.
+          else if ((key == names->field.band_gap) and (value == "Nitride"))
+            found = createBandGapNitride(evaluators, defaults, matName, myModels);
 
           // Build the BandGap_TempDep evaluator.
           else if ((key == names->field.band_gap) and (value == "TempDep"))
@@ -719,8 +829,13 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
               myModels);
 
           // Build the EffectiveDOS_Simple evaluator.
-          else if ((key == "Effective DOS") and (value == "Simple"))
+          else if ((key == "Effective DOS") and (value == "Simple")) 
             found = createEffectiveDOSSimple(evaluators, defaults, matName,
+              myModels);
+
+          // Build the Effective_DOS_Nitride evaluator.
+          else if ((key == "Effective DOS") and (value == "Nitride"))
+            found = createEffectiveDOSNitride(evaluators, defaults, matName,
               myModels);
 
           //*******************************************************************
@@ -758,12 +873,12 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
           // Build the Mobility_Arora evaluator for Electron.
           else if ((key == names->field.elec_mobility) and (value == "Arora"))
             found = createMobilityArora(evaluators, defaults,
-              CARRIER_TYPE_ELECTRON, matName, myModels);
+              CARRIER_TYPE_ELECTRON, matName, myModels, false);
 
           // Build the Mobility_Arora evaluator for Hole.
           else if ((key == names->field.hole_mobility) and (value == "Arora"))
             found = createMobilityArora(evaluators, defaults,
-              CARRIER_TYPE_HOLE, matName, myModels);
+              CARRIER_TYPE_HOLE, matName, myModels, false);
 
           // Build the Mobility_Masetti evaluator for Electron.
           else if ((key   == names->field.elec_mobility)  and
@@ -909,6 +1024,16 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
               eqnSetType, myModels, cvfem_data);
 
           //*******************************************************************
+          // Instantiate Band2Band Tunneling generation related evaluators.
+          //*******************************************************************
+
+           // Build the Band2Band_Tunneling_Local evaluator.
+           else if ((key == names->field.bbt_rate) and
+                    (value == "Local"))
+             found = createBand2BandTunnelingLocal(evaluators, defaults, matName,
+               eqnSetType, myModels, cvfem_data);
+
+          //*******************************************************************
           // Instantiate thermal related evaluators.
           //*******************************************************************
 
@@ -991,7 +1116,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
 
           // Build the MoleFraction_Function evaluator.
           else if ((key == names->field.mole_frac) and (value == "Function"))
-            found = createMoleFractionFunction(evaluators, defaults, myModels);
+            found = createMoleFractionFunction(evaluators, defaults, matName, myModels);
 
           //*******************************************************************
           // Instantiate the bulk fixed charge evaluator.
@@ -1059,8 +1184,12 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     {
       const string matType(matProperty.getMaterialType(matName));
       if ((matType == "Semiconductor") or (matType == "Insulator"))
+      {
         createConstant(evaluators, defaults, names->field.band_gap,
           matProperty.getPropertyValue(matName, "Band Gap"));
+        createConstant(evaluators, defaults, names->field.eff_band_gap,
+          matProperty.getPropertyValue(matName, "Band Gap"));
+      }
     }
 
     // When neither Electron Affinity nor TempDep Band Gap is given, use the
@@ -1069,15 +1198,18 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     {
       const string matType(matProperty.getMaterialType(matName));
       if ((matType == "Semiconductor") or (matType == "Insulator"))
+      {
         createConstant(evaluators, defaults, names->field.affinity,
           matProperty.getPropertyValue(matName, "Electron Affinity"));
+        createConstant(evaluators, defaults, names->field.eff_affinity,
+          matProperty.getPropertyValue(matName, "Electron Affinity"));
+      }
     }
 
     // When neither Band Gap nor Intrinsic Concentration is specified, use the
     // ni value from charon::Material_Properties.
     //if ((not myModels.isSublist(names->field.intrin_conc))  and
     if ((not myModels.isSublist("Intrinsic Concentration"))  and
-
         (not isBandGap                                   ))
     {
       const string matType(matProperty.getMaterialType(matName));
@@ -1218,6 +1350,12 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     if (trapSrhRecomb == "On")
       createRecombRateTrapSRH(evaluators, defaults, matName, myModels, eqnSetType, drForce, cvfem_data);
 
+    string dynamicTrapsRecomb("Off");
+    if (iesParams.isParameter("Dynamic Traps"))
+      dynamicTrapsRecomb = iesParams.get<string>("Dynamic Traps");
+    if (dynamicTrapsRecomb == "On")
+      createRecombRateDynamicTraps(evaluators, defaults, matName, myModels, eqnSetType, drForce, cvfem_data);
+
     // Build the RecombRate_Defect_Cluster evaluator when Defect Cluster = On
     // in the Physics Blocks.
     string defectClusterRecomb("Off");
@@ -1269,6 +1407,14 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         (not myModels.isSublist(names->field.avalanche_rate)))
       createAvalancheVanOverstraeten(evaluators, defaults, matName, cvfem_data);
 
+    // When Band2Band Tunneling is NOT specified, throw  error message and stop simulation
+    string bbtGen("Off");
+    if (iesParams.isParameter("Band2Band Tunneling"))
+      bbtGen = iesParams.get<string>("Band2Band Tunneling");
+    if ((bbtGen == "On") and (not myModels.isSublist(names->field.bbt_rate)))
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+        std::endl << "Error: Band2Band Tunneling model is not found!");
+
     // Is Optical Generation on?
     string optGen("Off");
     if (iesParams.isParameter("Optical Generation"))
@@ -1278,23 +1424,24 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         std::endl << "Error: Optical Generation model is not found!");
 
     // Build the RecombRate_Total evaluator to sum up all recomb. rates.
-    if (matProperty.getMaterialType(matName) == "Semiconductor")
+    const string matType(matProperty.getMaterialType(matName));
+    if (matType == "Semiconductor")
       createRecombRateTotal(evaluators, defaults, srhRecomb, trapSrhRecomb,
         defectClusterRecomb, empiricalDefectRecomb,
         ionizationParticleStrike, radRecomb, augerRecomb, optGen,
-        avaGen, eqnSetType, cvfem_data);
+        avaGen, bbtGen, eqnSetType, cvfem_data);
 
     //*************************************************************************
     // Build the Intrinsic_FermiEnergy evaluator to make Ei available.
     //*************************************************************************
-    if (matProperty.getMaterialType(matName) == "Semiconductor")
-      createIntrinsicFermiEnergy(evaluators, defaults, eqnSetType);
+    if (matType == "Semiconductor")
+      createIntrinsicFermiEnergy(evaluators, defaults);
 
     //*************************************************************************
     // Build the CondVale_Band evaluator to make Ec and Ev available.
     //*************************************************************************
-    if (matProperty.getMaterialType(matName) == "Semiconductor")
-      createCondValeBand(evaluators, defaults, eqnSetType);
+    if ((matType == "Semiconductor") or (matType == "Insulator"))
+      createCondValeBand(evaluators, defaults);
 
     //*************************************************************************
     // Build the Degeneracy_Factor evaluator to make the field available.
@@ -1307,7 +1454,6 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     //*************************************************************************
     if (matProperty.getMaterialType(matName) == "Semiconductor")
       createSpaceCharge(evaluators, defaults);
-
 
     //*************************************************************************
     // Instantiate material-independent evaluators.
@@ -1337,7 +1483,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     if (models.isParameter("Reference Material"))
       refMaterial = models.get<string>("Reference Material");
     bool foundRefMat(false);
-
+    
     // Loop over modelIds to compute Reference Energy for all the modelIds.
     for (ParameterList::ConstIterator modelIt = models.begin();
       modelIt != models.end(); ++modelIt)
@@ -1348,9 +1494,7 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
       if (models.isSublist(key))
       {
         const ParameterList& submodels = models.sublist(key);
-
-        // Only material models, with "Material Name" parameters, should be
-        // checked, not other models like "MMS Parameters".
+        
         if ((submodels.isParameter("Material Name")               )  and
             (submodels.get<string>("Material Name") == refMaterial))
         {
@@ -1361,11 +1505,24 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         else if ((submodels.isParameter("Material Name")         )  and
             (submodels.get<string>("Material Name") != refMaterial))
         {
+          /*
           if (eqnSetType.find("Laplace") != string::npos) 
           {
             foundRefMat = true;
             createReferenceEnergy(evaluators, defaults, refMaterial, submodels);
-          }
+          } 
+          */
+	  if (eqnSetType.find("Laplace") != string::npos) 
+          {
+            foundRefMat = true;
+            createReferenceEnergy(evaluators, defaults, refMaterial, submodels);
+          } else {
+            if (matProperty.hasMoleFracDependence(matName)) {
+	      matProperty.validateMaterialName(refMaterial);
+	      foundRefMat = true;
+	      createReferenceEnergy(evaluators, defaults, refMaterial, submodels);
+	    }
+	  }
         }
 
         // Parse the global MMS parameters (applied to all materials).  These
@@ -1374,12 +1531,14 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         else if ((boost::iequals(key, "Global MMS Parameters"))  and
                  (typeid(EvalT) == typeid(Traits::Residual)   ))
         {
+
           for (ParameterList::ConstIterator smodIt=submodels.begin();
             smodIt != submodels.end(); ++smodIt)
           {
             ParameterList in =
               Teuchos::getValue<ParameterList>(smodIt->second);
             const string value(in.get<string>("Value"));
+
             if (boost::iequals(smodIt->first, "Global Statistics"))
               createGlobalStatistics(evaluators, in, value, ir, globalData,
                 userData, fm);
@@ -1402,6 +1561,41 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
                 "\" specified in Closure Models section of the input file");
           }
         } // end of else if for Global MMS Parameters section
+
+        
+        // Parse the global MMS parameters (applied to all materials).  These
+        // quantities are only relevant for scalar evaluations; no derivatives
+        // are required.
+        else if ((boost::iequals(key, "Global Norm"))  and
+                 (typeid(EvalT) == typeid(Traits::Residual)   ))
+        {
+          for (ParameterList::ConstIterator smodIt=submodels.begin();
+            smodIt != submodels.end(); ++smodIt)
+          {
+            ParameterList in =
+              Teuchos::getValue<ParameterList>(smodIt->second);
+            const string value(in.get<string>("Value"));
+            if (boost::iequals(smodIt->first, "Norm Calculation: L2"))
+              createNormCalculationL2(evaluators, defaults, value, in,
+                ir, userData, globalData, fm);
+            else if (boost::iequals(smodIt->first, "Norm Calculation: H1"))
+              createNormCalculationH1(evaluators, defaults, value, in,
+                ir, userData, globalData, fm);
+            else if (boost::iequals(smodIt->first, "Manufactured Solution"))
+              createManufacturedSolution(evaluators, defaults, value, in,
+                ir, userData, globalData, fm);
+            else if (boost::iequals(smodIt->first, "Norm Calculation: L2 Error"))
+              createNormCalculationL2Error(evaluators, defaults, value, in,
+                ir, userData, globalData, fm);
+            else if (boost::iequals(smodIt->first, "Norm Calculation: H1 Error"))
+              createNormCalculationH1Error(evaluators, defaults, value, in,
+                ir, userData, globalData, fm);
+            else
+              TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+                "Unknown Norm Parameter (List) \"" << smodIt->first <<
+                "\" specified in Closure Models section of the input file");
+          }
+        } // end of Global Norms section
       }  // end of if (models.isSublist(key))
     }  // end of loop over modeIds
 
@@ -1470,11 +1664,12 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
     {
       bool found(false);
       const string key(modelIt->first);
+     
       const Teuchos::ParameterEntry& entry(modelIt->second);
       const ParameterList& plist(Teuchos::getValue<ParameterList>(entry));
+
       if (plist.isType<double>("Value"))
-        found = createConstant(evaluators, defaults, key,
-          plist.get<double>("Value"));
+        found = createConstant(evaluators, defaults, key, plist.get<double>("Value"));
 
       TEUCHOS_TEST_FOR_EXCEPTION(not plist.isParameter("Value"),
         std::logic_error, "Error!  The model \"" + modelId +
@@ -1485,7 +1680,8 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
       {
         const string value(plist.get<string>("Value"));
 
-        // Check to see it is user data.                                         // JMG:  What needs to happen here?  12/16/2016.
+        // Check to see it is user data.                                  
+        // JMG:  What needs to happen here?  12/16/2016.
         if (value == "User Data")
         {
           //TODO
@@ -1497,16 +1693,13 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
 
         // Read from Exodus File.
         else if (value == "Exodus File")
-	{
           found = createGatherScaledFields(evaluators, defaults, key, userData);
-	}
 
         // Read "Input DOF Name" from Exodus File and map it to "DOF Name".
         else if (value == "Remap")
         {
           const string inputDOFName(plist.get<string>("Input DOF Name"));
-          found = createGatherScaledFields(evaluators, defaults, inputDOFName,
-            userData);
+          found = createGatherScaledFields(evaluators, defaults, inputDOFName,userData);
           found &= createICRemap(evaluators, defaults, key, inputDOFName);
         }
 
@@ -1555,14 +1748,68 @@ charon::ClosureModelFactory<EvalT>::buildClosureModels(
         // i.e., n0 = nie*exp(-Ei/kbT) and p0 = nie*exp(Ei/kbT).
         else if (value == "Equilibrium Density")
 	{
-          found = createICEquilibriumDensity(evaluators, defaults, key, plist);
+	  found = createICEquilibriumDensity(evaluators, defaults, key, plist);
 	}
 
-        else if (value == "Equilibrium Potential")
+        else if (value.substr(0,21) == "Equilibrium Potential")
 	{
-	  found = createICEquilibriumPotential(evaluators, defaults, key, userData);
+	  string SemBlockIds;
+	  Teuchos::RCP<std::vector<string>> semBlocks = rcp(new vector<string>); 
+	  if(value.substr(0,21).length() < value.length()) {
+	    Teuchos::RCP<std::map<string,string>> block_mat = 
+	      userData.get<Teuchos::RCP<std::map<string,string>>>("block2mat");
+	    Material_Properties& matProperty = Material_Properties::getInstance();
+	    const string matType(matProperty.getMaterialType(
+			(*block_mat)[defaults.get<string>("Block ID")]));      
+	    if (matType != "Insulator") {
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+					 "Error: SemBlockIds can only be specified in Insulators!");
+	    }
+	    size_t pos = value.find("SemBlockIds");
+	    if (pos != string::npos) {
+	      string tmp =  value.substr(pos,value.length());
+	      size_t pos1 = tmp.find("=");
+	      if (pos1 != string::npos) {
+		SemBlockIds = tmp.substr(pos1+1,tmp.length());
+	        // trim whitespaces
+		size_t p = SemBlockIds.find_first_not_of(" \t");
+		SemBlockIds.erase(0, p);
+		p = SemBlockIds.find_last_not_of(" \t");
+		if (string::npos != p)
+		  SemBlockIds.erase(p+1);
+		// strip off paranthesis
+		SemBlockIds.erase(0,1);
+		SemBlockIds.erase(SemBlockIds.length()-1,1); 
+		stringstream ss(SemBlockIds); 
+		while (ss.good()) { 
+		  string substr; 
+		  getline(ss, substr, ','); 
+		  semBlocks->push_back(substr); 
+		} 
+		
+		// validate blocks
+		for(size_t kk=0; kk < semBlocks->size(); kk++) {
+		  const string matType1(matProperty.getMaterialType(
+				(*block_mat)[(*semBlocks)[kk]])); 
+		  if (matType1 != "Semiconductor") {
+		    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+			  "Error: " << (*semBlocks)[kk] << " must be a semiconductor block!");
+		  }
+		}
+	      } else {
+		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+					 "Error: SemBlockIds= must be specified!");
+	      }
+	    } else {
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+					 "Error: SemBlockIds must be specified!");
+	    }
+	    found = createICEquilibriumPotential(evaluators, defaults, key, userData, semBlocks);
+	  } else {
+            found = createICEquilibriumPotential(evaluators, defaults, key, userData, semBlocks);
+	  }
 	}
-
+      
         // Build the IC_Gauss evaluator.
         else if (value == "Gauss")
           found = createICGauss(evaluators, defaults, key, plist);
@@ -2030,7 +2277,82 @@ createDOF(
   return true;
 } // end of createDOF()
 
-///////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
+//
+//  createDOFGradient()
+//
+///////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createDOFGradient(
+  EvaluatorVector               evaluators,
+  const Teuchos::ParameterList& defaults,
+  const std::string&            key,
+  const Teuchos::ParameterList& cvfem_data) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using panzer::DOFGradient; 
+  ParameterList in;
+
+  if (cvfem_data.get<bool>("Is CVFEM"))
+  {
+    in.set("IR", cvfem_data.get<RCP<IR>>("CVFEM Vol IR"));  // IR for subcv centroid
+    in.set("Basis", cvfem_data.get<RCP<BIRL>>("CVFEM Vol Basis")); // HGrad basis, not HCurl basis
+  }
+  else
+  {
+    in.set("IR", defaults.get<RCP<IR>>("IR"));
+    in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+  }
+  in.set("Name",          key                             );
+  in.set("Gradient Name", names->grad_dof.phi             );
+  // in.set("Basis",         defaults.get<RCP<BIRL>>("Basis"));
+  // in.set("IR",            ir                              );
+  RCP<Evaluator<Traits>> e = rcp(new DOFGradient<EvalT, Traits>(in));
+  evaluators->push_back(e);
+  return true;
+} // end of createDOFGradient()
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  createInitialPotentialGrad()
+//
+//////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createInitialPotentialGrad(
+  EvaluatorVector                evaluators,
+  const Teuchos::ParameterList&  defaults,
+  const Teuchos::ParameterList&  userData,
+  const Teuchos::ParameterList&  cvfem_data)  const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using charon::Initial_PotentialGrad;
+  ParameterList in;
+
+  if (cvfem_data.get<bool>("Is CVFEM"))
+  {
+    in.set("IR", cvfem_data.get<RCP<IR>>("CVFEM Vol IR"));  // IR for subcv centroid
+    in.set("Basis", cvfem_data.get<RCP<BIRL>>("CVFEM Vol Basis")); // HGrad basis, not HCurl basis
+  }
+  else
+  {
+    in.set("IR", defaults.get<RCP<IR>>("IR"));
+    in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+  }
+  in.set("Names", names                           );
+  // in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+  // in.set("IR",    ir                              );
+  in.set("Max Worksets",userData.get<std::size_t>("Max Worksets"));
+  RCP<Evaluator<Traits>> e = rcp(new Initial_PotentialGrad<EvalT, Traits>(in));
+  evaluators->push_back(e);
+  return true;
+} // end of createInitialPotentialGrad()
+
+
+////////////////////////////////////////////////////////////////////////////
 //
 //  createDopingStepJunction()
 //
@@ -2106,6 +2428,14 @@ createDopingFunction(
         "ParamLib", globalData->pl);
     }
 
+  if ((in.sublist("Doping ParameterList").isParameter("SweepingIsOn")))
+    if (in.sublist("Doping ParameterList").get<bool>("SweepingIsOn") == true)
+      {
+	in.sublist("Doping ParameterList").set<Teuchos::RCP<panzer::ParamLib>>("ParamLib", globalData->pl);
+      }
+
+
+
   if (withIonizAcc)
     in.sublist("IncmplIonizAcc Doping ParameterList") =
       models.sublist("Incomplete Ionized Acceptor").sublist("Model");
@@ -2149,6 +2479,110 @@ createSpaceCharge(
   }
   return true;
 } // end of createSpaceCharge()
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createRelPermittivity()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createRelPermittivity(
+    EvaluatorVector               evaluators,
+    const Teuchos::ParameterList& defaults,
+    const std::string&            matName,
+    const Teuchos::ParameterList& models) const 
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  
+  ParameterList in;
+  in.set("Names",            names         );
+  in.set("Material Name",    matName       );
+  in.sublist("Relative Permittivity ParameterList") = 
+    models.sublist("Relative Permittivity");
+  { // at IP
+    in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
+    RCP<Evaluator<Traits>> e = rcp(new Relative_Permittivity<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  { // at BASIS
+    in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
+    RCP<Evaluator<Traits>> e = rcp(new Relative_Permittivity<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  return true;
+} // end of createRelPermittivity()
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createPermittivityNitride()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createPermittivityNitride(
+  EvaluatorVector               evaluators,
+  const Teuchos::ParameterList& defaults,
+  const std::string&            matName,
+  const Teuchos::ParameterList& models) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using charon::Permittivity_Nitride;
+  ParameterList in;
+  in.set("Names",            names         );
+  in.set("Material Name",    matName       );
+  // in.set("Scaling Parameters",m_scale_params);
+  in.sublist("Relative Permittivity ParameterList") = 
+    models.sublist("Relative Permittivity");
+  { // at IP
+    in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
+    RCP<Evaluator<Traits>> e = rcp(new Permittivity_Nitride<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  { // at BASIS
+    in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
+    RCP<Evaluator<Traits>> e = rcp(new Permittivity_Nitride<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  return true;
+} // end of createPermittivityNitride()
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createBandGapNitride()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createBandGapNitride(
+  EvaluatorVector               evaluators,
+  const Teuchos::ParameterList& defaults,
+  const std::string&            matName,
+  const Teuchos::ParameterList& models) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using charon::BandGap_Nitride;
+  ParameterList in;
+  in.set("Names",            names         );
+  in.set("Material Name",    matName       );
+  in.set("Scaling Parameters",m_scale_params);
+  in.sublist("Bandgap ParameterList") = models.sublist("Band Gap");
+  { // at IP
+    in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
+    RCP<Evaluator<Traits>> e = rcp(new BandGap_Nitride<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  { // at BASIS
+    in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
+    RCP<Evaluator<Traits>> e = rcp(new BandGap_Nitride<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  return true;
+} // end of createBandGapNitride()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2208,7 +2642,7 @@ createIntrinsicConcOldSlotboom(
   in.set("Scaling Parameters",m_scale_params);
   if (models.isSublist(names->field.intrin_conc))
     in.sublist("Intrinsic Conc ParameterList") =
-      models.sublist(names->field.intrin_conc);
+      models.sublist(inp_names->field.intrin_conc);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
     RCP<Evaluator<Traits>> e =
@@ -2246,7 +2680,7 @@ createIntrinsicConcPersson(
   in.set("Band Gap Narrowing", bgn    );
   in.set("Scaling Parameters",m_scale_params);
   in.sublist("Intrinsic Conc ParameterList") =
-    models.sublist(names->field.intrin_conc);
+    models.sublist(inp_names->field.intrin_conc);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
     RCP<Evaluator<Traits>> e =
@@ -2284,7 +2718,7 @@ createIntrinsicConcSlotboom(
   in.set("Band Gap Narrowing", bgn    );
   in.set("Scaling Parameters",m_scale_params);
   in.sublist("Intrinsic Conc ParameterList") =
-    models.sublist(names->field.intrin_conc);
+    models.sublist(inp_names->field.intrin_conc);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
     RCP<Evaluator<Traits>> e =
@@ -2320,7 +2754,7 @@ createIntrinsicConcHarmon(
   in.set("Band Gap Narrowing", bgn  );
   in.set("Scaling Parameters",m_scale_params);
   in.sublist("Intrinsic Conc ParameterList") =
-    models.sublist(names->field.intrin_conc);
+    models.sublist(inp_names->field.intrin_conc);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
     RCP<Evaluator<Traits>> e =
@@ -2373,6 +2807,41 @@ createEffectiveDOSSimple(
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  createEffectiveDOSNitride()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createEffectiveDOSNitride(
+  EvaluatorVector               evaluators,
+  const Teuchos::ParameterList& defaults,
+  const std::string&            matName,
+  const Teuchos::ParameterList& models /* = Teuchos::ParameterList() */) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using charon::EffectiveDOS_Nitride;
+  ParameterList in;
+  in.set("Names",         names  );
+  in.set("Material Name", matName);
+  in.set("Scaling Parameters",m_scale_params);
+  if (models.isSublist("Effective DOS"))
+    in.sublist("Effective DOS ParameterList") =
+      models.sublist("Effective DOS");
+  { // at IP
+    in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
+    RCP<Evaluator<Traits>> e = rcp(new EffectiveDOS_Nitride<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  { // at BASIS
+    in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
+    RCP<Evaluator<Traits>> e = rcp(new EffectiveDOS_Nitride<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  return true;
+} // end of createEffectiveDOSNitride()
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  createSRHLifetimeFunction()
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2396,12 +2865,12 @@ createSRHLifetimeFunction(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type", "Electron");
       in.sublist("Lifetime ParameterList") =
-        models.sublist(names->field.elec_lifetime);
+        models.sublist(inp_names->field.elec_lifetime);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
       in.sublist("Lifetime ParameterList") =
-        models.sublist(names->field.hole_lifetime);
+        models.sublist(inp_names->field.hole_lifetime);
       break;
     default:
       stringstream msg;
@@ -2450,12 +2919,12 @@ createMobilityAnalytic(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type", "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -2499,25 +2968,42 @@ createMobilityArora(
   const Teuchos::ParameterList& defaults,
   const CarrierType&            type,
   const std::string&            matName,
-  const Teuchos::ParameterList& models) const
+  const Teuchos::ParameterList& models,
+  const bool useSuppliedParameterList) const
 {
   CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
   using charon::Mobility_Arora;
   ParameterList in;
-  in.set("Names",         names  );
-  in.set("Material Name", matName);
-  in.set("Scaling Parameters",m_scale_params);
+ 
+  if(useSuppliedParameterList)
+  {
+    // the Arora mobility model does not take "IR" as an input parameter, so remove it.
+    ParameterList bulkMobility;
+    bulkMobility.setParameters(defaults);
+    bulkMobility.remove("IR");
+    in.setParameters(bulkMobility);
+    in.setName("Arora");
+  }
+  else
+  {
+    in.set("Names",         names  );
+    in.set("Material Name", matName);
+    in.set("Scaling Parameters",m_scale_params);
+  } 
+
   switch (type)
   {
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type", "Electron");
-      in.sublist("Mobility ParameterList") =
-        models.sublist("Electron Mobility" /*names->field.elec_mobility*/);
+      if(!useSuppliedParameterList)
+        in.sublist("Mobility ParameterList") =
+          models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
-      in.sublist("Mobility ParameterList") =
-        models.sublist("Hole Mobility" /*names->field.hole_mobility*/);
+      if(!useSuppliedParameterList)
+        in.sublist("Mobility ParameterList") =
+          models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -2538,11 +3024,11 @@ createMobilityArora(
     RCP<Evaluator<Traits>> e = rcp(new Mobility_Arora<EvalT, Traits>(in));
     evaluators->push_back(e);
   }
-  { // at primary element Edge, pass in Basis to retrieve edge
-    // information
+  { // at primary element Edge, pass in Basis to retrieve edge information
     in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
     in.set("Is Edge Data Layout", true);
-    in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+    if (!useSuppliedParameterList) 
+      in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
     RCP<Evaluator<Traits>> e = rcp(new Mobility_Arora<EvalT, Traits>(in));
     evaluators->push_back(e);
   }
@@ -2574,12 +3060,12 @@ createMobilityMasetti(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type", "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -2636,12 +3122,12 @@ createMobilityUniBo(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type", "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -2696,7 +3182,7 @@ createMobilityDopantTempDep(
   in.set("Names", names);
   in.set("Scaling Parameters",m_scale_params);
   in.sublist("Mobility ParameterList") =
-    models.sublist(names->field.elec_mobility);
+    models.sublist(inp_names->field.elec_mobility);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
     RCP<Evaluator<Traits>> e =
@@ -2742,13 +3228,13 @@ createMobilityMOSFET(
       in.set("Carrier Type", "Electron");
       efin.set("Carrier Type", "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
       efin.set("Carrier Type", "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -2770,7 +3256,7 @@ createMobilityMOSFET(
     in.set("Is Edge Data Layout", false);
     in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
 
-    //Need to make sure we get the electric field for this evaluator when the discretization is NOT SUPG
+    //Need to make sure we get the electric field for this evaluator when the discretization is SUPG
     efin.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
     efin.set("IR", defaults.get<RCP<IR>>("IR"));
     efin.set("Scaling Parameters",m_scale_params);
@@ -2788,8 +3274,7 @@ createMobilityMOSFET(
     RCP<Evaluator<Traits>> e = rcp(new Mobility_MOSFET<EvalT, Traits>(in));
     evaluators->push_back(e);
   }
-  { // at primary element Edge, pass in Basis to retrieve edge
-    // information
+  { // at primary element Edge, pass in Basis to retrieve edge information
     //in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
     in.set("Is Edge Data Layout", true);
     in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
@@ -2809,45 +3294,52 @@ createMobilityMOSFET(
     bulkMobility.sublist("Mobility ParameterList").setParameters(inCopy.sublist("Mobility ParameterList").sublist("Bulk Mobility"));
   bulkMobility.sublist("Mobility ParameterList").set<std::string>("Compound Mobility", "On", "Rename the evaluated field to reflect compound mobility");
   if(inCopy.sublist("Mobility ParameterList").sublist("Bulk Mobility").isParameter("Enable High Field"))
-    {
-      bulkMobility.sublist("Mobility ParameterList").remove("Enable High Field");
-      bulkMobility.sublist("Mobility ParameterList").set<std::string>("G Parameter Set", "Klaassen", "Use Klaassen or Meyer parameter set");
-      bulkMobility.sublist("Mobility ParameterList").set<std::string>("Driving Force", "ElectricField", "Different high field calculation methods");
-      bulkMobility.sublist("Mobility ParameterList").set<std::string>("High Field", "On", "Turn on/off high field dependence");
-    }
+  {
+    bulkMobility.sublist("Mobility ParameterList").remove("Enable High Field");
+    bulkMobility.sublist("Mobility ParameterList").set<std::string>("G Parameter Set", "Klaassen", "Use Klaassen or Meyer parameter set");
+    bulkMobility.sublist("Mobility ParameterList").set<std::string>("Driving Force", "ElectricField", "Different high field calculation methods");
+    bulkMobility.sublist("Mobility ParameterList").set<std::string>("High Field", "On", "Turn on/off high field dependence");
+  }
 
   ParameterList perpMobility;
   perpMobility.setParameters(inCopy);
   perpMobility.setName("MOSFET Perpendicular Field Model");
   perpMobility.remove("Mobility ParameterList");
   if(inCopy.sublist("Mobility ParameterList").isSublist("Perpendicular Field Model"))
-    {
-      perpMobility.sublist("Mobility ParameterList").setParameters(inCopy.sublist("Mobility ParameterList").sublist("Perpendicular Field Model"));
-      perpMobility.sublist("Mobility ParameterList").set("Value",inCopy.sublist("Mobility ParameterList").sublist("Perpendicular Field Model").get<std::string>("Value"));
-    }
-
+  {
+    perpMobility.sublist("Mobility ParameterList").setParameters(inCopy.sublist("Mobility ParameterList").sublist("Perpendicular Field Model"));
+    perpMobility.sublist("Mobility ParameterList").set("Value",inCopy.sublist("Mobility ParameterList").sublist("Perpendicular Field Model").get<std::string>("Value"));
+  }
+/*
   //If bulk is Klaassen and there is a perpendicular field model, disable lattice scattering in Klaassen
   if(perpMobility.isSublist("Mobility ParameterList"))
-    {
-      if(perpMobility.sublist("Mobility ParameterList").get<std::string>("Value") != "")
-	bulkMobility.sublist("Mobility ParameterList").set<bool>("Disable Lattice Scattering",true);
-    }
-
+  {
+    if(perpMobility.sublist("Mobility ParameterList").get<std::string>("Value") != "")
+      bulkMobility.sublist("Mobility ParameterList").set<bool>("Disable Lattice Scattering",true);
+  }
+*/
   //Create the bulk mobility model
   if(bulkMobility.sublist("Mobility ParameterList").get<std::string>("Value") == "Klaassen")
+  {
+    // If bulk is Klaassen and there is a perpendicular field model, disable lattice scattering in Klaassen
+    if(perpMobility.isSublist("Mobility ParameterList"))
     {
-      bulkMobility.sublist("Mobility ParameterList").set<std::string>("G Parameter Set", "Klaassen");
-      createMobilityPhilipsThomas(evaluators, bulkMobility, type, matName, models, true);
+      if(perpMobility.sublist("Mobility ParameterList").get<std::string>("Value") != "")
+        bulkMobility.sublist("Mobility ParameterList").set<bool>("Disable Lattice Scattering",true);
     }
+    bulkMobility.sublist("Mobility ParameterList").set<std::string>("G Parameter Set", "Klaassen");
+    createMobilityPhilipsThomas(evaluators, bulkMobility, type, matName, models, true);
+  }
+  
+  if (bulkMobility.sublist("Mobility ParameterList").get<std::string>("Value") == "Arora")
+    createMobilityArora(evaluators, bulkMobility, type, matName, models, true); 
 
   //Create the perp mobility model
   if(perpMobility.isSublist("Mobility ParameterList"))
-    {
-      if(perpMobility.sublist("Mobility ParameterList").get<std::string>("Value") == "Shirahata")
-	createMobilityShirahata(evaluators, perpMobility, type, matName, models, true);
-    }
-
-
+  {
+    if(perpMobility.sublist("Mobility ParameterList").get<std::string>("Value") == "Shirahata")
+      createMobilityShirahata(evaluators, perpMobility, type, matName, models, true);
+  }
 
   return true;
 } // end of createMobilityMOSFET()
@@ -2892,14 +3384,14 @@ createMobilityShirahata(
       efin.set("Carrier Type", "Electron");
       if(!useSuppliedParameterList)
 	in.sublist("Mobility ParameterList") =
-	  models.sublist(names->field.elec_mobility);
+	  models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type", "Hole");
       efin.set("Carrier Type", "Hole");
       if(!useSuppliedParameterList)
 	in.sublist("Mobility ParameterList") =
-	  models.sublist(names->field.hole_mobility);
+	  models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -2990,14 +3482,14 @@ createMobilityPhilipsThomas(
       efin.set("Carrier Type", "Electron");
       if(!useSuppliedParameterList)
 	in.sublist("Mobility ParameterList") =
-	  models.sublist(names->field.elec_mobility);
+	  models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type",  "Hole");
       efin.set("Carrier Type", "Hole");
       if(!useSuppliedParameterList)
 	in.sublist("Mobility ParameterList") =
-	  models.sublist(names->field.hole_mobility);
+	  models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -3059,12 +3551,12 @@ createMobilityLucent(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type",  "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type",  "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -3113,12 +3605,12 @@ createMobilityGaAs(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type",  "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type",  "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -3167,12 +3659,12 @@ createMobilityAlbrecht(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type",  "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type",  "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -3221,12 +3713,12 @@ createMobilityFarahmand(
     case CARRIER_TYPE_ELECTRON:
       in.set("Carrier Type",  "Electron");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.elec_mobility);
+        models.sublist(inp_names->field.elec_mobility);
       break;
     case CARRIER_TYPE_HOLE:
       in.set("Carrier Type",  "Hole");
       in.sublist("Mobility ParameterList") =
-        models.sublist(names->field.hole_mobility);
+        models.sublist(inp_names->field.hole_mobility);
       break;
     default:
       stringstream msg;
@@ -3436,6 +3928,7 @@ createAvalancheUniBoNew(
   return true;
 } // end of createAvalancheUniBoNew()
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  createAvalancheSelberherr()
@@ -3514,6 +4007,49 @@ createAvalancheCrowellSze(
   }
   return true;
 } // end of createAvalancheCrowellSze()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createBand2BandTunnelingLocal()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createBand2BandTunnelingLocal(
+  EvaluatorVector               evaluators,
+  const Teuchos::ParameterList& defaults,
+  const std::string&            matName,
+  const std::string&            eqnSetType,
+  const Teuchos::ParameterList& models,
+  const Teuchos::ParameterList& cvfem_data) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using charon::Band2Band_Tunneling_Local;
+  ParameterList in;
+  in.set("Names", names);
+  in.set("Material Name", matName);
+  in.set("Equation Set Type", eqnSetType);
+  in.set("Scaling Parameters", m_scale_params);
+  if (cvfem_data.get<bool>("Is CVFEM")) 
+  {
+    in.set("IR", cvfem_data.get<RCP<IR>>("CVFEM Vol IR"));  // IR for subcv centroid
+    in.set("Basis", cvfem_data.get<RCP<BIRL>>("CVFEM Vol Basis")); // HGrad basis, not HCurl basis
+  }
+  else 
+  {
+    in.set("IR", defaults.get<RCP<IR>>("IR"));
+    in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+  }
+  in.sublist("Band2Band Tunneling ParameterList") =
+    models.sublist(names->field.bbt_rate);
+  { // at IP for now
+    RCP<Evaluator<Traits>> e = rcp(new Band2Band_Tunneling_Local<EvalT, Traits>(in));
+    evaluators->push_back(e);
+  }
+  return true;
+} // end of createBand2BandTunnelingLocal()
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3986,6 +4522,7 @@ bool charon::ClosureModelFactory<EvalT>::
 createMoleFractionFunction(
   EvaluatorVector               evaluators,
   const Teuchos::ParameterList& defaults,
+  const std::string&            matName,
   const Teuchos::ParameterList& models) const
 {
   CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
@@ -3994,6 +4531,7 @@ createMoleFractionFunction(
   in.set("Names", names                           );
   in.set("IR",    defaults.get<RCP<IR>>("IR")     );
   in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+  in.set("Material Name", matName);
   in.sublist("Mole Fraction ParameterList") =
     models.sublist(names->field.mole_frac);
   RCP<Evaluator<Traits>> e = rcp(new MoleFraction_Function<EvalT, Traits>(in));
@@ -4184,6 +4722,57 @@ createRecombRateSRH(
   }
   return true;
 } // end of createRecombRateSRH()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createRecombRateDynamicTraps()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createRecombRateDynamicTraps(
+  EvaluatorVector               evaluators,
+  const Teuchos::ParameterList& defaults,
+  const std::string&            matName,
+  const Teuchos::ParameterList& models,
+  const std::string&            eqnSetType,
+  const std::string&            drForce,
+  const Teuchos::ParameterList& cvfem_data) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
+  using charon::RecombRate_DynamicTraps;
+  const string key("Dynamic Traps Recombination");
+  ParameterList in(key);
+  in.set("Names",              names                 );
+  in.set("Material Name",      matName               );
+  in.set("Equation Set Type",  eqnSetType            );
+  in.set("Driving Force",      drForce               );
+  in.set("Scaling Parameters", m_scale_params        );
+  if (cvfem_data.get<bool>("Is CVFEM"))  // SGCVFEM
+  {
+    in.set("IR", cvfem_data.get<RCP<IR>>("CVFEM Vol IR"));  // IR for subcv centroid
+    in.set("Basis", cvfem_data.get<RCP<BIRL>>("CVFEM Vol Basis"));  // HGrad basis, not HCurl basis (edge basis vectors)
+  }
+  else  // SUPG-FEM and EFFPG-FEM
+  {
+    in.set("IR",    defaults.get<RCP<IR>>("IR"));
+    in.set("Basis", defaults.get<RCP<BIRL>>("Basis"));
+  }
+  if (not models.isSublist(key))
+  {
+    stringstream msg;
+    msg << "Error!  " << key
+        << " ParameterList must be specified when Dynamic Traps = On!";
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+  }
+  in.sublist("Dynamic Traps ParameterList") = models.sublist(key);
+   
+  RCP<Evaluator<Traits>> e = rcp(new RecombRate_DynamicTraps<EvalT, Traits>(in));
+  evaluators->push_back(e);
+  return true;
+} // end of createRecombRateDynamicTraps()
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -4475,6 +5064,7 @@ createTID(
       // this parameter is checked in checkTID_param function in Charon_Main.cpp
       // 'Gate Contact' is a valid gate contact with varying voltage (LOCA)
       in1.set("ParamLib", globalData->pl);
+      in1.set("Voltage Sweep",true);
       // freeze voltage
       param = "Freeze Voltage";
       if (models.isSublist(key) and models.sublist(key).isSublist("Kimpton Model")
@@ -4486,7 +5076,9 @@ createTID(
 	msg << "'Freeze Voltage' parameter in TID section is missing!" << std::endl;
 	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
       }
-    }
+
+
+      }
 
     if (cvfem_data.get<bool>("Is CVFEM")) { // SGCVFEM
       // IR for subcv centroid
@@ -4512,14 +5104,6 @@ createTID(
 		     sublist("Interface Traps")).get<string>(param);
 	in1.set("Sideset ID", sidesetID);
       } 
-      // interface trap density 
-      double Nti(0);
-      param = "Total Density";
-      if (models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").isParameter(param)) {
-	Nti = (models.sublist(key).sublist("Kimpton Model").
-	       sublist("Interface Traps")).get<double>(param);
-	in1.set("Interface Trap Density", Nti);
-      }
       // initial interface trap filling factor 
       double fill_facti(0);
       param = "Initial Filling Factor"; 
@@ -4529,13 +5113,73 @@ createTID(
 	in1.set("Interface Initial Filling Factor", fill_facti);
       } 
       // interface trap capture cross section
-      double sigma_i(0);
-      param = "Capture Cross Section";
-      if (models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").isParameter(param)) {
-	sigma_i = (models.sublist(key).sublist("Kimpton Model").
-		   sublist("Interface Traps")).get<double>(param);
-	in1.set("Interface Trap Capture Cross Section", sigma_i);
-      } 
+
+
+      param = "Capture Cross Section Sweep is On";
+      bool crossSectionSweep = false;
+      if ( models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").isParameter(param))
+	crossSectionSweep = models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").get<bool>(param);
+
+      if (crossSectionSweep)
+	{
+	  bool ITTrapsSweep = (models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps")).get<bool>(param);
+	  std::string ITCCSweep = "Interface Trap Capture Cross Section Sweep is On";
+	  in1.set(ITCCSweep, ITTrapsSweep);
+	  std::string initialCC = "Interface Trap Initial Capture Cross Section";
+	  std::string finalCC = "Interface Trap Final Capture Cross Section";
+	  double initialCrossSection = (models.sublist(key).sublist("Kimpton Model").
+					sublist("Interface Traps")).get<double>("Initial Capture Cross Section");
+	  double finalCrossSection = (models.sublist(key).sublist("Kimpton Model").
+				      sublist("Interface Traps")).get<double>("Final Capture Cross Section");
+	  in1.set(initialCC, initialCrossSection);
+	  in1.set(finalCC, finalCrossSection);
+	  in1.set("ParamLib", globalData->pl);
+		  in1.set("Interface Trap Capture Cross Section Sweep","Parameter");
+		  
+	}
+      else
+	{
+	  double sigma_i(0);
+	  std::string param1 = "Capture Cross Section";
+	  if (models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").isParameter(param1)) {
+	    sigma_i = (models.sublist(key).sublist("Kimpton Model").
+		       sublist("Interface Traps")).get<double>(param1);
+	    in1.set("Interface Trap Capture Cross Section", sigma_i);
+	  } 
+	}
+      
+      // interface trap density 
+      param = "Total Density Sweep is On";
+      bool totalDensitySweep = false;
+      if ( models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").isParameter(param))
+	totalDensitySweep = models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps").get<bool>(param);
+
+      if ( totalDensitySweep)
+	{
+	  bool ITDensitySweep = (models.sublist(key).sublist("Kimpton Model").sublist("Interface Traps")).get<bool>(param);
+	  std::string ITTDSweep = "Interface Trap Total Density Sweep is On";
+	  in1.set(ITTDSweep, ITDensitySweep);
+	  std::string initialTD = "Interface Trap Initial Total Density";
+	  std::string finalTD = "Interface Trap Final Total Density";
+	  double initialTotalDensity = (models.sublist(key).sublist("Kimpton Model").
+					sublist("Interface Traps")).get<double>("Initial Total Density");
+	  double finalTotalDensity = (models.sublist(key).sublist("Kimpton Model").
+				      sublist("Interface Traps")).get<double>("Final Total Density");
+	  in1.set(initialTD, initialTotalDensity);
+	  in1.set(finalTD, finalTotalDensity);
+	  in1.set("ParamLib", globalData->pl);
+	  in1.set("Interface Trap Total Density Sweep","Parameter");
+	}
+      else
+	{
+	  double Nti(0);
+	  std::string param1 = "Total Density";
+	      Nti = (models.sublist(key).sublist("Kimpton Model").
+		     sublist("Interface Traps")).get<double>(param1);
+	      in1.set("Interface Trap Density", Nti);
+	}
+      
+
     } // interface traps
 
     if (models.isSublist(key) and models.sublist(key).isSublist("Kimpton Model")
@@ -4715,24 +5359,26 @@ createRecombRateTotal(
   const std::string&            auger,
   const std::string&            optGen,
   const std::string&            avaGen,
+  const std::string&            bbtGen,
   const std::string&            eqnSetType,
   const Teuchos::ParameterList& cvfem_data) const
 {
   CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
   using charon::RecombRate_Total;
   ParameterList in("Total Recombination");
-  in.set("SRH",                srh                     );
-  in.set("Trap SRH",           trapSrh                 );
-  in.set("Defect Cluster",     defectCluster           );
-  in.set("Empirical Defect",   empiricalDefect         );
-  in.set("Particle Strike",    ionizationParticleStrike);
-  in.set("Radiative",          rad                     );
-  in.set("Auger",              auger                   );
-  in.set("Optical Generation", optGen                  );
-  in.set("Avalanche",          avaGen                  );
-  in.set("Equation Set Type",  eqnSetType              );
-  in.set("Names",              names                   );
-  { // at IP
+  in.set("SRH",                 srh                     );
+  in.set("Trap SRH",            trapSrh                 );
+  in.set("Defect Cluster",      defectCluster           );
+  in.set("Empirical Defect",    empiricalDefect         );
+  in.set("Particle Strike",     ionizationParticleStrike);
+  in.set("Radiative",           rad                     );
+  in.set("Auger",               auger                   );
+  in.set("Optical Generation",  optGen                  );
+  in.set("Avalanche",           avaGen                  );
+  in.set("Band2Band Tunneling", bbtGen                  );
+  in.set("Equation Set Type",   eqnSetType              );
+  in.set("Names",               names                   );
+  { 
     // at finite element IP for SUPG-FEM and EFFPG-FEM, but at SubCV centroid for SGCVFEM formulations
     if (cvfem_data.get<bool>("Is CVFEM"))  // for SGCVFEM
     {
@@ -4760,14 +5406,12 @@ template <typename EvalT>
 bool charon::ClosureModelFactory<EvalT>::
 createIntrinsicFermiEnergy(
   EvaluatorVector               evaluators,
-  const Teuchos::ParameterList& defaults,
-  const std::string&            eqnSetType) const
+  const Teuchos::ParameterList& defaults) const
 {
   CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
   using charon::Intrinsic_FermiEnergy;
   ParameterList in("Intrinsic Fermi Energy");
   in.set("Names",             names     );
-  in.set("Equation Set Type", eqnSetType);
   in.set("Scaling Parameters", m_scale_params);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
@@ -4793,23 +5437,25 @@ template <typename EvalT>
 bool charon::ClosureModelFactory<EvalT>::
 createCondValeBand(
   EvaluatorVector               evaluators,
-  const Teuchos::ParameterList& defaults,
-  const std::string&            eqnSetType) const
+  const Teuchos::ParameterList& defaults) const
 {
   CHARON_USINGS_ETC(DEFINE_BIRL_IR_NAMES);
   using charon::CondVale_Band;
   ParameterList in("Conduction and Valence Band");
   in.set("Names",             names     );
-  in.set("Equation Set Type", eqnSetType);
   in.set("Scaling Parameters", m_scale_params);
   { // at IP
     in.set("Data Layout", defaults.get<RCP<IR>>("IR")->dl_scalar);
     RCP<Evaluator<Traits>> e = rcp(new CondVale_Band<EvalT, Traits>(in));
     evaluators->push_back(e);
+    e = rcp(new QuasiFermiLevels<EvalT, Traits>(in));
+    evaluators->push_back(e);
   }
   { // at BASIS
     in.set("Data Layout", defaults.get<RCP<BIRL>>("Basis")->functional);
     RCP<Evaluator<Traits>> e = rcp(new CondVale_Band<EvalT, Traits>(in));
+    evaluators->push_back(e);
+    e = rcp(new QuasiFermiLevels<EvalT, Traits>(in));
     evaluators->push_back(e);
   }
   return true;
@@ -5115,6 +5761,8 @@ createAnalyticComparisonL2Error(
     vector<RCP<FieldTag>> fieldTags = e->evaluatedFields();
     for (size_t fieldTag(0); fieldTag < fieldTags.size(); ++fieldTag)
       fm.template requireField<EvalT>(*(fieldTags[fieldTag]));
+    
+    
   }
   return true;
 } // end of createAnalyticComparisonL2Error()
@@ -5160,6 +5808,290 @@ createAnalyticComparisonRelError(
   }
   return true;
 } // end of createAnalyticComparisonRelError()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createManufacturedSolution()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createManufacturedSolution(
+  EvaluatorVector                             evaluators,
+  const Teuchos::ParameterList&               defaults,
+  const std::string&                          value,
+  Teuchos::ParameterList&                     in,
+  const Teuchos::RCP<panzer::IntegrationRule> ir,
+  const Teuchos::ParameterList&               userData,
+  const Teuchos::RCP<panzer::GlobalData>&     globalData, //NEW ADDITION
+  PHX::FieldManager<panzer::Traits>&          fm) const
+{
+  CHARON_USINGS_ETC(DEFINE_NONE);
+  using boost::char_separator;
+  using boost::tokenizer;
+  using PHX::FieldTag;
+  using Teuchos::Comm;
+
+
+  using charon::DD_RDH_1_AnalyticSolution;
+  bool found(false);
+  if (boost::iequals(value, "mms_dd_rdh_1"))
+  {
+    RCP<Evaluator<Traits>> e = rcp(new DD_RDH_1_AnalyticSolution<EvalT,
+      Traits>(ir));
+    evaluators->push_back(e);
+    found = true;
+  }
+ 
+  if (not found)
+  {
+    std::stringstream err_msg;
+    err_msg << "ClosureModelFactory failed to build evaluator for analytic "
+            << "solution \"" << value << std::endl;
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, err_msg.str());
+  }
+  return found;
+
+} // end of createManufacturedSolution()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createNormCalculationL2Error()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createNormCalculationL2Error(
+  EvaluatorVector                             evaluators,
+  const Teuchos::ParameterList&               defaults,
+  const std::string&                          value,
+  Teuchos::ParameterList&                     in,
+  const Teuchos::RCP<panzer::IntegrationRule> ir,
+  const Teuchos::ParameterList&               userData,
+  const Teuchos::RCP<panzer::GlobalData>&     globalData, //NEW ADDITION
+  PHX::FieldManager<panzer::Traits>&          fm) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL);
+  using boost::char_separator;
+  using boost::tokenizer;
+  using PHX::FieldTag;
+  using Teuchos::Comm;
+  using charon::Norm_L2Error;
+  typedef tokenizer<char_separator<char>>::const_iterator FieldNameIterator;
+  char_separator<char> sep(": , ");
+  tokenizer<char_separator<char>> fieldNames(value, sep);
+  for (FieldNameIterator fieldName = fieldNames.begin();
+    fieldName != fieldNames.end(); ++fieldName)
+  {
+    // in.set("DataLayout",      defaults.get<RCP<BIRL>>("Basis")->functional);
+    in.set("Basis",           defaults.get<RCP<BIRL>>("Basis")            );
+    in.set("IR",              ir                                          );
+    in.set("Name",            *fieldName                                  );
+    in.set("Analytic Prefix", "Analytic_"                                 );
+    in.set("Error Prefix",    "L2Error_"                                  );
+    in.set("Comm",            userData.get<RCP<const Comm<int>>>("Comm")  );
+    
+    // For norm scalar exo output
+    Teuchos::ParameterList NORM;
+    in.sublist("Norm ParameterList") = NORM;
+    in.sublist("Norm ParameterList").set<Teuchos::RCP<panzer::ParamLib>>("ParamLib", globalData->pl);
+
+    
+    // NEW ADDITIONS FOR Norm_L2Error
+    RCP<Evaluator<Traits>> e = rcp(new Norm_L2Error<EvalT, Traits>(in));
+    evaluators->push_back(e);
+    
+    vector<RCP<FieldTag>> fieldTags = e->evaluatedFields();
+    for (size_t fieldTag(0); fieldTag < fieldTags.size(); ++fieldTag)
+      fm.template requireField<EvalT>(*(fieldTags[fieldTag]));
+
+        
+    // Just throwing in an analytic solution to test error calculation
+    //RCP<Evaluator<Traits>> e2 = rcp(new DD_RDH_1_AnalyticSolution<EvalT, Traits>("analytic_solution", ir));
+    //evaluators->push_back(e2);
+    
+  }
+  return true;
+} // end of createNormCalculationL2Error()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createNormCalculationH1Error()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createNormCalculationH1Error(
+  EvaluatorVector                             evaluators,
+  const Teuchos::ParameterList&               defaults,
+  const std::string&                          value,
+  Teuchos::ParameterList&                     in,
+  const Teuchos::RCP<panzer::IntegrationRule> ir,
+  const Teuchos::ParameterList&               userData,
+  const Teuchos::RCP<panzer::GlobalData>&     globalData, //NEW ADDITION
+  PHX::FieldManager<panzer::Traits>&          fm) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL);
+  using boost::char_separator;
+  using boost::tokenizer;
+  using PHX::FieldTag;
+  using Teuchos::Comm;
+  using charon::Norm_H1Error;
+  typedef tokenizer<char_separator<char>>::const_iterator FieldNameIterator;
+  char_separator<char> sep(": , ");
+  tokenizer<char_separator<char>> fieldNames(value, sep);
+  for (FieldNameIterator fieldName = fieldNames.begin();
+    fieldName != fieldNames.end(); ++fieldName)
+  {
+    // in.set("DataLayout",      defaults.get<RCP<BIRL>>("Basis")->functional);
+    in.set("Basis",           defaults.get<RCP<BIRL>>("Basis")            );
+    in.set("IR",              ir                                          );
+    in.set("Name",            *fieldName                                  );
+    in.set("Analytic Prefix", "Analytic_"                                 );
+    in.set("Error Prefix",    "H1Error_"                                  );
+    in.set("Comm",            userData.get<RCP<const Comm<int>>>("Comm")  );
+    
+    // For norm scalar exo output
+    Teuchos::ParameterList NORM;
+    in.sublist("Norm ParameterList") = NORM;
+    in.sublist("Norm ParameterList").set<Teuchos::RCP<panzer::ParamLib>>("ParamLib", globalData->pl);
+
+    
+    // NEW ADDITIONS FOR Norm_L2Error
+    RCP<Evaluator<Traits>> e = rcp(new Norm_H1Error<EvalT, Traits>(in));
+    evaluators->push_back(e);
+    
+    vector<RCP<FieldTag>> fieldTags = e->evaluatedFields();
+    for (size_t fieldTag(0); fieldTag < fieldTags.size(); ++fieldTag)
+      fm.template requireField<EvalT>(*(fieldTags[fieldTag]));
+
+        
+    // Just throwing in an analytic solution to test error calculation
+    //RCP<Evaluator<Traits>> e2 = rcp(new AnalyticSolution<EvalT, Traits>("analytic_solution", ir));
+    //RCP<Evaluator<Traits>> e2 = rcp(new DD_RDH_1_AnalyticSolution<EvalT, Traits>("analytic_solution", ir));
+    //evaluators->push_back(e2);
+    
+  }
+  return true;
+} // end of createNormCalculationH1Error()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createNormCalculationL2()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createNormCalculationL2(
+  EvaluatorVector                             evaluators,
+  const Teuchos::ParameterList&               defaults,
+  const std::string&                          value,
+  Teuchos::ParameterList&                     in,
+  const Teuchos::RCP<panzer::IntegrationRule> ir,
+  const Teuchos::ParameterList&               userData,
+  const Teuchos::RCP<panzer::GlobalData>&     globalData, //NEW ADDITION
+  PHX::FieldManager<panzer::Traits>&          fm) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL);
+  using boost::char_separator;
+  using boost::tokenizer;
+  using PHX::FieldTag;
+  using Teuchos::Comm;
+  using charon::Norm_L2;
+  typedef tokenizer<char_separator<char>>::const_iterator FieldNameIterator;
+  char_separator<char> sep(": , ");
+  tokenizer<char_separator<char>> fieldNames(value, sep);
+  for (FieldNameIterator fieldName = fieldNames.begin();
+    fieldName != fieldNames.end(); ++fieldName)
+  {
+    // in.set("DataLayout",      defaults.get<RCP<BIRL>>("Basis")->functional);
+    in.set("Basis",           defaults.get<RCP<BIRL>>("Basis")            );
+    in.set("IR",              ir                                          );
+    in.set("Name",            *fieldName                                  );
+    in.set("Analytic Prefix", "Analytic_"                                 );
+    in.set("Error Prefix",    "L2Norm_"                                  );
+    in.set("Comm",            userData.get<RCP<const Comm<int>>>("Comm")  );
+    
+    // For norm scalar exo output
+    Teuchos::ParameterList NORM;
+    in.sublist("Norm ParameterList") = NORM;
+    in.sublist("Norm ParameterList").set<Teuchos::RCP<panzer::ParamLib>>("ParamLib", globalData->pl);
+
+    
+    // NEW ADDITIONS FOR Norm_L2
+    RCP<Evaluator<Traits>> e = rcp(new Norm_L2<EvalT, Traits>(in));
+    evaluators->push_back(e);
+    
+    vector<RCP<FieldTag>> fieldTags = e->evaluatedFields();
+    for (size_t fieldTag(0); fieldTag < fieldTags.size(); ++fieldTag)
+      fm.template requireField<EvalT>(*(fieldTags[fieldTag]));
+
+    
+  }
+  return true;
+} // end of createNormCalculationL2()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  createNormCalculationH1()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+bool charon::ClosureModelFactory<EvalT>::
+createNormCalculationH1(
+  EvaluatorVector                             evaluators,
+  const Teuchos::ParameterList&               defaults,
+  const std::string&                          value,
+  Teuchos::ParameterList&                     in,
+  const Teuchos::RCP<panzer::IntegrationRule> ir,
+  const Teuchos::ParameterList&               userData,
+  const Teuchos::RCP<panzer::GlobalData>&     globalData, //NEW ADDITION
+  PHX::FieldManager<panzer::Traits>&          fm) const
+{
+  CHARON_USINGS_ETC(DEFINE_BIRL);
+  using boost::char_separator;
+  using boost::tokenizer;
+  using PHX::FieldTag;
+  using Teuchos::Comm;
+  using charon::Norm_H1;
+  typedef tokenizer<char_separator<char>>::const_iterator FieldNameIterator;
+  char_separator<char> sep(": , ");
+  tokenizer<char_separator<char>> fieldNames(value, sep);
+  for (FieldNameIterator fieldName = fieldNames.begin();
+    fieldName != fieldNames.end(); ++fieldName)
+  {
+    // in.set("DataLayout",      defaults.get<RCP<BIRL>>("Basis")->functional);
+    in.set("Basis",           defaults.get<RCP<BIRL>>("Basis")            );
+    in.set("IR",              ir                                          );
+    in.set("Name",            *fieldName                                  );
+    in.set("Analytic Prefix", "Analytic_"                                 );
+    in.set("Error Prefix",    "H1Norm_"                                  );
+    in.set("Comm",            userData.get<RCP<const Comm<int>>>("Comm")  );
+    
+    // For norm scalar exo output
+    Teuchos::ParameterList NORM;
+    in.sublist("Norm ParameterList") = NORM;
+    in.sublist("Norm ParameterList").set<Teuchos::RCP<panzer::ParamLib>>("ParamLib", globalData->pl);
+
+    
+    // NEW ADDITIONS FOR Norm_H1
+    RCP<Evaluator<Traits>> e = rcp(new Norm_H1<EvalT, Traits>(in));
+    evaluators->push_back(e);
+    
+    vector<RCP<FieldTag>> fieldTags = e->evaluatedFields();
+    for (size_t fieldTag(0); fieldTag < fieldTags.size(); ++fieldTag)
+      fm.template requireField<EvalT>(*(fieldTags[fieldTag]));
+
+    
+  }
+  return true;
+} // end of createNormCalculationH1()
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -5313,13 +6245,15 @@ createICEquilibriumDensity(
 template <typename EvalT>
 bool charon::ClosureModelFactory<EvalT>::
 createICEquilibriumPotential(
-  EvaluatorVector               evaluators,
-  const Teuchos::ParameterList& defaults,
-  const std::string&            key,
-  const Teuchos::ParameterList& userData) const
+  EvaluatorVector                 evaluators,
+  const Teuchos::ParameterList&   defaults,
+  const std::string&              key,
+  const Teuchos::ParameterList&   userData,
+  const Teuchos::RCP<std::vector<std::string>> semBlocks) const
 {
   CHARON_USINGS_ETC(DEFINE_BIRL_NAMES);
   using charon::IC_Equilibrium_Potential;
+
   ParameterList in;
   in.set("DOF Name",          key                              );
   in.set("Basis",             defaults.get<RCP<BIRL>>("Basis") );
@@ -5350,12 +6284,38 @@ createICEquilibriumPotential(
   Teuchos::RCP<std::vector<double>> sc_vapp = 
     userData.get<Teuchos::RCP<std::vector<double>>>("SchottkyVapp");
   in.set("SchottkyVapp",sc_vapp);
+  Teuchos::RCP<std::vector<string>> g_cnts = 
+    userData.get<Teuchos::RCP<std::vector<string>>>("GateContacts");
+  in.set("GateContacts",g_cnts);
+  Teuchos::RCP<std::vector<string>> g_blks = 
+    userData.get<Teuchos::RCP<std::vector<string>>>("GateBlocks");
+  in.set("GateBlocks",g_blks);
+  Teuchos::RCP<std::vector<double>> g_wf = 
+    userData.get<Teuchos::RCP<std::vector<double>>>("GateWF");
+  in.set("GateWF",g_wf);
+  Teuchos::RCP<std::vector<double>> g_vapp = 
+    userData.get<Teuchos::RCP<std::vector<double>>>("GateVapp");
+  in.set("GateVapp",g_vapp);
 
+  Teuchos::RCP<std::map<string,string>> block_mat = 
+    userData.get<Teuchos::RCP<std::map<string,string>>>("block2mat");
+  in.set("Material",(*block_mat)[defaults.get<string>("Block ID")]);
+
+  in.set("Block ID", defaults.get<string>("Block ID"));
+
+  in.set("Semiconductor Blocks",semBlocks);
+  Teuchos::RCP<std::vector<string>> semMaterials = 
+    rcp(new std::vector<string>); 
+  if(semBlocks->size() > 0) {
+    for (size_t kk=0; kk<semBlocks->size(); kk++) {
+      semMaterials->push_back((*block_mat)[(*semBlocks)[kk]]);
+    }
+  } 
+  in.set("Semiconductor Materials",semMaterials);
+ 
   RCP<Evaluator<Traits>> e =
     rcp(new IC_Equilibrium_Potential<EvalT, Traits>(in));
   evaluators->push_back(e);
-
-  
 
   return true;
 } // end of createICEquilibriumPotential()
@@ -5407,5 +6367,294 @@ createICFunction(
   evaluators->push_back(e);
   return true;
 } // end of createICFunction()
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  setupMoleFraction()
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename EvalT>
+void charon::ClosureModelFactory<EvalT>::
+setupMoleFraction(const Teuchos::ParameterList& myModels) const {
+  using std::stringstream;
+  using Teuchos::ParameterList;
+
+  Material_Properties& matProperty = Material_Properties::getInstance();
+  const string& matName(myModels.get<string>("Material Name"));
+  if (matProperty.hasMoleFracDependence(matName)) {
+    if (!myModels.isSublist("Mole Fraction")) {
+      stringstream msg;
+      msg << "'Mole Fraction' must be specified for mole-fraction"
+	  << "\ndependent material '" << matName << "'" << std::endl;
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+    }
+
+    // check if mole fractions are specified correctly according to arity
+    const ParameterList& moleFracParamList = myModels.sublist("Mole Fraction");
+    for (ParameterList::ConstIterator model_it = moleFracParamList.begin();
+	 model_it != moleFracParamList.end(); ++model_it) {
+      const string key = model_it->first;
+      if (key.compare(0, 8, "Function") == 0) {
+	const Teuchos::ParameterEntry& entry = model_it->second;
+	const ParameterList& funcParamList = Teuchos::getValue<Teuchos::ParameterList>(entry);
+	const string funcType = funcParamList.get<string>("Function Type");
+	if (matProperty.getArityType(matName) == "Binary" or
+	    matProperty.getArityType(matName) == "Ternary") {
+	  if (funcType == "Uniform") {
+	    if (!funcParamList.isParameter("xMoleFrac Value")) {
+	      stringstream msg;
+	      msg << "'xMoleFrac Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	  } else if (funcType == "Linear") {
+	    if (!funcParamList.isParameter("xMoleFrac Start Value")) {
+	      stringstream msg;
+	      msg << "'xMoleFrac Start Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	    if (!funcParamList.isParameter("xMoleFrac End Value")) {
+	      stringstream msg;
+	      msg << "'xMoleFrac End Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	  }
+	} else if (matProperty.getArityType(matName) == "Quaternary") {
+	  if (funcType == "Uniform") {
+	    if (!funcParamList.isParameter("xMoleFrac Value")) {
+	      stringstream msg;
+	      msg << "'xMoleFrac Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	    if (!funcParamList.isParameter("yMoleFrac Value")) {
+	      stringstream msg;
+	      msg << "'yMoleFrac Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	  } else if (funcType == "Linear") {
+	    if (!funcParamList.isParameter("xMoleFrac Start Value")) {
+	      stringstream msg;
+	      msg << "'xMoleFrac Start Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	    if (!funcParamList.isParameter("xMoleFrac End Value")) {
+	      stringstream msg;
+	      msg << "'xMoleFrac End Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	    if (!funcParamList.isParameter("yMoleFrac Start Value")) {
+	      stringstream msg;
+	      msg << "'yMoleFrac Start Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	    if (!funcParamList.isParameter("yMoleFrac End Value")) {
+	      stringstream msg;
+	      msg << "'yMoleFrac End Value' must be specified for mole-fraction"
+		  << "\ndependent material '" << matName << "'" << std::endl;
+	      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, msg.str());
+	    }
+	  }
+	}
+      }
+    } // arity error check
+
+    // on demand mole-fraction material setup
+    matProperty.registerMoleFracMaterial(matName);
+
+    // bandgap mole fraction parameters setup
+    if (myModels.isSublist("Band Gap")) {
+      bool withTempDepBG = false;
+      const ParameterList& bgParamList(myModels.sublist("Band Gap"));
+      if (bgParamList.isType<string>("Value") and
+	  bgParamList.get<string>("Value") == "TempDep")
+	withTempDepBG = true;
+      if (withTempDepBG) {
+	double Eg300_b = 0.0, Eg300_c = 0.0;
+	double Eg300_0 = 0.0, Eg300_1 = 0.0;
+	double Chi300_b = 0.0, Chi300_c = 0.0;
+	double Chi300_0 = 0.0, Chi300_1 = 0.0;
+	double alpha_b = 0.0, alpha_c = 0.0;
+	double alpha_0 = 0.0, alpha_1 = 0.0;
+	double beta_b = 0.0, beta_c = 0.0;
+	double beta_0 = 0.0, beta_1 = 0.0;
+	// retrieve user input if specified
+	if (bgParamList.isSublist("Mole Fraction Parameters")) {
+	  const ParameterList& mf_params = bgParamList.sublist("Mole Fraction Parameters");
+	  if (mf_params.isSublist("Eg300")) {
+	    const ParameterList& Eg300_params = mf_params.sublist("Eg300");
+	    if (Eg300_params.isParameter("b"))
+	      Eg300_b = Eg300_params.get<double>("b");
+	    if (Eg300_params.isParameter("c"))
+	      Eg300_c = Eg300_params.get<double>("c");  
+	  }
+	  if (mf_params.isSublist("Chi300")) {
+	    const ParameterList& Chi300_params = mf_params.sublist("Chi300");
+	    if (Chi300_params.isParameter("b"))
+	      Chi300_b = Chi300_params.get<double>("b");
+	    if (Chi300_params.isParameter("c"))
+	      Chi300_c = Chi300_params.get<double>("c");
+	  }
+	  if (mf_params.isSublist("alpha")) {
+	    const ParameterList& alpha_params = mf_params.sublist("alpha");
+	    if (alpha_params.isParameter("b"))
+	      alpha_b = alpha_params.get<double>("b");
+	    if (alpha_params.isParameter("c"))
+	      alpha_c = alpha_params.get<double>("c");
+	  }
+	  if (mf_params.isSublist("beta")) {
+	    const ParameterList& beta_params = mf_params.sublist("beta");
+	    if (beta_params.isParameter("b"))
+	      beta_b = beta_params.get<double>("b");
+	    if (beta_params.isParameter("c"))
+	      beta_c = beta_params.get<double>("c");
+	  }
+	  if (mf_params.isParameter("Eg300(x=0)")) {
+	    Eg300_0 = mf_params.get<double>("Eg300(x=0)");
+	  }
+	  if (mf_params.isParameter("Eg300(x=1)")) {
+	    Eg300_1 = mf_params.get<double>("Eg300(x=1)");
+	  }
+	  if (mf_params.isParameter("Chi300(x=0)")) {
+	    Chi300_0 = mf_params.get<double>("Chi300(x=0)");
+	  }
+	  if (mf_params.isParameter("Chi300(x=1)")) {
+	    Chi300_1 = mf_params.get<double>("Chi300(x=1)");
+	  }
+	  if (mf_params.isParameter("alpha(x=0)")) {
+	    alpha_0 = mf_params.get<double>("alpha(x=0)");
+	  }
+	  if (mf_params.isParameter("alpha(x=1)")) {
+	    alpha_1 = mf_params.get<double>("alpha(x=1)");
+	  }
+	  if (mf_params.isParameter("beta(x=0)")) {
+	    beta_0 = mf_params.get<double>("beta(x=0)");
+	  }
+	  if (mf_params.isParameter("beta(x=1)")) {
+	    beta_1 = mf_params.get<double>("beta(x=1)");
+	  }
+	}
+	matProperty.setupMoleFracBandgapParams(matName,Eg300_b, Eg300_c,Chi300_b,Chi300_c,
+					       alpha_b,alpha_c,beta_b,beta_c, Eg300_0, Eg300_1,
+					       Chi300_0, Chi300_1, alpha_0, alpha_1, beta_0, beta_1);
+      } // withTempDepBG
+    } // bandgap mole fraction parameters setup
+
+    // relative permittivity mole fraction parameters setup
+    if (myModels.isSublist("Relative Permittivity")) {
+      const ParameterList& permParamList(myModels.sublist("Relative Permittivity"));
+      double Value_b = 0.0, Value_c = 0.0;
+      double Value_0 = 0.0, Value_1 = 0.0;
+      // retrieve user input if specified
+      if (permParamList.isSublist("Mole Fraction Parameters")) {
+	const ParameterList& mf_params = permParamList.sublist("Mole Fraction Parameters");
+	if (mf_params.isSublist("Value")) {
+	  const ParameterList& Value_params = mf_params.sublist("Value");
+	  if (Value_params.isParameter("b"))
+	    Value_b = Value_params.get<double>("b");
+	  if (Value_params.isParameter("c"))
+	    Value_c = Value_params.get<double>("c");  
+	  if (mf_params.isParameter("Value(x=0)")) {
+	    Value_0 = mf_params.get<double>("Value(x=0)");
+	  }
+	  if (mf_params.isParameter("Value(x=1)")) {
+	    Value_1 = mf_params.get<double>("Value(x=1)");
+	  }
+	}
+      }
+      matProperty.setupMoleFracRelPermittivityParams(matName,Value_b, Value_c, 
+						     Value_0, Value_1);
+    } // relative permittivity mole fraction parameters setup
+
+    // Mihai
+    // effective DOS mole fraction parameters setup
+    if (myModels.isSublist("Effective DOS")) {
+      const ParameterList& effDOSParamList(myModels.sublist("Effective DOS"));
+      if (effDOSParamList.isParameter("Value") and 
+	  effDOSParamList.isType<string>("Value") and 
+	  effDOSParamList.get<string>("Value") == "Simple") {
+	double Nc300_b = 0.0, Nc300_c = 0.0;
+	double Nc300_0 = 0.0, Nc300_1 = 0.0;
+        double Nv300_b = 0.0, Nv300_c = 0.0;
+	double Nv300_0 = 0.0, Nv300_1 = 0.0;
+        double Nc_F_b = 0.0, Nc_F_c = 0.0;
+        double Nc_F_0 = 0.0, Nc_F_1 = 0.0;
+        double Nv_F_b = 0.0, Nv_F_c = 0.0;
+        double Nv_F_0 = 0.0, Nv_F_1 = 0.0;
+	// retrieve user input if specified
+	if (effDOSParamList.isSublist("Mole Fraction Parameters")) {
+	  const ParameterList& mf_params = effDOSParamList.sublist("Mole Fraction Parameters");
+	  if (mf_params.isSublist("Nc300")) {
+	    const ParameterList& Nc300_params = mf_params.sublist("Nc300");
+	    if (Nc300_params.isParameter("b"))
+	      Nc300_b = Nc300_params.get<double>("b");
+	    if (Nc300_params.isParameter("c"))
+	      Nc300_c = Nc300_params.get<double>("c");  
+	  }
+	  if (mf_params.isSublist("Nc_F")) {
+	    const ParameterList& Nc_F_params = mf_params.sublist("Nc_F");
+	    if (Nc_F_params.isParameter("b"))
+	      Nc_F_b = Nc_F_params.get<double>("b");
+	    if (Nc_F_params.isParameter("c"))
+	      Nc_F_c = Nc_F_params.get<double>("c");  
+	  }
+          if (mf_params.isSublist("Nv300")) {
+	    const ParameterList& Nv300_params = mf_params.sublist("Nv300");
+	    if (Nv300_params.isParameter("b"))
+	      Nv300_b = Nv300_params.get<double>("b");
+	    if (Nv300_params.isParameter("c"))
+	      Nv300_c = Nv300_params.get<double>("c");  
+	  }
+          if (mf_params.isSublist("Nv_F")) {
+	    const ParameterList& Nv_F_params = mf_params.sublist("Nv_F");
+	    if (Nv_F_params.isParameter("b"))
+	      Nv_F_b = Nv_F_params.get<double>("b");
+	    if (Nv_F_params.isParameter("c"))
+	      Nv_F_c = Nv_F_params.get<double>("c");  
+	  }
+	  if (mf_params.isParameter("Nc300(x=0)")) {
+	    Nc300_0 = mf_params.get<double>("Nc300(x=0)");
+	  }
+	  if (mf_params.isParameter("Nc300(x=1)")) {
+	    Nc300_1 = mf_params.get<double>("Nc300(x=1)");
+	  }
+	  if (mf_params.isParameter("Nc_F(x=0)")) {
+	    Nc_F_0 = mf_params.get<double>("Nc_F(x=0)");
+	  }
+	  if (mf_params.isParameter("Nc_F(x=1)")) {
+	    Nc_F_1 = mf_params.get<double>("Nc_F(x=1)");
+	  }
+          if (mf_params.isParameter("Nv300(x=0)")) {
+	    Nv300_0 = mf_params.get<double>("Nv300(x=0)");
+	  }
+	  if (mf_params.isParameter("Nv300(x=1)")) {
+	    Nv300_1 = mf_params.get<double>("Nv300(x=1)");
+	  }
+	  if (mf_params.isParameter("Nv_F(x=0)")) {
+	    Nv_F_0 = mf_params.get<double>("Nv_F(x=0)");
+	  }
+	  if (mf_params.isParameter("Nv_F(x=1)")) {
+	    Nv_F_1 = mf_params.get<double>("Nv_F(x=1)");
+	  }
+	}
+	matProperty.setupMoleFracDOSParams(matName,Nc300_b,Nc300_c,Nv300_b,Nv300_c,
+					   Nc_F_b,Nc_F_c,Nv_F_b,Nv_F_c,Nc300_0,Nc300_1,
+					   Nv300_0,Nv300_1,Nc_F_0,Nc_F_1,Nv_F_0,Nv_F_1);
+      }
+    } // effective DOS mole fraction parameters setup
+    // Mihai
+
+
+  } // mole fraction material
+} // end of setupMoleFraction()
+
+
 
 #endif // CHARON_CLOSURE_MODEL_FACTORY_IMPL_HPP

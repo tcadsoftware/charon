@@ -1,0 +1,52 @@
+
+Import State File memristor.exo
+
+start output parameters
+  Output State File memristor.nlp.exo
+end output parameters
+
+start Physics Block Semiconductor
+  geometry block is tio2
+  standard discretization type is nlp gfem
+  material model is TiO2Parameter
+end Physics Block Semiconductor
+
+tpetra is on
+concentration scaling = 5e20
+lattice temperature = 300
+
+start Material Block TiO2Parameter
+  material name is TiO2
+  reference material is TiO2
+  relative permittivity = 10.0
+
+  start uniform doping named Function1
+    type is donor
+    concentration = 5e20
+  end uniform doping named Function1
+
+  start uniform doping named Function2
+    type is acceptor
+    concentration = 5e18
+  end uniform doping
+
+  fixed mobility for electrons is 1.0
+  fixed mobility for holes is 0.5
+  
+  start intrinsic concentration
+    model is old slotboom
+  end  
+end Material Block TiO2Parameter
+
+BC is ohmic for left on tio2 fixed at 0
+BC is ohmic for right on tio2 fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in tio2 is Equilibrium Potential
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block
+

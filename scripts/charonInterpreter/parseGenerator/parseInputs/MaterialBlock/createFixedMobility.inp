@@ -2,7 +2,7 @@
 
 interpreter name FixedMobility
 
-interpreter inputLine (fixed mobility) for [ (electrons) is {evalue} [ (holes) is {hvalue} ]]
+interpreter inputLine (fixed mobility) for [ (electrons) is {evalue} [ (holes) is {hvalue} [(ions) is {ivalue}]]]
 
 interpreter shortHelp { Set a fixed mobility value }
 
@@ -10,4 +10,4 @@ interpreter longHelp {Set a fixed mobility value <> value is the value }
 
 xmlOptional (electrons) Charon->Closure Models->{MaterialBlockName}->Electron Mobility,Value,double,{evalue}
 xmlOptional (holes) Charon->Closure Models->{MaterialBlockName}->Hole Mobility,Value,double,{hvalue}
-
+xmlOptional (ions) Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Value,double,{ivalue}

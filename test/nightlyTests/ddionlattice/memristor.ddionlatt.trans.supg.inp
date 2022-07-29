@@ -1,0 +1,80 @@
+import State File memristor.dd.equ.exo at index 1
+
+start output parameters
+      Output State File memristor.ddionlatt.trans.supg.exo
+      Output tabulated transient currents to current_time_ddionlatt_supg.csv
+      unscale variables is off
+end output parameters
+
+concentration scaling = 5e20
+tpetra is on
+
+start Physics Block Semiconductor
+      geometry block is tio2
+      standard discretization type is ddionlattice
+      discretization method is FEM-SUPG
+      solve ion equation is true
+      ion charge = 1
+      material model is TiO2Parameter
+      srh recombination is off
+      auger recombination is off
+      radiative recombination is off
+      band gap narrowing is off
+end Physics Block Semiconductor
+
+start Material Block TiO2Parameter
+      material name is TiO2
+      reference material is TiO2
+      relative permittivity = 10.0
+
+      start uniform doping named Function1
+        concentration = 5e18
+        type is acceptor
+      end uniform doping
+
+      fixed mobility for electrons is 1.0
+      fixed mobility for holes is 0.5
+      fixed mobility for ions is 1e-10
+
+      start intrinsic concentration
+        model is old slotboom
+      end
+end Material Block TiO2Parameter
+
+BC is ohmic for left on tio2 fixed at 0.0 with fermi pinning and contact ion density = 5e20
+BC is ohmic for right on tio2 fixed at 3.0 with fermi pinning and contact ion density = 5e20
+BC is thermal contact for left on tio2 fixed at 300
+BC is thermal contact for right on tio2 fixed at 300
+
+Initial conditions for ELECTRIC_POTENTIAL in tio2 is Exodus File
+Initial Conditions for ELECTRON_DENSITY in tio2 is Exodus File
+Initial Conditions for HOLE_DENSITY in tio2 is Exodus File
+Initial conditions for ION_DENSITY in tio2 is constant = 0.1
+Initial conditions for LATTICE_TEMPERATURE in tio2 is constant = 1.0
+
+start solver block
+  start tpetra block
+    problem type is tempus
+    verbosity level is high
+    linear solver is aztecOO
+    maximum number nonlinear iterations = 15
+    nonlinear solver residual tolerance = 1e-8
+    time step size is variable
+    time integrator final time = 1e-2
+    time integrator initial step size = 1e-6
+    time integrator minimum step size = 1e-8
+    time integrator maximum step size = 1.0
+
+    start nonlinear solver wrms block
+      absolute tolerance = 1e-8
+      relative tolerance = 1e-4
+      alpha = 1.0
+      beta = 0.5
+    end
+
+  end tpetra block
+end solver block
+
+
+
+

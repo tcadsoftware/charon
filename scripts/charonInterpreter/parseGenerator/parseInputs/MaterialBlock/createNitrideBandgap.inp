@@ -1,0 +1,9 @@
+interpreter name NitrideBandgap
+
+interpreter inputLine (Nitride Bandgap)
+
+interpreter shortHelp {Sets the bandgap for nitrides in this material block}
+
+interpreter longHelp {Sets the bandgap for binary and ternary nitrides in this material block}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap,Value,string,Nitride

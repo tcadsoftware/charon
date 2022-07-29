@@ -1,0 +1,9 @@
+interpreter name NitrideEfectiveDOS
+
+interpreter inputLine (Nitride Effective DOS)
+
+interpreter shortHelp {Sets the Effective DOS for nitrides in this material block}
+
+interpreter longHelp {Sets the Effective DOS for binary and ternary nitrides in this material block}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Effective DOS,Value,string,Nitride

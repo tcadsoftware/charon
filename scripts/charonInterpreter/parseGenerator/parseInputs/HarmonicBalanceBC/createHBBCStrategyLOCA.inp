@@ -1,0 +1,38 @@
+interpreter name HBBCStrategyLOCA
+
+interpreter inputLine (small signal sweep from) {potential1} to {potential2} [(with amplitude) {ssAmplitude} [(with phase shift) {ssPhaseShift} [(with frequency) {ssFrequency}]]]
+
+interpreter shortHelp {Specify a small signal analysis while performing a DC sweep.}
+
+interpreter longHelp {Specify a small signal analysis while performing a DC sweep. <> potential1 is the beginning voltage in a LOCA sweep <> potential2 is the ending voltage in a LOCA sweep <> ssAmplitude is the small-signal perturbation amplitude <> ssPhaseShift is the small-signal phase shift <> ssFrequency is the small-signal frequency.}
+
+# Set the data parameter to a string
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data,Varying Voltage,string,Parameter
+
+# Modify the solver type from NOX to LOCA
+xmlRequired Charon->Solution Control,Piro Solver,string,LOCA
+
+#LOCA Parameters
+xmlRequired Charon->Solution Control->LOCA->Predictor,Method,string,Constant
+xmlRequired Charon->Solution Control->LOCA->Stepper,Initial Value,double,{potential1}
+xmlRequired Charon->Solution Control->LOCA->Stepper,Continuation Parameter,string,Varying Voltage
+xmlRequired Charon->Solution Control->LOCA->Stepper,Max Steps,int,1000
+xmlRequired Charon->Solution Control->LOCA->Stepper,Max Value,double,{potential2}
+xmlRequired Charon->Solution Control->LOCA->Stepper,Min Value,double,{potential1}
+xmlRequired Charon->Solution Control->LOCA->Stepper,Compute Eigenvalues,bool,0
+xmlRequired Charon->Solution Control->LOCA->Step Size,Initial Step Size,double,1.0
+
+# Set the parameters block
+xmlRequired Charon->Active Parameters,Number of Parameter Vectors,int,1
+xmlRequired Charon->Active Parameters->Parameter Vector 0,Number,int,1
+xmlRequired Charon->Active Parameters->Parameter Vector 0,Parameter 0,string,Varying Voltage
+xmlRequired Charon->Active Parameters->Parameter Vector 0,Initial Value 0,double,{potential1}
+xmlRequired use Modifier 0
+
+xmlOptional (with amplitude) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Small Signal Perturbation,Amplitude,double,{ssAmplitude}
+xmlOptional (with phase shift) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Small Signal Perturbation,Phase Shift,double,{ssPhaseShift}
+xmlOptional (with frequency) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Small Signal Perturbation,Frequency,double,{ssFrequency}
+
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Small Signal Perturbation,Frequency,double,1e0
+xmlDefault Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Small Signal Perturbation,Phase Shift,double,0
+

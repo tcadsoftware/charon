@@ -5,6 +5,10 @@
 #**WORKSPACE=/gpfs1/glhenni/workspace
 ####################################################
 
+# Set this appropriately if the stupid license servers
+# change
+export LM_LICENSE_FILE="28518@cee-infra009.sandia.gov"
+
 # Set to "1" to remove the directories containing the test
 # repositories so that they can be cloned from scratch
 CLEANTESTREPO=0
@@ -108,21 +112,21 @@ elif [ "${TEST_TYPE}" = "h" ]
 then
   SBATCH_ARGS="heavy"
   REPORT_NAME="WeeklyHeavy"
-  PART="batch"
-  TIME="8:00:00"
+  PART="short,batch"
+  TIME="3:59:00"
 elif [ "${TEST_TYPE}" = "x" ]
 then
   SBATCH_ARGS="xyce"
   REPORT_NAME="XyceHeavy"
-  PART="batch"
-  TIME="8:00:00"
+  PART="short,batch"
+  TIME="3:59:00"
 else
     echo "ERROR: Uknown script option!"
     exit 1
 fi
 
 export todaysDate=$(date +%y-%m-%d)
-export pathToReport='/projects/charon/Charon2/Testing/Regression/Skybridge'
+export pathToReport='/projects/charon/Testing/Regression/Skybridge'
 
 # Delete files older than 30 days
 find ${pathToReport} -mtime +30 -exec rm {} \;
@@ -135,10 +139,13 @@ export reportName=${pathToReport}/${REPORT_NAME}Report-${todaysDate}
 cat ${WORKSPACE}/tcad-charon/src/cmake/ctest/machines/skybridge/skybridge.sbatch.sh.TEMPL | sed -e s/TIMEVAL/${TIME}/g > ${WORKSPACE}/batch-job.sh
 
 # Submit the job to the queue
-sbatch --output=${reportName} \
+chmod +x ${WORKSPACE}/batch-job.sh
+srun --output=${reportName} \
        --error=${reportName} \
        --account=FY140041 \
+       --time=${TIME} \
        --partition=${PART} \
+       --job-name=charon_nt \
        --nodes=1 \
        ${WORKSPACE}/batch-job.sh ${SBATCH_ARGS}
 

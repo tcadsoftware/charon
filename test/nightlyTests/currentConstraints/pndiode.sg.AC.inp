@@ -1,5 +1,7 @@
 
-Import State File pndiode.sg.AC.exo at index 1
+Import State File pndiode.sg.exo at index 1
+
+tpetra is on
 
 start output parameters
       Output State File pndiode.sg.AC.exo
@@ -45,10 +47,10 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
 Initial Conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use solver pack 3
-      nonlinear solver tolerance = 1.0e-12
-      max nonlinear iterations = 30
-      line search method is backtrack
+  start tpetra block
+    problem type is constrained steady state
+    verbosity level is high
+  end
 end solver block
 
 lattice temperature = 300

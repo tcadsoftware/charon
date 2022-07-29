@@ -7,7 +7,8 @@ start output parameters
       unscale variables is on
 end output parameters
 
-assembly workset = 2000
+assembly workset = 50
+tpetra is on
 
 start Physics Block Semiconductor
       geometry block is silicon
@@ -48,8 +49,15 @@ initial conditions for ELECTRON_DENSITY in Default is constant = 0.0
 initial conditions for HOLE_DENSITY in Default is constant = 0.0
 
 start solver block
-      use solver pack 5
-      nonlinear solver tolerance = 1.0e-5
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+    start nonlinear solver wrms block
+      absolute tolerance = 1.0e-16
+      relative tolerance = 1.0e-09
+      alpha = 1.0
+      beta = 0.5
+    end
+  end
 end solver block
 

@@ -1,0 +1,8 @@
+interpreter name ElectronPowerDep
+
+interpreter inputLine (electron electric field power dependency) = {value}
+
+interpreter shortHelp {The trap electron field-dependent cross section power dependency exponent}
+interpreter longHelp {The trap electron field-dependent cross section power dependency exponent, a positive number}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Electron Electric Field Power Dependency,double,{value}

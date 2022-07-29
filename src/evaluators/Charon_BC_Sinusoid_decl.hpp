@@ -8,6 +8,7 @@
 #include "Charon_Names.hpp"
 #include "Charon_FermiDirac_Integral.hpp"
 #include "Charon_Scaling_Parameters.hpp"
+#include "Panzer_ScalarParameterEntry.hpp"
 
 using panzer::Cell;
 using panzer::BASIS;
@@ -78,6 +79,10 @@ private:
 
   Teuchos::RCP<const charon::Names> m_names;
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
+
+  Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+  std::string contactVoltageName;
+
 
 }; // end of class BC_Sinusoid
 

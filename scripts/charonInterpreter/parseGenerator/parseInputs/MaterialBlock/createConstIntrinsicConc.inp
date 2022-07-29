@@ -1,0 +1,9 @@
+interpreter name IntrinsicConcentration
+
+interpreter inputLine (constant intrinsic concentration) = {intrconc}
+
+interpreter shortHelp {Sets intrinsic concentration for the material in this material block}
+
+interpreter longHelp {Sets the intrinsic concentration for the material in this material block <> intrconc is the value of the intrinsic concentration}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Intrinsic Concentration,Value,double,{intrconc}

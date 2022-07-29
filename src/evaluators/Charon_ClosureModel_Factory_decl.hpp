@@ -114,6 +114,11 @@ namespace charon
         const Teuchos::ParameterList&               defaults,
         const std::string&                          key,
         const Teuchos::RCP<panzer::IntegrationRule> ir) const;
+      bool createDOFGradient(
+        EvaluatorVector                evaluators,
+        const Teuchos::ParameterList&  defaults,
+        const std::string&             key,
+        const Teuchos::ParameterList&  cvfem_data) const;
       bool createDopingStepJunction(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
@@ -128,6 +133,21 @@ namespace charon
         const bool&                   withIonizDon,
         const Teuchos::RCP<panzer::GlobalData>& globalData,
         const Teuchos::ParameterList& user_data,
+        const Teuchos::ParameterList& models) const;
+      bool createRelPermittivity(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const std::string&            matName,
+        const Teuchos::ParameterList& models) const;
+      bool createPermittivityNitride(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const std::string&            matName,
+        const Teuchos::ParameterList& models) const;
+      bool createBandGapNitride(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const std::string&            matName,
         const Teuchos::ParameterList& models) const;
       bool createBandGapTempDep(
         EvaluatorVector               evaluators,
@@ -163,6 +183,11 @@ namespace charon
         const Teuchos::ParameterList& defaults,
         const std::string&            matName,
         const Teuchos::ParameterList& models = Teuchos::ParameterList()) const;
+      bool createEffectiveDOSNitride(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const std::string&            matName,
+        const Teuchos::ParameterList& models = Teuchos::ParameterList()) const;
       bool createSRHLifetimeFunction(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
@@ -180,7 +205,8 @@ namespace charon
         const Teuchos::ParameterList& defaults,
         const CarrierType&            type,
         const std::string&            matName,
-        const Teuchos::ParameterList& models) const;
+        const Teuchos::ParameterList& models,
+        const bool useSuppliedParameterList) const;
       bool createMobilityMasetti(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
@@ -293,6 +319,13 @@ namespace charon
         const std::string&            eqnSetType,
         const Teuchos::ParameterList& models,
         const Teuchos::ParameterList& cvfem_data) const;
+      bool createBand2BandTunnelingLocal(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const std::string& matName,
+        const std::string& eqnSetType,
+        const Teuchos::ParameterList& models,
+        const Teuchos::ParameterList& cvfem_data) const;
       bool createHeatCapacityTempDep(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
@@ -351,6 +384,7 @@ namespace charon
       bool createMoleFractionFunction(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
+        const std::string&            matName,
         const Teuchos::ParameterList& models) const;
       bool createBulkFixChargeFunction(
         EvaluatorVector               evaluators,
@@ -374,6 +408,14 @@ namespace charon
         const Teuchos::ParameterList& defaults,
         const bool&                   bUseFD) const;
       bool createRecombRateTrapSRH(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const std::string&            matName,
+        const Teuchos::ParameterList& models,
+        const std::string&            eqnSetType,
+        const std::string&            drForce,
+        const Teuchos::ParameterList& cvfem_data) const;
+      bool createRecombRateDynamicTraps(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
         const std::string&            matName,
@@ -421,16 +463,15 @@ namespace charon
         const std::string&            auger,
         const std::string&            opt_gen,
         const std::string&            ava_gen,
+        const std::string&            bbtGen,
         const std::string&            eqnSetType,
         const Teuchos::ParameterList& cvfem_data) const;
       bool createIntrinsicFermiEnergy(
         EvaluatorVector               evaluators,
-        const Teuchos::ParameterList& defaults,
-        const std::string&            eqnSetType) const;
+        const Teuchos::ParameterList& defaults) const;
       bool createCondValeBand(
         EvaluatorVector               evaluators,
-        const Teuchos::ParameterList& defaults,
-        const std::string&            eqnSetType) const;
+        const Teuchos::ParameterList& defaults) const;
       bool createDegeneracyFactor(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
@@ -480,6 +521,51 @@ namespace charon
         const std::string&                          value,
         Teuchos::ParameterList&                     in,
         PHX::FieldManager<panzer::Traits>&          fm) const;
+      bool createManufacturedSolution(
+        EvaluatorVector                             evaluators,
+        const Teuchos::ParameterList&               defaults,
+        const std::string&                          value,
+        Teuchos::ParameterList&                     in,
+        const Teuchos::RCP<panzer::IntegrationRule> ir,
+        const Teuchos::ParameterList&               userData,
+        const Teuchos::RCP<panzer::GlobalData>&      globalData,
+        PHX::FieldManager<panzer::Traits>&          fm) const;        
+      bool createNormCalculationL2Error(
+        EvaluatorVector                             evaluators,
+        const Teuchos::ParameterList&               defaults,
+        const std::string&                          value,
+        Teuchos::ParameterList&                     in,
+        const Teuchos::RCP<panzer::IntegrationRule> ir,
+        const Teuchos::ParameterList&               userData,
+        const Teuchos::RCP<panzer::GlobalData>&      globalData,
+        PHX::FieldManager<panzer::Traits>&          fm) const;
+      bool createNormCalculationH1Error(
+        EvaluatorVector                             evaluators,
+        const Teuchos::ParameterList&               defaults,
+        const std::string&                          value,
+        Teuchos::ParameterList&                     in,
+        const Teuchos::RCP<panzer::IntegrationRule> ir,
+        const Teuchos::ParameterList&               userData,
+        const Teuchos::RCP<panzer::GlobalData>&      globalData,
+        PHX::FieldManager<panzer::Traits>&          fm) const;
+      bool createNormCalculationL2(
+        EvaluatorVector                             evaluators,
+        const Teuchos::ParameterList&               defaults,
+        const std::string&                          value,
+        Teuchos::ParameterList&                     in,
+        const Teuchos::RCP<panzer::IntegrationRule> ir,
+        const Teuchos::ParameterList&               userData,
+        const Teuchos::RCP<panzer::GlobalData>&      globalData,
+        PHX::FieldManager<panzer::Traits>&          fm) const;
+      bool createNormCalculationH1(
+        EvaluatorVector                             evaluators,
+        const Teuchos::ParameterList&               defaults,
+        const std::string&                          value,
+        Teuchos::ParameterList&                     in,
+        const Teuchos::RCP<panzer::IntegrationRule> ir,
+        const Teuchos::ParameterList&               userData,
+        const Teuchos::RCP<panzer::GlobalData>&      globalData,
+        PHX::FieldManager<panzer::Traits>&          fm) const;
       bool createThermodiffCoeffDefault(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults) const;
@@ -513,7 +599,8 @@ namespace charon
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
         const std::string&            key, 
-	const Teuchos::ParameterList&  userData) const;
+	const Teuchos::ParameterList& userData,
+	const Teuchos::RCP<std::vector<std::string>> semBlocks) const;
       bool createICGauss(
         EvaluatorVector               evaluators,
         const Teuchos::ParameterList& defaults,
@@ -524,6 +611,13 @@ namespace charon
         const Teuchos::ParameterList& defaults,
         const std::string&            key,
         const Teuchos::ParameterList& plist) const;
+      bool createInitialPotentialGrad(
+        EvaluatorVector               evaluators,
+        const Teuchos::ParameterList& defaults,
+        const Teuchos::ParameterList& userData,
+        const Teuchos::ParameterList& cvfem_data) const; 
+      void setupMoleFraction(const Teuchos::ParameterList& myModels) const; 
+
   }; // end of class ClosureModelFactory
 
 } // end of namespace charon

@@ -17,7 +17,9 @@ namespace charon {
 RythmosObserver_ClusterObserver::
 RythmosObserver_ClusterObserver(const std::vector<std::string> & response_names,
                                 const std::vector<std::string> & parameter_names,
-                                const Teuchos::RCP<charon::Scaling_Parameters> & scale_params) :
+				Teuchos::RCP<panzer::ParamLib> const& parameterLibrary,
+                               const Teuchos::RCP<charon::Scaling_Parameters> & scale_params) :
+  parameterLibrary_(parameterLibrary),
   m_scale_params(scale_params),
   m_response_names(response_names),
   m_parameter_names(parameter_names)

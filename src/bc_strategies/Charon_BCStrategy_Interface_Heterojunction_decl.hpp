@@ -78,6 +78,7 @@ namespace charon {
     double tunnelMass;
     bool field_spy_;
 
+    double surfCharge;
   };
 
 }

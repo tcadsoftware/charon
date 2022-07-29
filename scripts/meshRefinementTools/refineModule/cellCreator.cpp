@@ -281,6 +281,8 @@ void cellCreator::recursiveCreateCells(int idcell, int level, double xlo, double
   x[1] = ylo;
   fValues[3] = function.evaluateFunction(x);
 
+  //std::cout<<" Function values "<<fValues[0]<<"    "<<fValues[1]<<"    "<<fValues[2]<<"    "<<fValues[3]<<std::endl;
+
   //If any one of the fValues differs in sign from the others, createflag = 0
   //If all fValues have the same sign, createflag = 1
   bool allPos=true, allNeg=true;

@@ -7,6 +7,7 @@ start output parameters
 end output parameters
 
 Assembly Workset = 1
+tpetra is on
 
 start Physics Block Semiconductor
       geometry block is gan
@@ -27,7 +28,7 @@ start Material Block ganParameter
 	    donor concentration = 1e16
 	    junction location = 0.5
 	    dopant order is PN
-            direction is x 
+            direction is x
       end step junction doping
 
       start Farahmand Mobility
@@ -48,8 +49,8 @@ Initial Conditions for ELECTRON_DENSITY in gan is Exodus File
 Initial Conditions for HOLE_DENSITY in gan is Exodus File
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
-      thyra function scaling is Row Sum
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

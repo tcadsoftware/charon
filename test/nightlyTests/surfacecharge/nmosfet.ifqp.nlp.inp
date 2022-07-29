@@ -2,6 +2,7 @@
 Import State File "nmosfet.exo"
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
       Output State File nmosfet.ifqp.nlp.exo
@@ -65,8 +66,8 @@ start surface charge bc for sheet
 end surface charge bc for sheet
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1e-10
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
-

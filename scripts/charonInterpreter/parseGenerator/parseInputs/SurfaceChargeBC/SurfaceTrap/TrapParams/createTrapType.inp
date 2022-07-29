@@ -1,11 +1,12 @@
 
 interpreter name TrapType
 
-interpreter inputLine (type is) {trapType}
+interpreter inputLine (type is) [ (donor) [ (acceptor) ]]
 
 interpreter shortHelp {Specify surface trap type which is either Acceptor or Donor}
 
 interpreter longHelp {Specify surface trap type which is either Acceptor or Donor}
 
-xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Trap Type,string,{trapType}
+xmlOptional (donor) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Trap Type,string,Donor
 
+xmlOptional (acceptor) Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Trap Type,string,Acceptor

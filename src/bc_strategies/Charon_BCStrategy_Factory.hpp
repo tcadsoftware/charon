@@ -16,6 +16,7 @@
 #include "Charon_BCStrategy_Dirichlet_ContactOnInsulator.hpp"
 #include "Charon_BCStrategy_Dirichlet_LinearRamp.hpp"
 #include "Charon_BCStrategy_Dirichlet_Sinusoid.hpp"
+#include "Charon_BCStrategy_Dirichlet_Trapezoid.hpp"
 #include "Charon_BCStrategy_Dirichlet_Periodic.hpp"
 #include "Charon_BCStrategy_Dirichlet_BJT1DBaseContact.hpp"
 #include "Charon_BCStrategy_Dirichlet_CurrentConstraint.hpp"
@@ -30,6 +31,8 @@
 #include "Charon_BCStrategy_FreqDom.hpp"
 #include "Charon_BCStrategy_Dirichlet_SchottkyContact.hpp"
 #include "Charon_BCStrategy_Neumann_SchottkyContact.hpp"
+#include "Charon_BCStrategy_Neumann_DynamicTraps.hpp"
+#include "Charon_BCStrategy_GateTunneling.hpp"
 
 namespace charon {
 
@@ -46,6 +49,8 @@ namespace charon {
     charon::BCStrategy_Dirichlet_LinearRamp, BCStrategy_Dirichlet_LinearRamp)
   PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
     charon::BCStrategy_Dirichlet_Sinusoid, BCStrategy_Dirichlet_Sinusoid)
+  PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
+    charon::BCStrategy_Dirichlet_Trapezoid, BCStrategy_Dirichlet_Trapezoid)
   PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
     charon::BCStrategy_Dirichlet_MMS, BCStrategy_Dirichlet_MMS)
   PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
@@ -84,6 +89,12 @@ namespace charon {
   PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
     charon::BCStrategy_Neumann_SchottkyContact,
     BCStrategy_Neumann_SchottkyContact)
+  PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
+    charon::BCStrategy_Neumann_DynamicTraps,
+    BCStrategy_Neumann_DynamicTraps)
+  PANZER_DECLARE_BCSTRATEGY_TEMPLATE_BUILDER(
+    charon::BCStrategy_GateTunneling,
+    BCStrategy_GateTunneling)
 
   struct BCFactory : public panzer::BCStrategyFactory {
     bool throwOnFailure_;
@@ -110,6 +121,8 @@ namespace charon {
         BCStrategy_Dirichlet_LinearRamp)
       PANZER_BUILD_BCSTRATEGY_OBJECTS("Sinusoid",
         BCStrategy_Dirichlet_Sinusoid)
+      PANZER_BUILD_BCSTRATEGY_OBJECTS("Trapezoid",
+        BCStrategy_Dirichlet_Trapezoid)
       PANZER_BUILD_BCSTRATEGY_OBJECTS("MMS", BCStrategy_Dirichlet_MMS)
       PANZER_BUILD_BCSTRATEGY_OBJECTS("Periodic",
         BCStrategy_Dirichlet_Periodic)
@@ -139,6 +152,10 @@ namespace charon {
         BCStrategy_Dirichlet_SchottkyContact)
       PANZER_BUILD_BCSTRATEGY_OBJECTS("Neumann Schottky Contact",
         BCStrategy_Neumann_SchottkyContact)
+      PANZER_BUILD_BCSTRATEGY_OBJECTS("Neumann Dynamic Traps",
+        BCStrategy_Neumann_DynamicTraps)
+      PANZER_BUILD_BCSTRATEGY_OBJECTS("Gate Tunneling",
+        BCStrategy_GateTunneling)
 
       if(throwOnFailure_) {
         TEUCHOS_TEST_FOR_EXCEPTION(!found, std::logic_error,

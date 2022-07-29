@@ -1,0 +1,11 @@
+
+
+interpreter name Valuex0
+
+interpreter inputLine (value for x at 0 is) {val} 
+
+interpreter shortHelp {Set relative permittivity for mole fraction x=0}
+
+interpreter longHelp {Set relative permittivity for mole fraction x=0}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Relative Permittivity->Mole Fraction Parameters,Value(x=0),double,{val}

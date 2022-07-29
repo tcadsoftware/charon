@@ -1,0 +1,9 @@
+interpreter name MaxThermalCond 
+
+interpreter inputLine (max thermal conductivity) = {maxcond} 
+
+interpreter shortHelp {Set the maximum thermal conductivity in W/(cm.K) for the LinearIonDep thermal conductivity model}
+
+interpreter longHelp {Set the maximum thermal conductivity in W/(cm.K) for the LinearIonDep thermal conductivity model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Maximum Thermal Conductivity,double,{maxcond}

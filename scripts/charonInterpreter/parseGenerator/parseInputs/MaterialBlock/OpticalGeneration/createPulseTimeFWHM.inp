@@ -1,0 +1,14 @@
+interpreter name PulseTimeFWHM
+
+interpreter inputLine (Pulse time FWHM =) {timeWidth}
+
+interpreter shortHelp {set the full width half max time width of the pulse}
+
+interpreter longHelp {set the full width half max time width of the pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Time FWHM,double,{timeWidth}
+
+#Setting the direction to both for now--not sure if it's worth adding one sided
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Time Direction,string,Both
+

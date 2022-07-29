@@ -62,6 +62,7 @@ setup(const panzer::PhysicsBlock& side_pb,
   using std::string;
   using std::pair;
 
+
   // get the physics block parameter list
   RCP<const ParameterList> pbParamList = side_pb.getParameterList();
 
@@ -83,7 +84,8 @@ setup(const panzer::PhysicsBlock& side_pb,
   Teuchos::RCP<std::vector<double> > eta = this->freqDomParamsRCP->getRemappedHarmonics();
   for(int i = 0 ; i < this->freqDomParamsRCP->getNumTotalHarmonics() ; i++){
     (this->m_fd_names).emplace_back(Teuchos::rcp(new charon::Names(num_dim,prefix,discfields,discsuffix, "_CosH"+std::to_string((*eta)[i])+"_" )));
-    (this->m_fd_names).emplace_back(Teuchos::rcp(new charon::Names(num_dim,prefix,discfields,discsuffix, "_SinH"+std::to_string((*eta)[i])+"_" )));
+    if(i > 0)
+      (this->m_fd_names).emplace_back(Teuchos::rcp(new charon::Names(num_dim,prefix,discfields,discsuffix, "_SinH"+std::to_string((*eta)[i])+"_" )));
   }
 
   // second, determine the time domain BC strategy
@@ -103,7 +105,7 @@ setup(const panzer::PhysicsBlock& side_pb,
 
   // finally, conditionally use those charon::Names objects to add the required DOFs
   // as required by the time domain BC strategy
-  for(int i = 0 ; i < 2*((this->freqDomParamsRCP)->getNumTotalHarmonics() ) ; i++)
+  for(int i = 0 ; i < 2*((this->freqDomParamsRCP)->getNumTotalHarmonics() -1 ) +1 ; i++)
   {
     // get the Data parameter list
     RCP<const Teuchos::ParameterList> dataPList = this->m_bc.params();
@@ -145,7 +147,7 @@ setup(const panzer::PhysicsBlock& side_pb,
         // For now assume that potential and carrier density use the same basis
         this->basis = dof_it->second;
       }
-    
+
       // for the DD+Lattice and DD+Lattice+Ion formulations, need to gather T (lattice temperature), since (phi,n,p) depend on T
       if (dof_it->first == n.dof.latt_temp)
       {
@@ -399,7 +401,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
             // sin(2*pi*\eta_i*tp) is such that \eta_i is unitless and tp is unitless
             // tp = t/(t0 * f0) and tp ranges between 0 and 1 
           dataPL.set<double>("Small Signal Perturbation", value);
-          //std::cout << "At time " << std::to_string(tp) << " Voltage is " << value << " for " << ebID_pb << " " << pbID << " " << ebID_bc << std::endl;
+          //std::cout << "At tp " << std::to_string(tp) << "/time " << std::to_string(timepoint) << " Small Signal Perturbation is " << value << " for " << ebID_pb << " " << pbID << " " << ebID_bc << std::endl;
         }
 
       }
@@ -480,6 +482,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     }
 
     // 'Target_ELECTRIC POTENTIAL_SinH'+'h_'
+    if(h>0)
     {
       Teuchos::ParameterList p;
       p.set("Sum Name",      (*this->fd_phi_target_sin_names)[h]); // this should be a frequency domain dof name
@@ -510,7 +513,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     }
 
     // 'Target_ELECTRON DENSITY_SinH'+'h_'
-    if(solveElectrons)
+    if(solveElectrons && h > 0)
     {
       Teuchos::ParameterList p;
       p.set("Sum Name",      (*this->fd_elec_target_sin_names)[h]); // this should be a frequency domain dof name
@@ -540,7 +543,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     }
 
     // 'Target_HOLE DENSITY_SinH'+'h_'
-    if(solveHoles)
+    if(solveHoles && h > 0)
     {
       Teuchos::ParameterList p;
       p.set("Sum Name",      (*this->fd_hole_target_sin_names)[h]); // this should be a frequency domain dof name

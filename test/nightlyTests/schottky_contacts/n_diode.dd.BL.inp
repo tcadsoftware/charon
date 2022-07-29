@@ -8,6 +8,7 @@ end output parameters
 
 
 Assembly Workset = 50
+tpetra is on
 lattice temperature = 300.0
 concentration scaling = 1.0e16
 
@@ -33,7 +34,6 @@ start Material Block siliconParameter
       end uniform doping named Function1
 end Material Block siliconParameter
 
-
 start Schottky BC for anode on silicon
       work function = 4.75
       voltage is fixed at 0.0 
@@ -49,23 +49,13 @@ end Schottky BC for anode on silicon
 
 BC is ohmic for cathode on silicon fixed at 0
 
-
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
 Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density 
 Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 
-
-
-
-
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
-      line search method is full step
-      aztec max iterations = 300
-      aztec tolerance = 1e-5
-      aztec Krylov subspace size = 200
-      ifpack level of fill = 3
-      thyra function scaling is Row Sum
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

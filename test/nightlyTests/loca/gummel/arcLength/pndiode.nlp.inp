@@ -5,11 +5,12 @@ start output parameters
 end output parameters
 
 assembly workset = 2000
+tpetra is on
 lattice temperature = 300
 
 start Physics Block Semiconductor
       geometry block is silicon
-      standard discretization type is nlp
+      standard discretization type is nlp gfem
       material model is siliconParameter
 end Physics Block Semiconductor
 
@@ -22,6 +23,7 @@ start Material Block siliconParameter
             donor concentration = 1e16
             junction location = 0.5
             dopant order is PN
+            direction is x
       end step junction doping
 
 end Material Block siliconParameter
@@ -32,7 +34,8 @@ BC is ohmic for cathode on silicon fixed at 0
 initial conditions for ELECTRIC_POTENTIAL in Default is constant = 0.0
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

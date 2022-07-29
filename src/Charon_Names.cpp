@@ -17,6 +17,10 @@ setDOFNames(DOF_Names& dof, const std::string& composite_prefix, const std::stri
   register_pdn(dof.hdensity);
   dof.iondensity = composite_prefix+"ION_DENSITY"+fd_suffix;
   register_pdn(dof.iondensity);
+  dof.elec_qpotential = composite_prefix+"ELECTRON_QUANTUM_POTENTIAL"+fd_suffix;
+  register_pdn(dof.elec_qpotential);
+  dof.hole_qpotential = composite_prefix+"HOLE_QUANTUM_POTENTIAL"+fd_suffix;
+  register_pdn(dof.hole_qpotential);
 
   // this should be the same name as field.latt_temp, so that the temperature-dependent
   // evaluators can be used for both DD and DD+LatticeT formulations
@@ -31,6 +35,8 @@ charon::Names::Names(int equation_dimension,
                      const std::string fd_suffix /*= "" */) :
   m_equation_dimension(equation_dimension),
   m_prefix(prefix),
+  m_discfields(discfields),
+  m_discsuffix(discsuffix),
   m_fd_suffix(fd_suffix)
 {
  {
@@ -80,6 +86,7 @@ charon::Names::Names(int equation_dimension,
   field.elec_klaassen_mobility = prefix+"Klaassen Electron Mobility"+fd_suffix;
   field.elec_shirahata_mobility = prefix+"Shirahata Electron Mobility"+fd_suffix;
   field.elec_philips_thomas_mobility = prefix+"Philips-Thomas Electron Mobility"+fd_suffix;
+  field.elec_arora_mobility = prefix+"Arora Electron Mobility"+fd_suffix; 
   field.elec_diff_coeff = prefix+"Electron Diffusion Coefficient"+fd_suffix;
   field.elec_efield = prefix+"Electron Electric Field"+fd_suffix;
   field.elec_grad_negpot = prefix+"Electron Centroid Negative Potential Gradient"+fd_suffix;
@@ -101,6 +108,7 @@ charon::Names::Names(int equation_dimension,
   field.hole_klaassen_mobility = prefix+"Klaassen Hole Mobility"+fd_suffix;
   field.hole_shirahata_mobility = prefix+"Shirahata Hole Mobility"+fd_suffix;
   field.hole_philips_thomas_mobility = prefix+"Philips-Thomas Hole Mobility"+fd_suffix;
+  field.hole_arora_mobility = prefix+"Arora Hole Mobility"+fd_suffix; 
   field.hole_diff_coeff = prefix+"Hole Diffusion Coefficient"+fd_suffix;
   field.hole_efield = prefix+"Hole Electric Field"+fd_suffix;
   field.hole_grad_negpot = prefix+"Hole Centroid Negative Potential Gradient"+fd_suffix;
@@ -117,6 +125,10 @@ charon::Names::Names(int equation_dimension,
   field.hole_deg_factor = prefix+"Hole Degeneracy Factor"+fd_suffix;
   field.hole_eff_velocity = prefix+"Hole Effective Velocity"+fd_suffix;
 
+  field.displacement_curr_density = prefix+"Displacement Current Density"+fd_suffix;
+  field.grad_phi_prev = prefix+"Potential Gradient Prev"+fd_suffix;
+  field.cont_disp_curr_density = prefix+"Cont Disp Current Density"+fd_suffix;
+
   field.srh_recomb = prefix+"SRH Recombination"+fd_suffix;
   field.srh_deriv_e = prefix+"SRH Electron Derivative"+fd_suffix;
   field.srh_deriv_h = prefix+"SRH Hole Derivative"+fd_suffix;
@@ -124,6 +136,15 @@ charon::Names::Names(int equation_dimension,
   field.trap_srh_charge = prefix+"Trap SRH Charge"+fd_suffix;
   field.trap_srh_deriv_e = prefix+"Trap SRH Electron Derivative"+fd_suffix;
   field.trap_srh_deriv_h = prefix+"Trap SRH Hole Derivative"+fd_suffix;
+  
+  field.dynamic_traps_erecomb = prefix+"Dynamic Traps eRecombination"+fd_suffix;
+  field.dynamic_traps_hrecomb = prefix+"Dynamic Traps hRecombination"+fd_suffix;
+  field.etrapped_charge = prefix+"Electron Trapped Charge"+fd_suffix;
+  field.htrapped_charge = prefix+"Hole Trapped Charge"+fd_suffix;
+  field.trapped_charge = prefix+"Trapped Charge"+fd_suffix;
+  field.eQF = prefix+"Electron Quasi Fermi Level"+fd_suffix;
+  field.hQF = prefix+"Hole Quasi Fermi Level"+fd_suffix;
+
   field.rad_recomb = prefix+"Radiative Recombination"+fd_suffix;
   field.rad_deriv_e = prefix+"Radiative Electron Derivative"+fd_suffix;
   field.rad_deriv_h = prefix+"Radiative Hole Derivative"+fd_suffix;
@@ -133,6 +154,7 @@ charon::Names::Names(int equation_dimension,
   field.avalanche_rate = prefix+"Avalanche Generation"+fd_suffix;
   field.ava_deriv_e = prefix+"Avalanche Electron Derivative"+fd_suffix;
   field.ava_deriv_h = prefix+"Avalanche Hole Derivative"+fd_suffix;
+  field.bbt_rate = prefix+"Band2Band Tunneling"+fd_suffix;
   field.defect_cluster_recomb = prefix+"Defect Cluster Rate"+fd_suffix;
   field.empirical_defect_recomb = prefix+"Empirical Defect Recombination"+fd_suffix;
   field.ionization_particle_strike_rate = prefix+"Ionization Particle Strike Rate"+fd_suffix;
@@ -171,6 +193,8 @@ charon::Names::Names(int equation_dimension,
   field.ion_thermodiff_coeff = prefix+"Ion Thermodiffusion Coefficient"+fd_suffix;
 
   field.mole_frac = prefix+"Mole Fraction"+fd_suffix;
+  field.xMoleFrac = prefix+"xMoleFraction"+fd_suffix;
+  field.yMoleFrac = prefix+"yMoleFraction"+fd_suffix;
   field.fixed_charge = prefix+"Fixed Charge"+fd_suffix; 
   field.latt_const = prefix+"Lattice Constant"+fd_suffix;
   field.e33 = prefix+"Piezoelectric Constant 33"+fd_suffix;
@@ -181,6 +205,16 @@ charon::Names::Names(int equation_dimension,
 
   field.ins_genpair_density = prefix+"Ins Generated Pairs Density"+fd_suffix; 
   field.ins_htrappedcharge = prefix+"Ins Hole Trapped Charge"+fd_suffix; 
+
+  // Fields needed for Quantum Correction
+  field.e_qp_flux = prefix+"Electron Quantum Correction Potential Flux"+fd_suffix;
+  field.e_qp_fieldmag = prefix+"Electron Quantum Correction Potential Field Magnitude"+fd_suffix;
+  field.h_qp_flux = prefix+"Hole Quantum Correction Potential Flux"+fd_suffix;
+  field.h_qp_fieldmag = prefix+"Hole Quantum Correction Potential Field Magnitude"+fd_suffix;
+
+  // Save the initial ELECTRIC_POTENTIAL
+  field.initial_phi = prefix+"Initial ELECTRIC_POTENTIAL"+fd_suffix;
+  field.initial_grad_phi = prefix+"Initial GRAD_ELECTRIC_POTENTIAL"+fd_suffix; 
 
   register_pdn(field.doping);
   register_pdn(field.doping_raw);
@@ -200,6 +234,7 @@ charon::Names::Names(int equation_dimension,
     key.radiative_recombination        = "Radiative Recombination"+fd_suffix;
     key.auger_recombination            = "Auger Recombination"+fd_suffix;
     key.trap_srh_recombination         = "Trap SRH Recombination"+fd_suffix;
+    key.dynamic_traps_recombination    = "Dynamic Traps Recombination"+fd_suffix;
     key.defect_cluster_recombination   = "Defect Cluster Recombination"+fd_suffix;
     key.empirical_defect_recombination = "Empirical Defect Recombination"+fd_suffix;
     key.particle_strike                = "Particle Strike"+fd_suffix;
@@ -274,6 +309,18 @@ std::string charon::Names::concat(const std::string& s1,
 const std::string& charon::Names::prefix() const
 {
   return m_prefix;
+}
+
+// **********************************************************************
+const std::string& charon::Names::discfields() const
+{
+  return m_discfields;
+}
+
+// **********************************************************************
+const std::string& charon::Names::discsuffix() const
+{
+  return m_discsuffix;
 }
 
 // **********************************************************************

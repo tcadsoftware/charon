@@ -34,6 +34,10 @@ namespace charon {
     const std::string& prefix() const;
 
     const std::string& FDsuffix() const;
+
+    const std::string& discfields() const;
+
+    const std::string& discsuffix() const;
     
   public:
 
@@ -53,6 +57,9 @@ namespace charon {
       std::string latt_temp;
       //! Ion density (scaled, no unit)
       std::string iondensity;
+      //! density Gradient Potential
+      std::string elec_qpotential;
+      std::string hole_qpotential;
     };
 
     //! Suffixes to be combined with the residual names
@@ -111,6 +118,11 @@ namespace charon {
       std::string psrc;
       //! Potential flux
       std::string phi_flux;
+      //! Density Gradient 
+      std::string e_qp_flux;
+      std::string e_qp_fieldmag;
+      std::string h_qp_flux;
+      std::string h_qp_fieldmag;
       //! Equilibrium effective intrinsic concentration
       std::string intrin_conc;
       //! Negative potential gradient
@@ -127,6 +139,8 @@ namespace charon {
       std::string elec_shirahata_mobility;
       //! Electron Philips-Thomas mobility
       std::string elec_philips_thomas_mobility;
+      //! Electron Arora mobility to combine with other mobility models
+      std::string elec_arora_mobility; 
       //! Electron diffusion coefficient
       std::string elec_diff_coeff;
       //! Electron effective electric field
@@ -168,6 +182,8 @@ namespace charon {
       std::string hole_shirahata_mobility;
       //! HOle Philips-Thomas mobility
       std::string hole_philips_thomas_mobility;
+      //! Hole Arora mobility to combine with other mobility models
+      std::string hole_arora_mobility; 
       //! Hole diffusion coefficient
       std::string hole_diff_coeff;
       //! Hole effective electric field
@@ -199,6 +215,11 @@ namespace charon {
       //! Hole effective velocity, include soret contribution
       std::string hole_eff_velocity;
 
+      //! Displacement current density
+      std::string displacement_curr_density;
+      std::string grad_phi_prev;
+      std::string cont_disp_curr_density;
+
       //! SRH recombination rate;
       std::string srh_recomb;
       //! SRH derivative
@@ -208,9 +229,19 @@ namespace charon {
       std::string trap_srh_recomb;
       //! Trap charge and traps are modeled as SRH
       std::string trap_srh_charge;
-      //! Trao SRH derivative
+      //! Trap SRH derivative
       std::string trap_srh_deriv_e;
       std::string trap_srh_deriv_h;
+      //! Dynamic traps recombination rate
+      std::string dynamic_traps_erecomb;
+      std::string dynamic_traps_hrecomb;
+      //! Dynamic traps charge
+      std::string etrapped_charge;
+      std::string htrapped_charge;
+      std::string trapped_charge;
+      //! quasi Fermi Levels
+      std::string eQF;
+      std::string hQF;
       //! Radiative recombination rate
       std::string rad_recomb;
       //! Radiative derivative
@@ -226,6 +257,8 @@ namespace charon {
       //! Avalanche derivative
       std::string ava_deriv_e;
       std::string ava_deriv_h;
+      //! Band2Band Tunneling generation rate
+      std::string bbt_rate;    
       //! Defect cluster recombination rate
       std::string defect_cluster_recomb;
       //! Empirical Defect recombination rate
@@ -295,6 +328,10 @@ namespace charon {
 
       //! X Mole fraction [unitless]
       std::string mole_frac;
+      //! X Mole fraction [unitless] 
+      std::string xMoleFrac;
+      //! Y Mole fraction [unitless] 
+      std::string yMoleFrac;
       
       //! Bulk fixed charge density; 
       std::string fixed_charge; 
@@ -316,6 +353,10 @@ namespace charon {
       //! Spontaneous polarization
       std::string psp;
 
+      //! Save the initial ELECTRIC_POTENTIAL
+      std::string initial_phi; 
+      std::string initial_grad_phi; 
+
     };
 
     /** Keys for groups of parameters in closure models (use
@@ -327,6 +368,7 @@ namespace charon {
       std::string radiative_recombination;
       std::string auger_recombination;
       std::string trap_srh_recombination;
+      std::string dynamic_traps_recombination;
       std::string defect_cluster_recombination;
       std::string empirical_defect_recombination;
       std::string particle_strike;
@@ -398,6 +440,8 @@ namespace charon {
     int m_equation_dimension;
 
     std::string m_prefix;
+    std::string m_discfields;
+    std::string m_discsuffix;
     std::string m_fd_suffix;
     std::vector <std::string*> pdns;
 

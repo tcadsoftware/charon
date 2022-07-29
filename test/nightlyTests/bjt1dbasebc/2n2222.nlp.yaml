@@ -1,17 +1,18 @@
 %YAML 1.1
 ---
 ANONYMOUS:
-  Mesh: 
+  Mesh:
     Source: Exodus File
-    Exodus File: 
+    Exodus File:
       File Name: 2n2222.exo
-  Block ID to Physics ID Mapping: 
+  Block ID to Physics ID Mapping:
     silicon: Semiconductor
-  Assembly: 
+  Assembly:
     Workset Size: 50
-  Physics Blocks: 
-    Semiconductor: 
-      child0: 
+    Use Tpetra: true
+  Physics Blocks:
+    Semiconductor:
+      child0:
         Type: NLPoisson
         Basis Type: HGrad
         Basis Order: 1
@@ -19,16 +20,16 @@ ANONYMOUS:
         Model ID: Silicon Parameter
         Prefix: ''
         Options: { }
-  Closure Models: 
+  Closure Models:
     Lattice Temperature: 3.00000000000000000e+02
     Concentration Scaling: 1.00000000000000000e+16
-    Silicon Parameter: 
+    Silicon Parameter:
       Material Name: Silicon
-      Relative Permittivity: 
+      Relative Permittivity:
         Value: 1.19000000000000004e+01
-      Doping: 
+      Doping:
         Value: Function
-        Function 1: 
+        Function 1:
           Function Type: Erfc
           Doping Type: Donor
           Doping Max Value: 4.00000000000000000e+18
@@ -38,7 +39,7 @@ ANONYMOUS:
           X Direction: Negative
           Xmin: 0.00000000000000000e+00
           Xmax: 1.50000000000000000e+01
-        Function 2: 
+        Function 2:
           Function Type: Gauss
           Doping Type: Acceptor
           Doping Max Value: 4.00000000000000000e+17
@@ -46,7 +47,7 @@ ANONYMOUS:
           X Peak Location: 0.00000000000000000e+00
           X Width: 3.29999999999999982e+00
           X Direction: Both
-        Function 3: 
+        Function 3:
           Function Type: Gauss
           Doping Type: Donor
           Doping Max Value: 4.00000000000000000e+19
@@ -54,54 +55,54 @@ ANONYMOUS:
           X Peak Location: 2.00000000000000011e-01
           X Width: 1.44999999999999996e+00
           X Direction: Both
-  User Data: 
+  User Data:
     function data one: { }
-  Boundary Conditions: 
-    child0: 
+  Boundary Conditions:
+    child0:
       Type: Dirichlet
       Sideset ID: emitter
       Element Block ID: silicon
       Equation Set Name: ELECTRIC_POTENTIAL
       Strategy: Ohmic Contact
-      Data: 
+      Data:
         Voltage: 0.00000000000000000e+00
-    child1: 
+    child1:
       Type: Dirichlet
       Sideset ID: base
       Element Block ID: silicon
       Equation Set Name: ELECTRIC_POTENTIAL
       Strategy: Ohmic Contact
-      Data: 
+      Data:
         Voltage: 0.00000000000000000e+00
-    child2: 
+    child2:
       Type: Dirichlet
       Sideset ID: collector
       Element Block ID: silicon
       Equation Set Name: ELECTRIC_POTENTIAL
       Strategy: Ohmic Contact
-      Data: 
+      Data:
         Voltage: 0.00000000000000000e+00
-  Initial Conditions: 
-    Default: 
-      ELECTRIC_POTENTIAL: 
+  Initial Conditions:
+    Default:
+      ELECTRIC_POTENTIAL:
         Value: Equilibrium Potential
-  Output: 
+  Output:
     File Name: 2n2222.nlp.exo
-    Cell Average Quantities: 
+    Cell Average Quantities:
       silicon: Doping
-  Options: 
-    Write Volume Assembly Graphs: true
+  Options:
+    Write Volume Assembly Graphs: false
     Volume Assembly Graph Prefix: charon_
-  Solution Control: 
+  Solution Control:
     Piro Solver: NOX
     Compute Sensitivities: false
     Jacobian Operator: Have Jacobian
-    LOCA: 
+    LOCA:
       Bifurcation: { }
       Constraints: { }
-      Predictor: 
+      Predictor:
         Method: Constant
-      Stepper: 
+      Stepper:
         Continuation Method: Natural
         Initial Value: 1.00000000000000000e+00
         Continuation Parameter: Parameter 0
@@ -109,7 +110,7 @@ ANONYMOUS:
         Max Value: 1.22500000000000000e+01
         Min Value: 5.00000000000000000e-01
         Compute Eigenvalues: true
-        Eigensolver: 
+        Eigensolver:
           Method: Anasazi
           Operator: Shift-Invert
           Num Blocks: 3
@@ -117,34 +118,34 @@ ANONYMOUS:
           Block Size: 1
           Maximum Restarts: 0
           Shift: 1.00000000000000000e+00
-      Step Size: 
+      Step Size:
         Initial Step Size: 5.00000000000000000e-01
         Aggressiveness: 2.00000000000000000e+00
-    NOX: 
-      Direction: 
+    NOX:
+      Direction:
         Method: Newton
-        Newton: 
+        Newton:
           Forcing Term Method: Constant
           Rescue Bad Newton Solve: true
-          Linear Solver: 
+          Linear Solver:
             Tolerance: 9.99999999999999955e-07
-          Stratimikos Linear Solver: 
+          Stratimikos Linear Solver:
             NOX Stratimikos Options: { }
-            Stratimikos: 
+            Stratimikos:
               Linear Solver Type: AztecOO
-              Linear Solver Types: 
-                AztecOO: 
-                  Forward Solve: 
-                    AztecOO Settings: 
+              Linear Solver Types:
+                AztecOO:
+                  Forward Solve:
+                    AztecOO Settings:
                       Aztec Solver: GMRES
                       Convergence Test: r0
                       Size of Krylov Subspace: 200
                       Output Frequency: 20
                     Max Iterations: 200
-                Belos: 
+                Belos:
                   Solver Type: Block GMRES
-                  Solver Types: 
-                    Block GMRES: 
+                  Solver Types:
+                    Block GMRES:
                       Convergence Tolerance: 1.00000000000000008e-05
                       Output Frequency: 10
                       Output Style: 1
@@ -153,26 +154,32 @@ ANONYMOUS:
                       Block Size: 1
                       Num Blocks: 20
                       Flexible Gmres: false
-              Preconditioner Type: Ifpack
-              Preconditioner Types: 
-                Ifpack: 
+              Preconditioner Type: Ifpack2
+              Preconditioner Types:
+
+                Ifpack2:
+                  Prec Type: RILUK
+                  Ifpack2 Settings:
+                    'fact: iluk level-of-fill': 1
+                    
+                Ifpack:
                   Overlap: 1
                   Prec Type: ILU
-                  Ifpack Settings: 
+                  Ifpack Settings:
                     'fact: level-of-fill': 3
                     'schwarz: reordering type': rcm
-      Line Search: 
+      Line Search:
         Method: Backtrack
-        Polynomial: 
+        Polynomial:
           Maximum Iterations: 10
           Recovery Step Type: Last Computed Step
-        Full Step: 
+        Full Step:
           Full Step: 1.00000000000000000e+00
       Nonlinear Solver: Line Search Based
-      Printing: 
+      Printing:
         Output Precision: 3
         Output Processor: 0
-        Output Information: 
+        Output Information:
           Error: true
           Warning: true
           Inner Iteration: true
@@ -185,30 +192,30 @@ ANONYMOUS:
           Stepper Iteration: true
           Stepper Details: true
           Stepper Parameters: true
-      Solver Options: 
+      Solver Options:
         Status Test Check Type: Minimal
-      Thyra Group Options: 
+      Thyra Group Options:
         Function Scaling: Row Sum
-      Status Tests: 
+      Status Tests:
         Test Type: Combo
         Combo Type: OR
         Number of Tests: 2
-        Test 0: 
+        Test 0:
           Test Type: NormF
           Tolerance: 1.00000000000000002e-08
-        Test 1: 
+        Test 1:
           Test Type: MaxIters
           Maximum Iterations: 30
-    Rythmos: 
+    Rythmos:
       Num Time Steps: 10
       Final Time: 1.00000000000000006e-01
       Stepper Type: Backward Euler
-      Rythmos Stepper: 
-        VerboseObject: 
+      Rythmos Stepper:
+        VerboseObject:
           Verbosity Level: medium
       Stratimikos: { }
       Rythmos Integration Control: { }
-      Rythmos Integrator: 
-        VerboseObject: 
+      Rythmos Integrator:
+        VerboseObject:
           Verbosity Level: medium
 ...

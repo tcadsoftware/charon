@@ -1,0 +1,15 @@
+
+interpreter name ElecQuantumCorrection
+
+interpreter inputline (electron density correction) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on Electron Quantum Correction}
+interpreter longHelp  {Turn on Electron Quantum Correction <> {State} is On/Off}
+
+#
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Quantum Correction,bool,True
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Quantum Correction,bool,True
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Quantum Correction,bool,False
+

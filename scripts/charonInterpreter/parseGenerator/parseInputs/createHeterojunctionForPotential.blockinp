@@ -1,0 +1,17 @@
+interpreterBlock name HeterojunctionForPotential
+
+interpreterBlock (start potential heterojunction) on {sidesetName}
+
+xmlDefault Charon->Boundary Conditions->pot1ANONYMOUS,Type,string,Interface
+xmlDefault Charon->Boundary Conditions->pot1ANONYMOUS,Strategy,string,Interface Heterojunction
+xmlDefault Charon->Boundary Conditions->pot1ANONYMOUS,Sideset ID,string,{sidesetName}
+xmlDefault Charon->Boundary Conditions->pot1ANONYMOUS,Equation Set Name,string,ELECTRIC_POTENTIAL
+xmlDefault Charon->Boundary Conditions->pot1ANONYMOUS,Equation Set Name2,string,ELECTRIC_POTENTIAL
+
+xmlDefault Charon->Boundary Conditions->pot2ANONYMOUS,Type,string,Interface
+xmlDefault Charon->Boundary Conditions->pot2ANONYMOUS,Strategy,string,Interface Heterojunction
+xmlDefault Charon->Boundary Conditions->pot2ANONYMOUS,Sideset ID,string,{sidesetName}
+xmlDefault Charon->Boundary Conditions->pot2ANONYMOUS,Equation Set Name,string,ELECTRIC_POTENTIAL
+xmlDefault Charon->Boundary Conditions->pot2ANONYMOUS,Equation Set Name2,string,ELECTRIC_POTENTIAL
+
+

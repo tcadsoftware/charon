@@ -7,9 +7,11 @@ end output parameters
 
 start Physics Block Semiconductor
       geometry block is silicon
-      standard discretization type is nlp
+      standard discretization type is nlp gfem
       material model is siliconParameter
 end Physics Block Semiconductor
+
+tpetra is on
 
 start Material Block siliconParameter
   material name is Silicon
@@ -30,7 +32,8 @@ BC is ohmic for cathode on silicon fixed at 0
 Initial conditions for ELECTRIC_POTENTIAL in silicon is constant = 13.59
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

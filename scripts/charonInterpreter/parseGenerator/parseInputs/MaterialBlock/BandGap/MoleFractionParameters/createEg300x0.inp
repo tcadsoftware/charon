@@ -1,0 +1,11 @@
+
+
+interpreter name Eg300x0
+
+interpreter inputLine (eg300 for x at 0 is) {val} 
+
+interpreter shortHelp {Set Eg300 for mole fraction x=0}
+
+interpreter longHelp {Set Eg300 for mole fraction x=0}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band Gap->Mole Fraction Parameters,Eg300(x=0),double,{val}

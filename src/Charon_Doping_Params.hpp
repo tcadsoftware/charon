@@ -9,15 +9,29 @@ namespace charon {
   class uniformDopingParams
   {
     public:
+        uniformDopingParams() :
+             dopType("None"),
+             dopVal(0.0),
+             xmin(-1e100),
+             xmax( 1e100),
+             ymin(-1e100),
+             ymax( 1e100),
+             zmin(-1e100),
+             zmax( 1e100),
+             sweepMe(false)
+        {}
+
         void parseUniform (const Teuchos::ParameterList& plist);
         std::string dopType;
         double dopVal;
+        double initialDopVal, finalDopVal;
         double xmin;
         double xmax;
         double ymin;
         double ymax;
         double zmin;
         double zmax;
+        bool sweepMe;
   };
 
   class gaussianDopingParams
@@ -170,6 +184,42 @@ namespace charon {
       double z_max;
       bool z_checkErfc;
       bool z_checkAxis;
+  };
+
+  class haloDopingParams
+  {
+    void testcoord (const std::string axis, const Teuchos::ParameterList& plist);
+    public:
+    haloDopingParams(): x_center(0.0),y_center(0.0), z_center(0.0),r1(0.0), r2(0.0), rotation(0.0)
+    {;};
+
+    ~haloDopingParams(){;}
+
+    void parseHalo (const Teuchos::ParameterList& plist, const int num_dim);
+
+
+    std::string dopType,distributionType;
+    double dopingVal;
+    double minDopingVal;
+    double width;
+
+    // x direction
+    double x_center;
+    bool x_checkAxis;
+
+    // y direction
+    double y_center;
+    bool y_checkAxis;
+
+    // z direction
+    double z_center;
+    bool z_checkAxis;
+
+    //ellipsoid axes
+    double r1,r2;
+    double rotation;
+
+
   };
 
 }  //namespace charon

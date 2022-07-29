@@ -1,0 +1,15 @@
+#############################
+#substrate doping
+#############################
+      start uniform doping named Function30
+          Concentration = 1e15
+          spatial range is -1 to 1 in x
+          spatial range is -1 to 0.001 in y
+          Type is acceptor
+      end uniform doping named Function30
+      start uniform doping named Function31
+          Concentration = 1e0
+          spatial range is -1 to 1 in x
+          spatial range is -1 to 0.001 in y
+          Type is donor
+      end uniform doping named Function31

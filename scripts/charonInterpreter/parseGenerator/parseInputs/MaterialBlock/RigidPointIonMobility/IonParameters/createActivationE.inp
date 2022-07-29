@@ -1,0 +1,9 @@
+interpreter name ActivationE 
+
+interpreter inputLine (activation energy) = {energy}
+
+interpreter shortHelp {The activation energy in eV for the RigidPointIon mobility model}
+
+interpreter longHelp {The activation energy in eV for the RigidPointIon mobility model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Activation Energy,double,{energy}

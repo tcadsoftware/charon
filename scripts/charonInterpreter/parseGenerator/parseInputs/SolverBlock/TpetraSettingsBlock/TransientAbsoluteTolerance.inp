@@ -1,0 +1,9 @@
+interpreter name TransientAbsoluteTolerance
+
+interpreter shortHelp {Set the absolute error tolerance in a transient simulation.}
+interpreter longHelp {Set the absolute error tolerance in a transient simulation.}
+
+interpreter inputLine (time integrator absolute error) = {absTol}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Absolute Error Tolerance,double,{absTol}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Maximum Absolute Error,double,{absTol}

@@ -7,6 +7,7 @@ INCLUDE(TribitsAddAdvancedTest)
 SET(testName charon_mp_oxide.lapl.bq-)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -25,6 +26,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=oxide.lapl.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -32,12 +34,13 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_4 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=oxide.lapl.bq-.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # Combine the parallel exodus
   TEST_5  EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX
     NOEXESUFFIX
-    ARGS  "-auto" "oxide.lapl.bq-.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "oxide.lapl.bq-.exo.4."
     NUM_MPI_PROCS 1
 
   # Compare the exodus
@@ -61,6 +64,7 @@ ENDIF()
 SET(testName charon_mp_oxide.sg.lapl.bq)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -79,6 +83,7 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=oxide.lapl.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   TEST_3 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter
@@ -86,12 +91,13 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_4 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=oxide.sg.lapl.bq.inp.xml
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # Combine the parallel exodus
   TEST_5  EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX
     NOEXESUFFIX
-    ARGS  "-auto" "oxide.sg.lapl.bq.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "oxide.sg.lapl.bq.exo.4."
     NUM_MPI_PROCS 1
 
   # Compare the exodus
@@ -115,6 +121,7 @@ ENDIF()
 SET(testName charon_mp_oxide.lapl.bq-.loca)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -131,12 +138,13 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=oxide.lapl.bq-.loca.inp.xml 
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # Combine the parallel exodus
   TEST_3  EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX
     NOEXESUFFIX
-    ARGS  "-auto" "oxide.lapl.bq-.loca.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "oxide.lapl.bq-.loca.exo.4."
     NUM_MPI_PROCS 1
 
   # Compare the exodus
@@ -160,6 +168,7 @@ ENDIF()
 SET(testName charon_mp_oxide.sg.lapl.bq.loca)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
 
   TEST_0 COPY_FILES_TO_TEST_DIR
@@ -176,12 +185,13 @@ TRIBITS_ADD_ADVANCED_TEST(
 
   TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
     ARGS  --i=oxide.sg.lapl.bq.loca.inp.xml 
+    NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # Combine the parallel exodus
   TEST_3  EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX
     NOEXESUFFIX
-    ARGS  "-auto" "oxide.sg.lapl.bq.loca.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "oxide.sg.lapl.bq.loca.exo.4."
     NUM_MPI_PROCS 1
 
   # Compare the exodus

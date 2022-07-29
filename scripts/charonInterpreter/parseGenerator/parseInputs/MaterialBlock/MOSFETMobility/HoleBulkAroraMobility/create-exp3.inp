@@ -1,0 +1,9 @@
+interpreter name exp3
+
+interpreter inputLine (exp3) = {exp3val}
+
+interpreter shortHelp {The third exponent of the temperature ratio for the Arora mobility model.}
+
+interpreter longHelp {The third exponent of the temperature ratio for the Arora mobility model.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Hole Mobility->Bulk Mobility,exp3,double,{exp3val}

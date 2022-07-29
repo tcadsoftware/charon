@@ -1,0 +1,4549 @@
+$ Algebraic Preprocessor (Aprepro) version 5.29 (2021/07/22)
+
+Import State File pndiode.dd.exo at index 1
+
+tpetra is on
+
+start output parameters
+      Output State File pndiodeC_linearX.dd.exo
+end output parameters
+
+start Physics Block Semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion gfem
+      material model is siliconParameter
+end Physics Block Semiconductor
+
+start Material Block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+ 
+      start Carrier Lifetime Block
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11
+      end Carrier Lifetime Block
+
+      start step junction doping
+      	    acceptor concentration = 1e16
+	    donor concentration = 1e16
+	    junction location = 0.5
+	    dopant order is PN
+            direction is x
+      end step junction doping
+end Material Block Silicon Parameter
+
+BC is mixed mode via current for anode on silicon as node named vconnectL in netlist pndiodeC_linearX.cir with initial current -1e-3 with initial voltage 1.5
+BC is mixed mode via current for cathode on silicon as node named vconnectR in netlist pndiodeC_linearX.cir with initial current 1e-3 with initial voltage 1.0
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
+Initial Conditions for ELECTRON_DENSITY in silicon is Exodus File
+Initial Conditions for HOLE_DENSITY in silicon is Exodus File
+
+start solver block
+  start tpetra block
+    problem type is householder constrained steady state
+    verbosity level is high
+    start nonlinear solver wrms block
+      absolute tolerance = 1.0e-10
+      relative tolerance = 1.0e-8
+    end
+  end
+end solver block
+--------------------------------------------------------------------------
+No OpenFabrics connection schemes reported that they were able to be
+used on a specific port.  As such, the openib BTL (OpenFabrics
+support) will be disabled for this port.
+
+  Local host:           ascic0187
+  Local device:         mlx5_bond_0
+  Local port:           1
+  CPCs attempted:       rdmacm, udcm
+--------------------------------------------------------------------------
+p=0 | ***********************************************************************
+p=0 |              Charon: 2.0 (development)
+p=0 | TCAD code for simulation of semiconductor physics 
+p=0 | 
+p=0 | Copyright 2020 National Technology & Engineering Solutions of Sandia,
+p=0 | LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the
+p=0 | U.S. Government retains certain rights in this software.
+p=0 | Questions? Contact the Charon team via email:
+p=0 |     charon@sandia.gov
+p=0 | ***********************************************************************
+p=0 | Nearby Source SHA1s:
+p=0 |   ------------------------------------------------------------
+p=0 |   tcad-charon:
+p=0 |   ------------
+p=0 |   2b648f4 [Tue Aug 24 20:51:59 2021 +0000] <ahuang@sandia.gov>
+p=0 |   Merge branch '548-add-interpreter-parser-for-mixed-mode' into 'develop'
+p=0 |   ------------------------------------------------------------
+p=0 |   src:
+p=0 |   ----
+p=0 |   2126563 [Tue Sep 21 22:35:50 2021 +0000] <mnegoit@sandia.gov>
+p=0 |   Merge branch '344-fix-a-bug-sign-for-charge-at-heterointerface' into 'develop'
+p=0 |   ------------------------------------------------------------
+p=0 |   nightlyTests:
+p=0 |   -------------
+p=0 |   28b72c3 [Thu Sep 30 10:20:21 2021 -0600] <ahuang@sandia.gov>
+p=0 |   Forgot to git add one of the resistor.exo.4. files. Addingforward and reverse bi
+p=0 |   ------------------------------------------------------------
+p=0 |   nightlyTestsOUO:
+p=0 |   ----------------
+p=0 |   6ddf1eb [Sun Feb 14 20:12:31 2021 +0000] <lcmusso@sandia.gov>
+p=0 |   Merge branch '17-modify-issue-temapltes-for-stories' into 'develop'
+p=0 |   ------------------------------------------------------------
+p=0 |   heavyTests:
+p=0 |   -----------
+p=0 |   9c4fe21 [Thu Jul 29 23:03:33 2021 +0000] <lcmusso@sandia.gov>
+p=0 |   Merge branch '40-add-ivcurve-testing-to-heavy-mosfet-dakota-test' into 'develop'
+p=0 |   ------------------------------------------------------------
+p=0 |   heavyTestsOUO:
+p=0 |   --------------
+p=0 |   90391d2 [Wed Oct 14 12:30:41 2020 -0600] <glhenni@sandia.gov>
+p=0 |   Merge branch 'glh.add-time.1' into 'develop'
+p=0 |   ------------------------------------------------------------
+p=0 |   docs:
+p=0 |   -----
+p=0 |   9a2b87f [Mon Mar 23 09:06:59 2020 -0600] <glhenni@sandia.gov>
+p=0 |   Merge branch '75-modify-user-installation-section-of-the-user-manual-to-note-use
+p=0 |   ------------------------------------------------------------
+p=0 |   Trilinos:
+p=0 |   ---------
+p=0 |   5ef4b4e [Mon Aug 23 22:13:01 2021 -0600] <charonops@cee-build012.sandia.gov>
+p=0 |   Merge 'trilinos/Trilinos:develop' (353c2865540) into 'tcad-charon/Trilinos:devel
+p=0 |   ------------------------------------------------------------
+p=0 | 
+p=0 | ***********************************************************************
+p=0 | Mesh -> 
+p=0 |  Source = Exodus File   [unused]
+p=0 |  Exodus File -> 
+p=0 |   Restart Index = 1   [unused]
+p=0 |   File Name = pndiode.dd.exo   [unused]
+p=0 | Assembly -> 
+p=0 |  Use Tpetra = 1   [unused]
+p=0 | Closure Models -> 
+p=0 |  Concentration Scaling = 1e+16   [unused]
+p=0 |  siliconParameter -> 
+p=0 |   Material Name = Silicon   [unused]
+p=0 |   Doping -> 
+p=0 |    Value = Step Junction   [unused]
+p=0 |    Acceptor Value = 1e+16   [unused]
+p=0 |    Donor Value = 1e+16   [unused]
+p=0 |    Junction Location = 0.5   [unused]
+p=0 |    Configuration = PN   [unused]
+p=0 |    Direction = X   [unused]
+p=0 |   Relative Permittivity -> 
+p=0 |    Value = 11.9   [unused]
+p=0 |   Electron Lifetime -> 
+p=0 |    Value = 1e-11   [unused]
+p=0 |   Hole Lifetime -> 
+p=0 |    Value = 1e-11   [unused]
+p=0 | Solution Control -> 
+p=0 |  Piro Solver = NOX-Constrained   [unused]
+p=0 |  Compute Sensitivities = 0   [unused]
+p=0 |  Jacobian Operator = Have Jacobian   [unused]
+p=0 |  NOX -> 
+p=0 |   Nonlinear Solver = Line Search Based   [unused]
+p=0 |   Direction -> 
+p=0 |    Method = Newton   [unused]
+p=0 |    Newton -> 
+p=0 |     Forcing Term Method = Constant   [unused]
+p=0 |     Rescue Bad Newton Solve = 1   [unused]
+p=0 |     Linear Solver -> 
+p=0 |      Tolerance = 1e-06   [unused]
+p=0 |     Stratimikos Linear Solver -> 
+p=0 |      Stratimikos -> 
+p=0 |       Linear Solver Type = Belos   [unused]
+p=0 |       Preconditioner Type = Ifpack2   [unused]
+p=0 |       Linear Solver Types -> 
+p=0 |        Belos -> 
+p=0 |         Solver Type = Block GMRES   [unused]
+p=0 |         VerboseObject -> 
+p=0 |          Verbosity Level = high   [unused]
+p=0 |         Solver Types -> 
+p=0 |          Block GMRES -> 
+p=0 |           Convergence Tolerance = 1e-06   [unused]
+p=0 |           Output Frequency = 20   [unused]
+p=0 |           Output Style = 1   [unused]
+p=0 |           Verbosity = 33   [unused]
+p=0 |           Block Size = 1   [unused]
+p=0 |           Num Blocks = 100   [unused]
+p=0 |           Maximum Iterations = 300   [unused]
+p=0 |           Flexible Gmres = 0   [unused]
+p=0 |        AztecOO -> 
+p=0 |         Forward Solve -> 
+p=0 |          Max Iterations = 300   [unused]
+p=0 |          AztecOO Settings -> 
+p=0 |           Aztec Solver = GMRES   [unused]
+p=0 |           Convergence Test = r0   [unused]
+p=0 |           Size of Krylov Subspace = 200   [unused]
+p=0 |           Output Frequency = 20   [unused]
+p=0 |       Preconditioner Types -> 
+p=0 |        Teko -> 
+p=0 |         Inverse Type = GS   [unused]
+p=0 |         Write Block Operator = 0   [unused]
+p=0 |         Test Block Operator = 0   [unused]
+p=0 |         Inverse Factory Library -> 
+p=0 |          GS -> 
+p=0 |           Type = Block Gauss-Seidel   [unused]
+p=0 |           Use Upper Triangle = 1   [unused]
+p=0 |           Inverse Type 1 = ILU_tpetra   [unused]
+p=0 |           Inverse Type 2 = Id   [unused]
+p=0 |          ILU_tpetra -> 
+p=0 |           Type = Ifpack2   [unused]
+p=0 |           Overlap = 1   [unused]
+p=0 |           Ifpack2 Settings -> 
+p=0 |            fact: drop tolerance = 0   [unused]
+p=0 |            fact: ilut level-of-fill = 1   [unused]
+p=0 |          Id -> 
+p=0 |           Type = Identity   [unused]
+p=0 |        Ifpack2 -> 
+p=0 |         Prec Type = ILUT   [unused]
+p=0 |         Ifpack2 Settings -> 
+p=0 |          schwarz: overlap level = 1   [unused]
+p=0 |          schwarz: use reordering = 0   [unused]
+p=0 |          schwarz: combine mode = add   [unused]
+p=0 |          fact: ilut level-of-fill = 3   [unused]
+p=0 |          fact: iluk level-of-fill = 3   [unused]
+p=0 |          fact: iluk level-of-overlap = 1   [unused]
+p=0 |   Status Tests -> 
+p=0 |    Test Type = Combo   [unused]
+p=0 |    Combo Type = OR   [unused]
+p=0 |    Number of Tests = 3   [unused]
+p=0 |    Test 0 -> 
+p=0 |     Tolerance = 1e-10   [unused]
+p=0 |     Test Type = Combo   [unused]
+p=0 |     Combo Type = AND   [unused]
+p=0 |     Number of Tests = 2   [unused]
+p=0 |     Test 0 -> 
+p=0 |      Test Type = NormF   [unused]
+p=0 |      Tolerance = 0.0001   [unused]
+p=0 |     Test 1 -> 
+p=0 |      Test Type = NormWRMS   [unused]
+p=0 |      Tolerance = 1   [unused]
+p=0 |      Relative Tolerance = 1e-08   [unused]
+p=0 |      Absolute Tolerance = 1e-10   [unused]
+p=0 |      alpha = 0   [unused]
+p=0 |      beta = 1   [unused]
+p=0 |    Test 1 -> 
+p=0 |     Maximum Iterations = 30   [unused]
+p=0 |     Test Type = MaxIters   [unused]
+p=0 |    Test 2 -> 
+p=0 |     Test Type = FiniteValue   [unused]
+p=0 |     Vector Type = F Vector   [unused]
+p=0 |   Thyra Group Options -> 
+p=0 |    Function Scaling = Row Sum   [unused]
+p=0 |   Line Search -> 
+p=0 |    Method = Full Step   [unused]
+p=0 |    Full Step -> 
+p=0 |     Full Step = 1   [unused]
+p=0 |   Printing -> 
+p=0 |    Output Precision = 3   [unused]
+p=0 |    Output Processor = 0   [unused]
+p=0 |    Output Information -> 
+p=0 |     Error = 1   [unused]
+p=0 |     Warning = 1   [unused]
+p=0 |     Inner Iteration = 1   [unused]
+p=0 |     Outer Iteration = 1   [unused]
+p=0 |     Outer Iteration StatusTest = 1   [unused]
+p=0 |     Parameters = 1   [unused]
+p=0 |     Details = 1   [unused]
+p=0 |     Linear Solver Details = 1   [unused]
+p=0 |     Stepper Iteration = 1   [unused]
+p=0 |     Stepper Details = 1   [unused]
+p=0 |     Stepper Parameters = 1   [unused]
+p=0 |   Solver Options -> 
+p=0 |    Status Test Check Type = Minimal   [unused]
+p=0 |  Rythmos -> 
+p=0 |   Final Time = 0.00055   [unused]
+p=0 |   Stepper Type = Backward Euler   [unused]
+p=0 |   Nonlinear Solver Type = NOX   [unused]
+p=0 |   Rythmos Integration Control -> 
+p=0 |    Take Variable Steps = 1   [unused]
+p=0 |   Rythmos Step Control Strategy -> 
+p=0 |    Initial Step Size = 1e-05   [unused]
+p=0 |    Min Step Size = 1e-07   [unused]
+p=0 |    Max Step Size = 0.0001   [unused]
+p=0 |    Number of Constant First Order Steps = 5   [unused]
+p=0 |    Step Size Decrease Factor = 0.2   [unused]
+p=0 |    Step Size Increase Factor = 1.5   [unused]
+p=0 |    Min Order = 1   [unused]
+p=0 |    Max Order = 1   [unused]
+p=0 |   Rythmos Stepper -> 
+p=0 |    VerboseObject -> 
+p=0 |     Verbosity Level = none   [unused]
+p=0 |   Rythmos Integrator -> 
+p=0 |    VerboseObject -> 
+p=0 |     Verbosity Level = none   [unused]
+p=0 | Output -> 
+p=0 |  File Name = pndiodeC_linearX.dd.exo   [unused]Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+
+p=0 | Block ID to Physics ID Mapping -> 
+p=0 |  silicon = Semiconductor   [unused]
+p=0 | Physics Blocks -> 
+p=0 |  Semiconductor -> 
+p=0 |   child0 -> 
+p=0 |    Type = Drift Diffusion   [unused]
+p=0 |    Basis Type = HGrad   [unused]
+p=0 |    Basis Order = 1   [unused]
+p=0 |    Integration Order = 2   [unused]
+p=0 |    Model ID = siliconParameter   [unused]
+p=0 |    Options -> 
+p=0 |     Solve Electron = True   [unused]
+p=0 |     Solve Hole = True   [unused]
+p=0 |     SUPG Stabilization = On   [unused]
+p=0 |     Tau_E = Tanh   [unused]
+p=0 |     Tau_H = Tanh   [unused]
+p=0 |     Length Scale = Stream   [unused]
+p=0 | Boundary Conditions -> 
+p=0 |  child0 -> 
+p=0 |   Type = Dirichlet   [unused]
+p=0 |   Sideset ID = anode   [unused]
+p=0 |   Element Block ID = silicon   [unused]
+p=0 |   Equation Set Name = ALL_DOFS   [unused]
+p=0 |   Strategy = Mixed Mode via Current   [unused]
+p=0 |   Data -> 
+p=0 |    Netlist = pndiodeC_linearX.cir   [unused]
+p=0 |    Node Name = vconnectL   [unused]
+p=0 |    Current Value = -0.001   [unused]
+p=0 |    Initial Voltage = 1.5   [unused]
+p=0 |  child1 -> 
+p=0 |   Type = Dirichlet   [unused]
+p=0 |   Sideset ID = cathode   [unused]
+p=0 |   Element Block ID = silicon   [unused]
+p=0 |   Equation Set Name = ALL_DOFS   [unused]
+p=0 |   Strategy = Mixed Mode via Current   [unused]
+p=0 |   Data -> 
+p=0 |    Netlist = pndiodeC_linearX.cir   [unused]
+p=0 |    Node Name = vconnectR   [unused]
+p=0 |    Current Value = 0.001   [unused]
+p=0 |    Initial Voltage = 1   [unused]
+p=0 | Initial Conditions -> 
+p=0 |  silicon -> 
+p=0 |   ELECTRIC_POTENTIAL -> 
+p=0 |    Value = Exodus File   [unused]
+p=0 |   ELECTRON_DENSITY -> 
+p=0 |    Value = Exodus File   [unused]
+p=0 |   HOLE_DENSITY -> 
+p=0 |    Value = Exodus File   [unused]
+p=0 | 
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+Mixed Mode strategy choice imposes this BC Strategy:: Constant Current
+
+Coordinate Scaling X0 = 0.0001 [cm]
+Concentration Scaling C0 = 1e+16 [1/cm^3]
+Diffusion Coefficient Scaling D0 = 25.8 [cm^2/s]
+Temperature Scaling T0 = 300 [K]
+Voltage Scaling V0 = 0.025852 [V]
+Mobility Scaling Mu0 = 997.987 [cm^2/(V.s)]
+Source Scaling R0 = 2.58e+25 [1/(cm^3.s)]
+Time Scaling t0 = 3.87597e-10 [s]
+Electric Field Scaling E0 = 258.52 [V/cm]
+Current Density Scaling J0 = 413.362 [A/cm^2]
+Heat Generation Scaling H0 = 3e+10 [W/cm^3]
+Heat Capacity Scaling cL0 = 0.0387597 [J/(cm^3.K)]
+Thermal Conductivity Scaling kL0 = 1 [W/(K.cm)]
+Laplacian Scaling Lambda2 = 0.000142867 [unitless]
+
+STK Mesh data:
+   Spatial dim = 2
+   Entity counts (Nodes, Edges, Cells) = ( 1111, 2110, 1000 )
+   Element blocks = "silicon" 
+   Sidesets = "anode" "cathode" 
+   Nodesets = 
+Degree of freedom load balancing: Max, Min, Mean, StdDev = 858, 825, 833.25, 14.2894
+ssID = anode, control name = anodeConstantCurrentVoltage
+ssID = anode, control name = anodeConstantCurrentVoltage
+ssID = anode, control name = anodeConstantCurrentVoltage
+ssID = cathode, control name = cathodeConstantCurrentVoltage
+ssID = cathode, control name = cathodeConstantCurrentVoltage
+ssID = cathode, control name = cathodeConstantCurrentVoltage
+Charon-Xyce coupling will use this netlist: pndiodeC_linearX.cir
+Charon-Xyce coupling will use this netlist: pndiodeC_linearX.cir
+Charon-Xyce coupling will use this netlist: pndiodeC_linearX.cir
+Charon-Xyce coupling will use this netlist: pndiodeC_linearX.cir
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceRad DEVELOPMENT-202109281315-noATHENA
+***** Date: Fri Oct 08 16:05:38 MDT 2021
+
+
+***** Executing netlist pndiodeC_linearX.cir
+
+***** Reading and parsing netlist...
+Netlist warning: No print specified
+***** Setting up topology...
+
+***** Device Count Summary ...
+       R level 1 (Resistor)                   2
+       V level 1 (Independent Voltage Source) 3
+       ----------------------------------------
+       Total Devices                          5
+***** Setting up matrix structure...
+***** Number of Unknowns = 6
+***** Initializing...
+
+Netlist warning: Linear DC or STEP parameters for sweep over VR would result
+ in no steps taken.  Check sign of step value to assure stop value can be
+ reached from start value.  Start=5 Stop=5 step=0.  Only a single computation
+ will be done at the start value.
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+
+************************************************************************
+
+-- Parameters Passed to Nonlinear Solver --
+
+     Nonlinear Solver = Line Search Based
+     Direction -> 
+      Method = Newton
+      Newton -> 
+       Forcing Term Method = Constant
+       Rescue Bad Newton Solve = 1
+       Linear Solver -> 
+        Tolerance = 1e-06
+       Stratimikos Linear Solver -> 
+        Stratimikos -> 
+         Linear Solver Type = Belos   [unused]
+         Preconditioner Type = Ifpack2   [unused]
+         Linear Solver Types -> 
+          Belos -> 
+           Solver Type = Block GMRES   [unused]
+           VerboseObject -> 
+            Verbosity Level = high   [unused]
+           Solver Types -> 
+            Block GMRES -> 
+             Convergence Tolerance = 1e-06   [unused]
+             Output Frequency = 20   [unused]
+             Output Style = 1   [unused]
+             Verbosity = 33   [unused]
+             Block Size = 1   [unused]
+             Num Blocks = 100   [unused]
+             Maximum Iterations = 300   [unused]
+             Flexible Gmres = 0   [unused]
+          AztecOO -> 
+           Forward Solve -> 
+            Max Iterations = 300   [unused]
+            AztecOO Settings -> 
+             Aztec Solver = GMRES   [unused]
+             Convergence Test = r0   [unused]
+             Size of Krylov Subspace = 200   [unused]
+             Output Frequency = 20   [unused]
+         Preconditioner Types -> 
+          Teko -> 
+           Inverse Type = GS   [unused]
+           Write Block Operator = 0   [unused]
+           Test Block Operator = 0   [unused]
+           Inverse Factory Library -> 
+            GS -> 
+             Type = Block Gauss-Seidel   [unused]
+             Use Upper Triangle = 1   [unused]
+             Inverse Type 1 = ILU_tpetra   [unused]
+             Inverse Type 2 = Id   [unused]
+            ILU_tpetra -> 
+             Type = Ifpack2   [unused]
+             Overlap = 1   [unused]
+             Ifpack2 Settings -> 
+              fact: drop tolerance = 0   [unused]
+              fact: ilut level-of-fill = 1   [unused]
+            Id -> 
+             Type = Identity   [unused]
+          Ifpack2 -> 
+           Prec Type = ILUT   [unused]
+           Ifpack2 Settings -> 
+            schwarz: overlap level = 1   [unused]
+            schwarz: use reordering = 0   [unused]
+            schwarz: combine mode = add   [unused]
+            fact: ilut level-of-fill = 3   [unused]
+            fact: iluk level-of-fill = 3   [unused]
+            fact: iluk level-of-overlap = 1   [unused]
+     Status Tests -> 
+      Test Type = Combo
+      Combo Type = OR
+      Number of Tests = 3
+      Test 0 -> 
+       Tolerance = 1e-10   [unused]
+       Test Type = Combo
+       Combo Type = AND
+       Number of Tests = 2
+       Test 0 -> 
+        Test Type = NormF
+        Tolerance = 0.0001
+        Norm Type = Two Norm   [default]
+        Scale Type = Unscaled   [default]
+       Test 1 -> 
+        Test Type = NormWRMS
+        Tolerance = 1
+        Relative Tolerance = 1e-08
+        Absolute Tolerance = 1e-10
+        alpha = 0   [unused]
+        beta = 1   [unused]
+        BDF Multiplier = 1   [default]
+        Alpha = 1   [default]
+        Beta = 0.5   [default]
+        Disable Implicit Weighting = 1   [default]
+      Test 1 -> 
+       Maximum Iterations = 30
+       Test Type = MaxIters
+      Test 2 -> 
+       Test Type = FiniteValue
+       Vector Type = F Vector
+       Norm Type = Two Norm   [default]
+     Thyra Group Options -> 
+      Function Scaling = Row Sum   [unused]
+     Line Search -> 
+      Method = Full Step
+      Full Step -> 
+       Full Step = 1
+     Printing -> 
+      Output Precision = 3
+      Output Processor = 0
+      MyPID = 0   [default]
+      Output Information -> 
+       Error = 1
+       Warning = 1
+       Inner Iteration = 1
+       Outer Iteration = 1
+       Outer Iteration StatusTest = 1
+       Parameters = 1
+       Details = 1
+       Linear Solver Details = 1
+       Stepper Iteration = 1
+       Stepper Details = 1
+       Stepper Parameters = 1
+       Debug = 0   [default]
+       Test Details = 0   [default]
+     Solver Options -> 
+      Status Test Check Type = Minimal
+      User Defined Pre/Post Operator = Teuchos::RCP<NOX::Observer>{ptr=0x3984650,node=0x39889d0,strong_count=3,weak_count=0}
+      Observer = Teuchos::RCP<NOX::Observer>{ptr=0,node=0,strong_count=0,weak_count=0}   [default]
+      User Defined Merit Function = Teuchos::RCP<NOX::MeritFunction::Generic>{ptr=0,node=0,strong_count=0,weak_count=0}   [default]
+      Fixed Point Iteration Type = Seidel   [default]
+************************************************************************
+-- Status Test Results --
+...........**OR Combination -> 
+  **...........AND Combination -> 
+    **...........F-Norm = 1.138e+02 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    ??...........WRMS-Norm = 1.000e+12 < 1
+  **...........Number of Iterations = 0 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 0 -- 
+||F|| = 1.138e+02  step = 0.000e+00  dx = 0.000e+00
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.969913e-05
+  Iter  40, [ 1] :    4.534963e-06
+  Iter  44, [ 1] :    7.064292e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 44 iterations with total CPU time of 0.0214131 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 1.5
+constraint number 1: cathode/vconnectR: 1
+constraint number 1: cathode/vconnectR: 1
+constraint number 1: cathode/vconnectR: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    **...........F-Norm = 1.529e-01 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    ??...........WRMS-Norm = 1.000e+12 < 1
+  **...........Number of Iterations = 1 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 1 -- 
+||F|| = 1.529e-01  step = 1.000e+00  dx = 1.934e+03
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    8.952770e-03
+  Iter  40, [ 1] :    6.781596e-03
+  Iter  60, [ 1] :    7.662439e-06
+  Iter  67, [ 1] :    9.724820e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 67 iterations with total CPU time of 0.0208946 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.47236
+constraint number 1: cathode/vconnectR: 1.79388
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    **...........F-Norm = 1.369e-01 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    ??...........WRMS-Norm = 1.000e+12 < 1
+  **...........Number of Iterations = 2 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 2 -- 
+||F|| = 1.369e-01  step = 1.000e+00  dx = 5.913e+02
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    4.459833e-03
+  Iter  40, [ 1] :    2.719082e-03
+  Iter  60, [ 1] :    1.616513e-06
+  Iter  62, [ 1] :    7.301887e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 62 iterations with total CPU time of 0.0196802 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 2.91154
+constraint number 1: cathode/vconnectR: 2.27133
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    **...........F-Norm = 9.310e-02 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    ??...........WRMS-Norm = 1.000e+12 < 1
+  **...........Number of Iterations = 3 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 3 -- 
+||F|| = 9.310e-02  step = 1.000e+00  dx = 2.985e+02
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.937794e-03
+  Iter  40, [ 1] :    1.973418e-03
+  Iter  58, [ 1] :    8.835766e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 58 iterations with total CPU time of 0.0180659 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.12567
+constraint number 1: cathode/vconnectR: 2.51917
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    **...........F-Norm = 3.068e-02 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    ??...........WRMS-Norm = 1.000e+12 < 1
+  **...........Number of Iterations = 4 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 4 -- 
+||F|| = 3.068e-02  step = 1.000e+00  dx = 1.506e+02
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    4.293227e-03
+  Iter  40, [ 1] :    1.556802e-03
+  Iter  58, [ 1] :    8.466147e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 58 iterations with total CPU time of 0.0179643 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.23022
+constraint number 1: cathode/vconnectR: 2.64727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    **...........F-Norm = 1.036e-03 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    ??...........WRMS-Norm = 1.000e+12 < 1
+  **...........Number of Iterations = 5 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 5 -- 
+||F|| = 1.036e-03  step = 1.000e+00  dx = 7.401e+01
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70727
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    7.405598e-02
+  Iter  40, [ 1] :    4.140954e-03
+  Iter  58, [ 1] :    4.431867e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 58 iterations with total CPU time of 0.0182455 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.28493
+constraint number 1: cathode/vconnectR: 2.70728
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 1.105e-05 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 5.559e+05 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 6 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 6 -- 
+||F|| = 1.105e-05  step = 1.000e+00  dx = 3.658e+01
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.761104e-01
+  Iter  40, [ 1] :    1.031547e-03
+  Iter  55, [ 1] :    7.642268e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 55 iterations with total CPU time of 0.0170602 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3132
+constraint number 1: cathode/vconnectR: 2.73574
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 5.521e-06 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 2.794e+05 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 7 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 7 -- 
+||F|| = 5.521e-06  step = 1.000e+00  dx = 1.829e+01
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.747346e-01
+  Iter  40, [ 1] :    4.190675e-04
+  Iter  54, [ 1] :    9.008701e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0168093 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.32734
+constraint number 1: cathode/vconnectR: 2.74997
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 2.755e-06 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 1.391e+05 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 8 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 8 -- 
+||F|| = 2.755e-06  step = 1.000e+00  dx = 9.144e+00
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.731173e-01
+  Iter  40, [ 1] :    6.283551e-04
+  Iter  54, [ 1] :    8.441042e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0167377 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33441
+constraint number 1: cathode/vconnectR: 2.75709
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 1.377e-06 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 6.939e+04 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 9 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 9 -- 
+||F|| = 1.377e-06  step = 1.000e+00  dx = 4.572e+00
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33795
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33795
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33795
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33795
+constraint number 1: cathode/vconnectR: 2.76064
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.729993e-01
+  Iter  40, [ 1] :    6.238768e-04
+  Iter  55, [ 1] :    3.754912e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 55 iterations with total CPU time of 0.0171193 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33794
+constraint number 1: cathode/vconnectR: 2.76065
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 6.882e-07 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 3.466e+04 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 10 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 10 -- 
+||F|| = 6.882e-07  step = 1.000e+00  dx = 2.286e+00
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33972
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33972
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33972
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33972
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728893e-01
+  Iter  40, [ 1] :    3.871565e-04
+  Iter  53, [ 1] :    7.809741e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 53 iterations with total CPU time of 0.0165229 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.33971
+constraint number 1: cathode/vconnectR: 2.76242
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 3.441e-07 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 1.732e+04 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 11 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 11 -- 
+||F|| = 3.441e-07  step = 1.000e+00  dx = 1.143e+00
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728090e-01
+  Iter  40, [ 1] :    7.185906e-04
+  Iter  54, [ 1] :    8.185490e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0168547 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.3406
+constraint number 1: cathode/vconnectR: 2.76331
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 1.721e-07 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 8.658e+03 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 12 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 12 -- 
+||F|| = 1.721e-07  step = 1.000e+00  dx = 5.715e-01
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728244e-01
+  Iter  40, [ 1] :    4.444382e-04
+  Iter  54, [ 1] :    8.687831e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0165036 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34104
+constraint number 1: cathode/vconnectR: 2.76376
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 8.603e-08 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 4.328e+03 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 13 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 13 -- 
+||F|| = 8.603e-08  step = 1.000e+00  dx = 2.858e-01
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728617e-01
+  Iter  40, [ 1] :    6.744011e-04
+  Iter  54, [ 1] :    8.190253e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0166083 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34126
+constraint number 1: cathode/vconnectR: 2.76398
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 4.301e-08 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 2.164e+03 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 14 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 14 -- 
+||F|| = 4.301e-08  step = 1.000e+00  dx = 1.429e-01
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728487e-01
+  Iter  40, [ 1] :    6.745685e-04
+  Iter  54, [ 1] :    9.304701e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0165675 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34137
+constraint number 1: cathode/vconnectR: 2.76409
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 2.151e-08 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 1.082e+03 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 15 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 15 -- 
+||F|| = 2.151e-08  step = 1.000e+00  dx = 7.144e-02
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34143
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34143
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34143
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34143
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728416e-01
+  Iter  40, [ 1] :    8.360212e-04
+  Iter  54, [ 1] :    8.206877e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0167502 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34142
+constraint number 1: cathode/vconnectR: 2.76415
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 1.075e-08 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 5.410e+02 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 16 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 16 -- 
+||F|| = 1.075e-08  step = 1.000e+00  dx = 3.572e-02
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34146
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34146
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34146
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34146
+constraint number 1: cathode/vconnectR: 2.76417
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728131e-01
+  Iter  40, [ 1] :    6.545390e-04
+  Iter  54, [ 1] :    8.917840e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0168921 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34145
+constraint number 1: cathode/vconnectR: 2.76418
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 5.377e-09 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 2.705e+02 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 17 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 17 -- 
+||F|| = 5.377e-09  step = 1.000e+00  dx = 1.786e-02
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728959e-01
+  Iter  40, [ 1] :    6.034413e-04
+  Iter  53, [ 1] :    9.828210e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 53 iterations with total CPU time of 0.0161097 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 2.688e-09 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 1.352e+02 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 18 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 18 -- 
+||F|| = 2.688e-09  step = 1.000e+00  dx = 8.930e-03
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.76419
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.727156e-01
+  Iter  40, [ 1] :    8.639816e-04
+  Iter  54, [ 1] :    9.238045e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0165589 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34147
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 1.344e-09 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 6.762e+01 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 19 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 19 -- 
+||F|| = 1.344e-09  step = 1.000e+00  dx = 4.465e-03
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.728714e-01
+  Iter  40, [ 1] :    9.385389e-04
+  Iter  55, [ 1] :    5.136368e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 55 iterations with total CPU time of 0.0170551 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 6.721e-10 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 3.381e+01 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 20 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 20 -- 
+||F|| = 6.721e-10  step = 1.000e+00  dx = 2.232e-03
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.727419e-01
+  Iter  40, [ 1] :    4.307047e-04
+  Iter  54, [ 1] :    8.902021e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 54 iterations with total CPU time of 0.0167832 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 3.361e-10 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 1.691e+01 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 21 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 21 -- 
+||F|| = 3.361e-10  step = 1.000e+00  dx = 1.116e-03
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.727414e-01
+  Iter  40, [ 1] :    1.521829e-03
+  Iter  55, [ 1] :    7.310973e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 55 iterations with total CPU time of 0.017146 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 1.680e-10 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 8.453e+00 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 22 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 22 -- 
+||F|| = 1.680e-10  step = 1.000e+00  dx = 5.581e-04
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.726413e-01
+  Iter  40, [ 1] :    2.762611e-03
+  Iter  56, [ 1] :    7.553664e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 56 iterations with total CPU time of 0.0175071 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 8.408e-11 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 4.226e+00 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 23 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 23 -- 
+||F|| = 8.408e-11  step = 1.000e+00  dx = 2.791e-04
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.726787e-01
+  Iter  40, [ 1] :    2.737137e-03
+  Iter  58, [ 1] :    6.356527e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 58 iterations with total CPU time of 0.0179516 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 4.207e-11 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 2.113e+00 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 24 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 24 -- 
+||F|| = 4.207e-11  step = 1.000e+00  dx = 1.395e-04
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.730487e-01
+  Iter  40, [ 1] :    7.094759e-03
+  Iter  58, [ 1] :    5.623220e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 58 iterations with total CPU time of 0.0182413 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+************************************************************************
+-- Status Test Results --
+**...........OR Combination -> 
+  **...........AND Combination -> 
+    Converged....F-Norm = 2.118e-11 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    **...........WRMS-Norm = 1.057e+00 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  **...........Number of Iterations = 25 < 30
+  **...........Finite Number Check (Two-Norm F) = Finite
+************************************************************************
+
+************************************************************************
+-- Nonlinear Solver Step 25 -- 
+||F|| = 2.118e-11  step = 1.000e+00  dx = 6.977e-05
+************************************************************************
+
+       CALCULATING FORCING TERM
+       Method: Constant
+       Forcing Term: 1e-06
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Mixed Mode contact current scaling in dg/dp: 1
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+ 
+ Entering Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Leaving Thyra::BelosLinearOpWithSolveFactory<double>::initializeOpImpl(...) ...
+ 
+ Starting iterations with Belos:
+  Using forward operator = Thyra::TpetraLinearOp<double, int, long long, Kokkos::Compat::KokkosDeviceWrapperNode<Kokkos::Serial, Kokkos::HostSpace> >{rangeDim=3333,domainDim=3333}
+  Using iterative solver = "Belos::BlockGmresSolMgr":
+    Template parameters:
+     ScalarType: double
+     MV: Thyra::MultiVectorBase<double>
+     OP: Thyra::LinearOpBase<double>
+    Flexible: false
+    Num Blocks: 100
+    Maximum Iterations: 300
+    Maximum Restarts: 20
+    Convergence Tolerance: 1e-06
+  With #Eqns=3333, #RHSs=1 ...
+  
+  *******************************************************
+  ***** Belos Iterative Solver:  Block Gmres 
+  ***** Maximum Iterations: 300
+  ***** Block Size: 1
+  ***** Residual Test: 
+  *****   Test 1 : Belos::StatusTestImpResNorm<>: (2-Norm Res Vec) / (2-Norm Res0), tol = 1e-06
+  *******************************************************
+  Iter   0, [ 1] :    1.000000e+00
+  Iter  20, [ 1] :    2.727147e-01
+  Iter  40, [ 1] :    1.308903e-02
+  Iter  59, [ 1] :    8.015667e-07
+ 
+ The Belos solver of type ""Belos::BlockGmresSolMgr": {Flexible: false, Num Blocks: 100, Maximum Iterations: 300, Maximum Restarts: 20, Convergence Tolerance: 1e-06}" returned a solve status of "SOLVE_STATUS_CONVERGED" in 59 iterations with total CPU time of 0.018517 sec
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+
+************************************************************************
+-- Nonlinear Solver Step 26 -- 
+||F|| = 1.078e-11  step = 1.000e+00  dx = 3.488e-05 (Converged!)
+************************************************************************
+
+************************************************************************
+-- Final Status Test Results --
+Converged....OR Combination -> 
+  Converged....AND Combination -> 
+    Converged....F-Norm = 1.078e-11 < 1.000e-04
+                 (Unscaled Two-Norm, Absolute Tolerance)
+    Converged....WRMS-Norm = 5.283e-01 < 1
+                 (Min Step Size:  1.000e+00 >= 1)
+  ??...........Number of Iterations = -1 < 30
+  ??...........Finite Number Check (Two-Norm F) = Unknown
+************************************************************************
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Xyce coupling voltages are: 
+constraint number 0: anode/vconnectL: 3.34148
+constraint number 1: cathode/vconnectR: 2.7642
+Responses after nonlinear solve:
+    anode_silicon_Current = -5.52840180e-04 
+    cathode_silicon_Current = 5.52840180e-04 
+    anode_Voltage = 3.34147944e+00 
+    cathode_Voltage = 2.76420086e+00 
+Voltage values:
+  anodeConstantCurrentVoltage = 3.34147944e+00
+  cathodeConstantCurrentVoltage = 2.76420086e+00
+p=0 | Charon run completed.
+[ascic0187:77690] 3 more processes have sent help message help-mpi-btl-openib-cpc-base.txt / no cpcs for port
+[ascic0187:77690] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages

@@ -1,0 +1,8 @@
+interpreter name Overlap
+
+interpreter shortHelp {Set the integer value preconditioner overlap}
+interpreter longHelp {Set the interger value preconditioner overlap}
+
+interpreter inputLine (overlap size) = {aztecOverlapSize}
+
+xmlRequired Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos->Linear Solver Types->AztecOO->Forward Solve->AztecOO Settings,Overlap,int,{aztecOverlapSize}

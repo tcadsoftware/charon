@@ -42,9 +42,21 @@ namespace charon {
     std::string drForce;
 
     bool haveSource;
-    bool withAvaGen;
-    bool withTrapSRH;
     bool addTrapCharge; 
+    // bool withAvaGen;
+    // bool withTrapSRH;
+    bool withDynamicTraps;
+    // bool withBBTGen;
+
+    // Quantum Correction
+    bool useEQC = false;
+    bool useHQC = false;
+    bool useElecSimplified = false;
+    bool useHoleSimplified = false;
+    double elecFitParam = 0.0;
+    double holeFitParam = 0.0;
+    double elecEffMass = 0.0;
+    double holeEffMass = 0.0;
 
   };
 

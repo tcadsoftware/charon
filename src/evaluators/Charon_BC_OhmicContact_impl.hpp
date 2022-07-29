@@ -396,6 +396,327 @@ namespace charon {
 template<typename EvalT, typename Traits>
 void OhmicContact<EvalT, Traits>::
 evaluateOhmicContactBC(const bool& bBJT1DBase, const bool& bUseFD,
+         const bool& bUseRefE, const bool& useEQC, const bool& useHQC, 
+         const Teuchos::ParameterList& incmpl_ioniz,
+         const typename EvalT::ScalarT& voltage,
+         const typename EvalT::ScalarT& Eref,
+         const typename EvalT::ScalarT& vScaling,
+         const typename EvalT::ScalarT& densScaling,
+         const typename EvalT::ScalarT& tempScaling,
+         const typename Traits::EvalData& workset,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& doping,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& acceptor,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& donor,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& intrin_conc,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& elec_effdos,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& hole_effdos,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& eff_affinity,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& eff_bandgap,
+         const PHX::MDField<const typename EvalT::ScalarT,Cell,BASIS>& latt_temp,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& eqc,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& hqc,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& potential,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& edensity,
+         PHX::MDField<typename EvalT::ScalarT,Cell,BASIS>& hdensity)
+{
+  using PHX::MDField;
+  using Teuchos::RCP;;
+  using Teuchos::rcp;
+  using panzer::index_t;
+
+  typedef typename EvalT::ScalarT ScalarT;
+  typedef typename PHX::MDField<ScalarT,Cell,BASIS>::size_type size_type;
+  size_type num_basis = doping.dimension(1);
+
+  // obtain kb
+  const charon::PhysicalConstants & phyConst = charon::PhysicalConstants::Instance();
+  double kbBoltz = phyConst.kb;   // Boltzmann constant in [eV/K]
+
+  const bool withAccIncmplIoniz =
+    (incmpl_ioniz.sublist("Acceptor").numParams() == 0) ? false : true;
+  const bool withDonIncmplIoniz =
+    (incmpl_ioniz.sublist("Donor").numParams() == 0) ? false : true;
+
+  ScalarT refEnergy = Eref;
+
+ // use the Fermi-Dirac (FD) statistics. To compare FD with MB, we should choose
+ // the right intrinsic conc. model so that nie = sqrt(Nc*Nv)*exp(-Egeff/2kbT)
+ // for MB, i.e., make sure the new MB impl. is used.
+
+ if (bUseFD)
+ {
+  // instantiate the FermiDiracIntegral class
+  RCP<charon::FermiDiracIntegral<EvalT> > inverseFermiIntegral =
+      rcp(new charon::FermiDiracIntegral<EvalT>(charon::FermiDiracIntegral<EvalT>::inverse_PlusOneHalf));
+
+  for (index_t cell = 0; cell < workset.num_cells; ++cell)
+  {
+    for (size_type basis = 0; basis < num_basis; ++basis)
+    {
+      // obtain concentrations (scaled)
+      const ScalarT& dop = doping(cell,basis);
+      const ScalarT& Nc = elec_effdos(cell,basis);
+      const ScalarT& Nv = hole_effdos(cell,basis);
+      const ScalarT& Na = acceptor(cell,basis);
+      const ScalarT& Nd = donor(cell,basis);
+      const ScalarT& nie = intrin_conc(cell,basis);
+
+      ScalarT e_gamma;
+      ScalarT h_gamma;
+
+      ScalarT n_over_Nc = edensity(cell,basis)/Nc;
+      ScalarT p_over_Nv = hdensity(cell,basis)/Nv;
+
+      if(n_over_Nc <= 1e-4)
+        e_gamma = 1.0; // use Boltzmann statistics
+      else
+      {
+        ScalarT eta = (*inverseFermiIntegral)(n_over_Nc);
+        e_gamma = n_over_Nc*exp(-eta);
+      }
+
+      if(p_over_Nv <= 1e-4)
+        h_gamma = 1.0;
+      else
+      {
+        ScalarT eta = (*inverseFermiIntegral)(p_over_Nv);
+        h_gamma = p_over_Nv*exp(-eta);
+      }
+
+      // obtain energies in [eV]
+      const ScalarT& effChi = eff_affinity(cell,basis);
+      const ScalarT& effEg = eff_bandgap(cell,basis);
+
+      // obtain lattice temperature in [K]
+      ScalarT lattT = latt_temp(cell,basis)*tempScaling;
+
+      // lattT should be always > 0, but it could become <= 0 due to numerical errors
+      // when the temperature eqn is solved, so reset it to 300 K to avoid unphysical parameters
+      if (Sacado::ScalarValue<ScalarT>::eval(lattT) <= 0.0)  lattT = 300.0;
+
+      ScalarT kbT = kbBoltz * lattT;  // [eV]
+
+      // determine the reference energy that goes into the 'potBC' calculation
+      ScalarT qtheta = effChi + 0.5*effEg + 0.5*kbT*log(Nc/Nv);  // [eV]
+      if (!bUseRefE) refEnergy = qtheta;
+
+      // compute carrier density and potential (scaled) at ohmic contact
+      if (dop >= 0.0)  // n-type contact
+      {
+        ScalarT n0 = 0;
+        if(!withDonIncmplIoniz) {
+          n0 = dop;  // assume n0 = dop
+        } else {
+          double ND_crit = incmpl_ioniz.sublist("Donor").
+            get<double>("Critical Doping Value");
+          if(Nd > ND_crit/densScaling)
+            // dopant fully ionized
+            n0 = dop;
+          else
+            // with incomplete ionized donor
+            n0 = compute_FD_carrier_dens(-1, incmpl_ioniz,
+                       Sacado::ScalarValue<ScalarT>::eval(kbT),
+                       Sacado::ScalarValue<ScalarT>::eval(Nc),
+                       Sacado::ScalarValue<ScalarT>::eval(Nv),
+                       Sacado::ScalarValue<ScalarT>::eval(nie),
+                       Sacado::ScalarValue<ScalarT>::eval(Na),
+                       Sacado::ScalarValue<ScalarT>::eval(Nd),
+                       Sacado::ScalarValue<ScalarT>::eval(e_gamma),
+                       Sacado::ScalarValue<ScalarT>::eval(h_gamma),
+                       Sacado::ScalarValue<ScalarT>::eval(densScaling));
+        }
+        ScalarT Ef_minus_Ec = kbT * (*inverseFermiIntegral)(n0/Nc);  // [eV]
+        ScalarT Ef_minus_Ev = Ef_minus_Ec + effEg;  // [eV]
+        ScalarT p0 = Nv * std::exp(-Ef_minus_Ev/kbT);
+        ScalarT potBC = refEnergy - effChi + Ef_minus_Ec + voltage;  // [eV]=[V]
+
+        edensity(cell,basis) = n0;
+        if (!bBJT1DBase) hdensity(cell,basis) = p0;  // do not evaluate minority density when bBJT1DBase = true
+        potential(cell,basis) = potBC / vScaling;
+      }
+      else  // p-type contact
+      {
+        ScalarT p0 = 0;
+        if(!withAccIncmplIoniz) {
+          p0 = -dop;  // assume p0 = dop
+        } else {
+          double NA_crit = incmpl_ioniz.sublist("Acceptor").
+            get<double>("Critical Doping Value");
+          if(Na > NA_crit/densScaling)
+            // dopant fully ionized
+            p0 = -dop;
+          else
+            // with incomplete ionized acceptor
+            p0 = compute_FD_carrier_dens(1, incmpl_ioniz,
+                       Sacado::ScalarValue<ScalarT>::eval(kbT),
+                       Sacado::ScalarValue<ScalarT>::eval(Nc),
+                       Sacado::ScalarValue<ScalarT>::eval(Nv),
+                       Sacado::ScalarValue<ScalarT>::eval(nie),
+                       Sacado::ScalarValue<ScalarT>::eval(Na),
+                       Sacado::ScalarValue<ScalarT>::eval(Nd),
+                       Sacado::ScalarValue<ScalarT>::eval(e_gamma),
+                       Sacado::ScalarValue<ScalarT>::eval(h_gamma),
+                       Sacado::ScalarValue<ScalarT>::eval(densScaling));
+        }
+        ScalarT Ev_minus_Ef = kbT * (*inverseFermiIntegral)(p0/Nv);  // [eV]
+        ScalarT Ec_minus_Ef = Ev_minus_Ef + effEg;  // [eV]
+        ScalarT n0 = Nc * std::exp(-Ec_minus_Ef/kbT);
+        ScalarT potBC = refEnergy - effChi -effEg - Ev_minus_Ef + voltage;  // [eV]=[V]
+
+        if (!bBJT1DBase) edensity(cell,basis) = n0;
+        hdensity(cell,basis) = p0;
+        potential(cell,basis) = potBC / vScaling;
+      }
+      // Quantum Corrections are 0 at ohmic contacts
+      // No Potential Wells should be present
+      if(useEQC) eqc(cell,basis) = 0;
+      if(useHQC) hqc(cell,basis) = 0;
+    }
+  }
+ }  // end of the if (bUseFD) block
+
+
+ // use the Maxwell-Boltzmann (MB) statistics. The old MB impl. uses nie which is
+ // NOT good for wide band gap materials (WBGM) as nie=0, while the new MB impl.
+ // is valid for WBGM and it assumes nie = sqrt(Nc*Nv)*exp(-Egeff/2kbT) for potBC.
+ else
+ {
+  for (index_t cell = 0; cell < workset.num_cells; ++cell)
+  {
+    for (size_type basis = 0; basis < num_basis; ++basis)
+    {
+      // obtain concentrations (scaled)
+      const ScalarT& dop = doping(cell,basis);
+      const ScalarT& Na = acceptor(cell,basis);
+      const ScalarT& Nd = donor(cell,basis);
+      const ScalarT& nie = intrin_conc(cell,basis);
+      const ScalarT& Nc = elec_effdos(cell,basis);
+      const ScalarT& Nv = hole_effdos(cell,basis);
+
+      // obtain energies in [eV]
+      const ScalarT& effChi = eff_affinity(cell,basis);
+      const ScalarT& effEg = eff_bandgap(cell,basis);
+
+      // obtain lattice temperature in [K]
+      ScalarT lattT = latt_temp(cell,basis)*tempScaling;
+
+      // lattT should be always > 0, but it could become <= 0 due to numerical errors
+      // when the temperature eqn is solved, so reset it to 300 K to avoid unphysical parameters
+      if (Sacado::ScalarValue<ScalarT>::eval(lattT) <= 0.0)  lattT = 300.0;
+
+      ScalarT kbT = kbBoltz * lattT;  // [eV]
+
+      // compute carrier density and potential (scaled) at ohmic contact
+      if (dop >= 0.0)  // n-type contact
+      {
+        ScalarT n0 = 0.;
+        if(!withDonIncmplIoniz) {
+          n0 = std::sqrt(std::pow(0.5*dop,2.0) + std::pow(nie,2.0)) + 0.5*dop;
+        } else {
+          double ND_crit = incmpl_ioniz.sublist("Donor").
+            get<double>("Critical Doping Value");
+          if(Nd > ND_crit/densScaling)
+            // dopant fully ionized
+            n0 = std::sqrt(std::pow(0.5*dop,2.0) + std::pow(nie,2.0)) + 0.5*dop;
+          else
+            // donor incomplete ionization active
+            // acceptor incomplete ionization can be active or not
+            // depending on the user input
+            n0 = compute_MB_carrier_dens(-1, incmpl_ioniz,
+                       Sacado::ScalarValue<ScalarT>::eval(kbT),
+                       Sacado::ScalarValue<ScalarT>::eval(Nc),
+                       Sacado::ScalarValue<ScalarT>::eval(Nv),
+                       Sacado::ScalarValue<ScalarT>::eval(nie),
+                       Sacado::ScalarValue<ScalarT>::eval(Na),
+                       Sacado::ScalarValue<ScalarT>::eval(Nd),
+                       Sacado::ScalarValue<ScalarT>::eval(densScaling));
+        }
+        edensity(cell,basis) = n0;
+        if (!bBJT1DBase) hdensity(cell,basis) = nie*nie/n0;
+
+        // keep the old MB impl. for backward compatibility. It is equivalent to
+        // the new MB impl. provided nie = sqrt(Nc*Nv)*exp(-Egeff/2kbT).
+
+        // if (Sacado::ScalarValue<ScalarT>::eval(nie) > std::numeric_limits<double>::epsilon())
+        if (Sacado::ScalarValue<ScalarT>::eval(nie) > 1e-50)
+        {
+          ScalarT tmp = dop/(2.0*nie);  // C0 is cancelled out here
+          ScalarT offset = refEnergy - effChi - 0.5*effEg - 0.5*kbT*std::log(Nc/Nv) ;
+          ScalarT potBC = offset + kbT*std::asinh(tmp) + voltage;  // [V]
+          potential(cell,basis) = potBC / vScaling;
+        }
+
+        else  // use the new MB impl. for wide band gap materials
+        {
+          ScalarT y = 0.5*dop/Nc + std::sqrt(std::pow(0.5*dop/Nc,2.0) + Nv/Nc*std::exp(-effEg/kbT));
+          ScalarT potBC = refEnergy - effChi + kbT*std::log(y) + voltage;  // [V]
+          potential(cell,basis) = potBC / vScaling;  // scaled
+        }
+      }
+
+      else  // p-type contact
+      {
+        //ScalarT p0 = std::sqrt(pow(0.5*dop,2.0) + pow(nie,2.0)) - 0.5*dop;
+        //hdensity(cell,basis) = p0;
+        ScalarT p0 = 0.;
+        if(!withAccIncmplIoniz) {
+          p0 = std::sqrt(std::pow(0.5*dop,2.0) + std::pow(nie,2.0)) - 0.5*dop;
+        } else {
+          double NA_crit = incmpl_ioniz.sublist("Acceptor").
+            get<double>("Critical Doping Value");
+          if(Na > NA_crit/densScaling)
+            // dopant fully ionized
+            p0 = std::sqrt(std::pow(0.5*dop,2.0) + std::pow(nie,2.0)) - 0.5*dop;
+          else
+          // acceptor incomplete ionization active
+          // donor incomplete ionization can be active or not
+          // depending on the user input
+          p0 = compute_MB_carrier_dens(1, incmpl_ioniz,
+                     Sacado::ScalarValue<ScalarT>::eval(kbT),
+                     Sacado::ScalarValue<ScalarT>::eval(Nc),
+                     Sacado::ScalarValue<ScalarT>::eval(Nv),
+                     Sacado::ScalarValue<ScalarT>::eval(nie),
+                     Sacado::ScalarValue<ScalarT>::eval(Na),
+                     Sacado::ScalarValue<ScalarT>::eval(Nd),
+                     Sacado::ScalarValue<ScalarT>::eval(densScaling));
+        }
+        hdensity(cell,basis) = p0;
+        if (!bBJT1DBase) edensity(cell,basis) = nie*nie/p0;
+
+        // the same old MB impl. holds for n- and p-type contacts
+        // if (Sacado::ScalarValue<ScalarT>::eval(nie) > std::numeric_limits<double>::epsilon())
+        if (Sacado::ScalarValue<ScalarT>::eval(nie) > 1e-50)
+        {
+          ScalarT tmp = dop/(2.0*nie);  // C0 is cancelled out here
+          ScalarT offset = refEnergy - effChi - 0.5*effEg - 0.5*kbT*std::log(Nc/Nv) ;
+          ScalarT potBC = offset + kbT*std::asinh(tmp) + voltage;  // [V]
+          potential(cell,basis) = potBC / vScaling;  // scaled
+        }
+
+        else  // use the new MB impl. for wide band gap materials
+        {
+          ScalarT y = -0.5*dop/Nv + std::sqrt(std::pow(0.5*dop/Nv,2.0) + Nc/Nv*std::exp(-effEg/kbT));
+          ScalarT potBC = refEnergy - effChi - effEg - kbT*std::log(y) + voltage;  // [V]
+          potential(cell,basis) = potBC / vScaling;  // scaled
+        }
+      }
+      // Quantum Corrections are 0 at ohmic contacts
+      // No Potential Wells should be present
+      if(useEQC) eqc(cell,basis) = 0;
+      if(useHQC) hqc(cell,basis) = 0;
+    } // end of loop over basis
+  }  // end of loop over cells
+
+ }  // end of the else block
+}
+///////////////////////////////////////////////////////////////////////////////
+//
+//  evaluateOhmicContactBC() overloaded no density gradient
+//
+///////////////////////////////////////////////////////////////////////////////
+template<typename EvalT, typename Traits>
+void OhmicContact<EvalT, Traits>::
+evaluateOhmicContactBC(const bool& bBJT1DBase, const bool& bUseFD,
          const bool& bUseRefE, const Teuchos::ParameterList& incmpl_ioniz,
          const typename EvalT::ScalarT& voltage,
          const typename EvalT::ScalarT& Eref,
@@ -694,7 +1015,6 @@ evaluateOhmicContactBC(const bool& bBJT1DBase, const bool& bUseFD,
           potential(cell,basis) = potBC / vScaling;  // scaled
         }
       }
-
     } // end of loop over basis
   }  // end of loop over cells
 
@@ -725,8 +1045,7 @@ BC_OhmicContact(
   // note that m_names never has a fd suffix, even if in a frequency domain simulation, 
   // since the closure model is evaluated at the time collocation points
   // so, for frequency domain simulations, find basis from the zero-th harmonic
-  Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(1,"","","","_CosH0.000000_"));
-
+  Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(1,"","","","_CosH"+std::to_string(0.0)+"_"));
   const charon::Names& names = *m_names;
 
   // basis
@@ -742,7 +1061,15 @@ BC_OhmicContact(
 
   num_basis = data_layout->dimension(1);
 
-  // read in user-specified voltage
+  
+  //Set up to write the contact voltage to the parameter library
+  contactVoltageName = p.get<std::string>("Sideset ID")+"_Voltage";
+  contactVoltage = 
+    panzer::createAndRegisterScalarParameter<EvalT>(
+						    std::string(contactVoltageName),
+						    *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+
+ // read in user-specified voltage
   user_value = rcp(new panzer::ScalarParameterEntry<EvalT>);
   user_value->setRealValue(0);
   if (p.isType<double>("Voltage"))
@@ -752,29 +1079,71 @@ BC_OhmicContact(
   else if (p.isType<std::string>("Varying Voltage"))
   {        
     if (p.get<std::string>("Varying Voltage") == "Parameter")
-      user_value =
-        panzer::createAndRegisterScalarParameter<EvalT>(
-        std::string("Varying Voltage"),
-        *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+      {
+	user_value =
+	  panzer::createAndRegisterScalarParameter<EvalT>(
+							  std::string("Varying Voltage"),
+							  *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+	Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > IAmLoca;
+	std::string locaFlag = contactVoltageName+"IS LOCA";
+	IAmLoca =
+	  panzer::createAndRegisterScalarParameter<EvalT>(
+							  std::string(locaFlag),
+							  *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+	IAmLoca->setValue(1.0);
+
+        if (p.isParameter("Initial Voltage"))
+          initial_voltage = p.get<double>("Initial Voltage");
+      }
     else
       TEUCHOS_TEST_FOR_EXCEPTION(true, std::invalid_argument,
         "BC_OhmicContact():  Error:  Expecting Varying Voltage value of " \
         "\"Parameter\"; received \"" << p.get<std::string>("Varying Voltage")
         << "\".")
   }
+  else if (p.isType<std::string>("Xyce Coupled Voltage"))
+  {        
+    if (p.get<std::string>("Xyce Coupled Voltage") == "Parameter")
+      user_value =
+        panzer::createAndRegisterScalarParameter<EvalT>(
+        std::string("Xyce Coupled Voltage"),
+        *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+    else
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::invalid_argument,
+        "BC_OhmicContact():  Error:  Expecting 'Xyce Coupled Voltage' value of " \
+        "\"Parameter\"; received \"" << p.get<std::string>("Xyce Coupled Voltage")
+        << "\".")
+  }
+
+  //Set the parameter library contact voltage to an initial value
+  contactVoltage->setValue(user_value->getValue());
+
   this->small_signal_perturbation = 0.0;
   if(p.get<bool>("Frequency Domain")){
     this->small_signal_perturbation = p.get<double>("Small Signal Perturbation");
   }
   bUseFD = p.get<bool>("Fermi Dirac");
 
+  // Quantum Correction Parameters
+  useEQC = p.get<bool>("Electron Quantum Correction");
+  if(useEQC) {
+      eqc = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.elec_qpotential, data_layout);
+      this->addEvaluatedField(eqc);
+  }
+  useHQC = p.get<bool>("Hole Quantum Correction");
+  if(useHQC) {
+      hqc = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.hole_qpotential, data_layout);
+      this->addEvaluatedField(hqc);
+  }
+
   incmpl_ioniz = p.sublist("Incomplete Ionization");
   expandIonizEnParams(incmpl_ioniz);
 
-  // evaluated fields
+ // evaluated fields
   potential = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.phi, data_layout);
   edensity = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.edensity, data_layout);
   hdensity = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.hdensity, data_layout);
+
 
   // add evaluated fields
   this->addEvaluatedField(potential);
@@ -827,7 +1196,9 @@ BC_OhmicContact<EvalT, Traits>::
 evaluateFields(
   typename Traits::EvalData workset)
 {
-  ScalarT voltage = user_value->getValue() + this->small_signal_perturbation;
+  ScalarT voltage = user_value->getValue() + this->small_signal_perturbation + initial_voltage;
+  contactVoltage->setValue(voltage);
+
   ScalarT Eref = ref_energy(0,0);
   ScalarT vScaling = V0;
   ScalarT densScaling = C0;
@@ -835,11 +1206,12 @@ evaluateFields(
   bool bBJT1DBase = false;
   bool bUseRefE = true;
 
+
   OhmicContact<EvalT, Traits>::evaluateOhmicContactBC(
-       bBJT1DBase, bUseFD, bUseRefE, incmpl_ioniz, voltage, Eref, vScaling, densScaling,
+       bBJT1DBase, bUseFD, bUseRefE, useEQC, useHQC, incmpl_ioniz, voltage, Eref, vScaling, densScaling,
        tempScaling, workset, doping, acceptor, donor,
        intrin_conc, elec_effdos, hole_effdos, eff_affinity, eff_bandgap,
-       latt_temp, potential, edensity, hdensity);
+       latt_temp, eqc, hqc, potential, edensity, hdensity);
 
 }
 
@@ -865,6 +1237,7 @@ BC_OhmicContact<EvalT, Traits>::getValidParameters() const
 
   p->set<double>("Voltage", 0.0);
   p->set<std::string>("Varying Voltage", "Parameter");
+  p->set<std::string>("Xyce Coupled Voltage", "Parameter");
   p->set<Teuchos::RCP<panzer::ParamLib> >("ParamLib",
        Teuchos::rcp(new panzer::ParamLib));
   p->set<bool>("Fermi Dirac", false);
@@ -898,6 +1271,15 @@ BC_OhmicContact<EvalT, Traits>::getValidParameters() const
   Teuchos::RCP<charon::EmpiricalDamage_Data> dmgdata;
   p->set("empirical damage data", dmgdata);
 
+  // Quantum Potential Correction
+  p->set<bool>("Electron Quantum Correction", false);
+  p->set<bool>("Hole Quantum Correction", false);
+
+  //Sideset ID
+  p->set<std::string>("Sideset ID","");
+ 
+  p->set<double>("Initial Voltage", 0.0); // to be used with Varying Voltage
+ 
   return p;
 }
 

@@ -17,6 +17,7 @@
 // include evaluators here
 #include "Panzer_DOF.hpp"
 #include "Panzer_DOFGradient.hpp"
+#include "Panzer_Integrator_BasisTimesScalar.hpp" // Quantum Correction Helmholtz term
 #include "Panzer_Integrator_GradBasisDotVector.hpp"
 #include "Panzer_CellTopologyInfo.hpp"
 #include "Panzer_Sum.hpp"
@@ -29,9 +30,16 @@
 #include "Charon_SGCVFEM_CentroidCurrDens.hpp"
 #include "Charon_SGCVFEM_CentroidDriveForce.hpp"
 #include "Charon_SGCVFEM_PotentialFlux.hpp"
+#include "Charon_PrevPotentialGrad.hpp"
+#include "Charon_DisplacementCurrentDensity.hpp"
+
 #include "Charon_Integrator_SubCVNodeScalar.hpp"
 #include "Charon_Integrator_SubCVFluxDotNorm.hpp"
 
+// Quantum Correction
+#include "Charon_QuantumPotential_Flux.hpp"
+#include "Charon_QuantumPotential_FieldMag.hpp"
+#include "Charon_Physical_Constants.hpp"
 
 // CVFEM-SG formulation of the Poisson + Continuity equations
 
@@ -61,6 +69,19 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
     valid_parameters.set("Basis Type","HGrad","Type of Basis to use");
     valid_parameters.set("Basis Order",1,"Order of the basis");
     valid_parameters.set("Integration Order",default_integration_order,"Order of the integration rule");
+
+    // Quantum Correction sublist and parameters
+    {
+        Teuchos::ParameterList& opt = valid_parameters.sublist("Quantum Correction");
+        opt.set<bool>("Electron Quantum Correction", false, "Electron Quantum Correction On/Off Boolean");
+        opt.set<double>("Electron Fit Parameter", 0.3, "Electron Quantum Correction Fit Parameter");
+        opt.set<double>("Electron Effective Mass", 1.08, "Unitless Electron Effective Mass Parameter");
+        opt.set<bool>("Hole Quantum Correction", false, "Hole Quantum Correction On/Off Boolean");
+        opt.set<double>("Hole Fit Parameter", 0.3, "Quantum Correction Fit Parameter");
+        opt.set<double>("Hole Effective Mass", 0.81, "Unitless Hole Effective Mass Parameter");
+        opt.set<std::string>("Electron Model Type", "?", "Electron Quantum Correction Model Type");
+        opt.set<std::string>("Hole Model Type", "?", "Hole Quantum Correction Model Type");
+    }
 
     Teuchos::ParameterList& opt = valid_parameters.sublist("Options");
     Teuchos::setStringToIntegralParameter<int>(
@@ -117,6 +138,13 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
       "Off",
       "Determines if users want to include Avalanche generation in the continuity equation(s)",
       Teuchos::tuple<std::string>("On","Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
+      "Band2Band Tunneling",
+      "Off",
+      "Determines if users want to include Band2Band tunneling generation in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On", "Off"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
@@ -183,6 +211,13 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
+      "Dynamic Traps",
+      "Off",
+      "Determine if users want to include Trap SRH recombination in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On","Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
       "Add Trap Charge",
       "False",
       "Determine if users want to include the trap charge in the Poisson equation",
@@ -196,18 +231,20 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
     solveHole = params->sublist("Options").get<std::string>("Solve Hole");
 
     // Must solve at least one continuity equation
-    //if ((solveElectron == "False") && (solveHole == "False"))
-    //  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error: must solve at least one"
+    // if ((solveElectron == "False") && (solveHole == "False"))
+    // TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Error: must solve at least one"
     //       << " continuity equation !" << "\n");
 
     const std::string& srh_recomb = params->sublist("Options").get<std::string>("SRH");
     const std::string& rad_recomb = params->sublist("Options").get<std::string>("Radiative");
     const std::string& auger_recomb = params->sublist("Options").get<std::string>("Auger");
     const std::string& ava_gen = params->sublist("Options").get<std::string>("Avalanche");
+    const std::string& bbt_gen = params->sublist("Options").get<std::string>("Band2Band Tunneling");
     const std::string& defect_cluster_recomb = params->sublist("Options").get<std::string>("Defect Cluster");
     const std::string& empirical_defect_recomb = params->sublist("Options").get<std::string>("Empirical Defect");
     const std::string& ionization_particle_strike = params->sublist("Options").get<std::string>("Particle Strike");
     const std::string& trap_srh_recomb = params->sublist("Options").get<std::string>("Trap SRH");
+    const std::string& dynamic_traps_recomb = params->sublist("Options").get<std::string>("Dynamic Traps");
     const std::string& add_trap_charge = params->sublist("Options").get<std::string>("Add Trap Charge");
     const std::string& opt_gen = params->sublist("Options").get<std::string>("Optical Generation"); 
 
@@ -215,7 +252,8 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
     if ((srh_recomb == "On") || (rad_recomb == "On") || (auger_recomb == "On") ||
         (trap_srh_recomb == "On") || (ava_gen == "On") || (opt_gen == "On") || 
         (defect_cluster_recomb == "On") || (empirical_defect_recomb == "On") ||
-        (ionization_particle_strike == "On"))
+        (ionization_particle_strike == "On") || (dynamic_traps_recomb == "On") ||
+        (bbt_gen == "On") )
     {
       TEUCHOS_ASSERT((solveElectron == "True") && (solveHole == "True"));
       haveSource = true;
@@ -223,8 +261,11 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
     else
       haveSource = false;  // NO recomb. model
 
-    withAvaGen = (haveSource && ava_gen == "On") ? true : false;
-    withTrapSRH = (haveSource && trap_srh_recomb == "On") ? true : false;
+    // withAvaGen = (haveSource && ava_gen == "On") ? true : false;
+    // withBBTGen = (haveSource && bbt_gen == "On") ? true : false;
+    // withTrapSRH = (haveSource && trap_srh_recomb == "On") ? true : false;
+    withDynamicTraps = (haveSource && dynamic_traps_recomb == "On") ? true : false;
+    
     addTrapCharge = (trap_srh_recomb == "On" && add_trap_charge == "True") ? true : false;
     drForce = params->sublist("Options").get<std::string>("Driving Force");
 
@@ -257,7 +298,6 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
   // *************************************
   // Assemble DOF names and Residual names
   // *************************************
-
   m_names = Teuchos::rcp(new charon::Names(cell_data.baseCellDimension(),prefix,discfields,discsuffix));
 
   this->getEvaluatorParameterList()->set("Names",Teuchos::RCP<const charon::Names>(m_names));
@@ -265,6 +305,33 @@ EquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>& p
   // Always solve the Poisson equation
   this->addDOF(m_names->dof.phi,basis_type,basis_order,integration_order,m_names->res.phi);
   this->addDOFGrad(m_names->dof.phi,m_names->grad_dof.phi);
+
+  // Conditional Quantum Correction
+  if( params->sublist("Quantum Correction").get<bool>("Electron Quantum Correction") ) 
+  {
+    this->addDOF(m_names->dof.elec_qpotential,basis_type,basis_order,integration_order,m_names->res.elec_qpotential);
+    this->addDOFGrad(m_names->dof.elec_qpotential,m_names->grad_dof.elec_qpotential);
+    useEQC = true; 
+    elecFitParam = params->sublist("Quantum Correction").get<double>("Electron Fit Parameter"); 
+    elecEffMass  = params->sublist("Quantum Correction").get<double>("Electron Effective Mass"); 
+  }
+  if( params->sublist("Quantum Correction").get<bool>("Hole Quantum Correction") ) 
+  {
+    this->addDOF(m_names->dof.hole_qpotential,basis_type,basis_order,integration_order,m_names->res.hole_qpotential);
+    this->addDOFGrad(m_names->dof.hole_qpotential,m_names->grad_dof.hole_qpotential);
+    useHQC = true; 
+    holeFitParam = params->sublist("Quantum Correction").get<double>("Hole Fit Parameter"); 
+    holeEffMass  = params->sublist("Quantum Correction").get<double>("Hole Effective Mass"); 
+  }
+
+  if (params->sublist("Quantum Correction").isParameter("Electron Model Type")) {
+    if (params->sublist("Quantum Correction").get<std::string>("Electron Model Type") == "Simplified") 
+      useElecSimplified = true;
+  }
+  if (params->sublist("Quantum Correction").isParameter("Hole Model Type")) {
+    if (params->sublist("Quantum Correction").get<std::string>("Hole Model Type") == "Simplified") 
+      useHoleSimplified = true;
+  }
 
   // Solve the Electron equation by default and users can disable it
   if (solveElectron == "True")
@@ -429,6 +496,53 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
         rcp(new charon::Integrator_SubCVNodeScalar<EvalT,panzer::Traits>(p));
       fm.template registerEvaluator<EvalT>(op);
     }
+
+    // Add the trap charges located at centroids of subcv to the Poisson source residual
+    // The trap charges are computed in charon::DynamicTraps_Recombination
+    if (withDynamicTraps && !this->isFreqDom)
+    {
+      ParameterList p("Dynamic Traps Source Residual");
+      p.set("Residual Name", n.res.phi+"_DYN_TRAPS_SOURCE_OP");
+      p.set("Value Name", n.field.trapped_charge);
+      p.set("Basis", hgrad_vol_cvfem);
+      p.set("IR", cvfem_vol_ir);
+      p.set("Multiplier", -1.0);
+      p.set("WithInterpolation", false);
+
+      RCP< PHX::Evaluator<panzer::Traits> > op =
+        rcp(new charon::Integrator_SubCVNodeScalar<EvalT,panzer::Traits>(p));
+      fm.template registerEvaluator<EvalT>(op);
+    }
+
+    {
+      // Computing displacement current density: Jd = -eps*d(grad(psi))/dt at IPs
+      if (this->buildTransientSupport()) {
+	{
+	  ParameterList p("Prev Potential Gradient");
+	  p.set("Current Name", m_names->field.grad_phi_prev);
+	  p.set< RCP<const charon::Names> >("Names", m_names);
+	  p.set("Scaling Parameters", scaleParams);
+	  p.set("IR", cvfem_vol_ir);
+	  RCP< PHX::Evaluator<panzer::Traits> > op = 
+	    rcp(new charon::PrevPotentialGrad<EvalT,panzer::Traits>(p));
+	  fm.template registerEvaluator<EvalT>(op); 
+	}
+
+	{
+	  ParameterList p("Displacement Current Density");
+	  p.set("Current Name", m_names->field.displacement_curr_density);
+	  p.set< RCP<const charon::Names> >("Names", m_names);
+	  p.set("Scaling Parameters", scaleParams);
+	  p.set("IR", cvfem_vol_ir);
+
+	  RCP< PHX::Evaluator<panzer::Traits> > op = 
+	    rcp(new charon::DisplacementCurrentDensity<EvalT,panzer::Traits>(p));
+	  fm.template registerEvaluator<EvalT>(op);
+	}
+      }
+
+    }
+
   }
 
   // Use a sum operator to form the overall residual for the equation
@@ -442,7 +556,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       rcp(new std::vector<std::string>);
     sum_names->push_back(n.res.phi + n.op.laplacian);
     sum_names->push_back(n.res.phi + n.op.src);
-    if (addTrapCharge)  sum_names->push_back(n.res.phi + "_TRAP_SOURCE_OP");
+    if (addTrapCharge) sum_names->push_back(n.res.phi + "_TRAP_SOURCE_OP");
+    if (withDynamicTraps && !this->isFreqDom) sum_names->push_back(n.res.phi + "_DYN_TRAPS_SOURCE_OP");
 
     p.set("Values Names", sum_names);
     p.set("Data Layout", basis->functional);
@@ -487,6 +602,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set<RCP<const charon::Names> >("Names", m_names);
     p.set("Basis", basis);
     p.set("Scaling Parameters", scaleParams);
+    p.set("Use Electron Quantum Correction", useEQC);
+    p.set("Use Hole Quantum Correction", false);
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::SGCVFEM_EdgeCurrDens<EvalT,panzer::Traits>(p));
@@ -547,7 +664,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
   // Source Residual
   {
-   if(withAvaGen) 
+   // if(withAvaGen || withTrapSRH || withDynamicTraps || withBBTGen) 
+   // Always instantiate SGCVFEM_CentroidCurrDens
    {
      // interpolate electron CVFEM-SG edge current density to centroids
      // of subcontrol volumes using edge basis functions (vectors)
@@ -562,8 +680,9 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
        rcp(new charon::SGCVFEM_CentroidCurrDens<EvalT,panzer::Traits>(p));
      fm.template registerEvaluator<EvalT>(op);
    }
-
-   if(withAvaGen || withTrapSRH)  // need driving force for both ava. gen. and trap srh
+   
+   // if(withAvaGen || withTrapSRH || withDynamicTraps || withBBTGen)  
+   // Always instantiate SGCVFEM_CentroidDriveForce
    {
      // compute electron driving force at the centroids of the subcontrol volumes
      ParameterList p("Electron Centroid Driving Force");
@@ -580,10 +699,9 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
      fm.template registerEvaluator<EvalT>(op);
    }
 
-   // integrate the total source term at the centroid of the subcontrol volume
-   // over subcv
+   // integrate the total source at the centroid of a subcontrol volume over subcv
    if (haveSource)
-     {
+   {
        ParameterList p("Electron Source Residual");
        p.set("Residual Name", n.res.edensity+n.op.src);
        p.set("Value Name", n.field.total_recomb);
@@ -595,7 +713,22 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
        RCP< PHX::Evaluator<panzer::Traits> > op =
          rcp(new charon::Integrator_SubCVNodeScalar<EvalT,panzer::Traits>(p));
        fm.template registerEvaluator<EvalT>(op);
-     }
+   }
+  
+   if (withDynamicTraps && !this->isFreqDom)
+   {
+       ParameterList p("Electron Dynamic Traps Source Residual");
+       p.set("Residual Name", n.res.edensity+"_DYN_TRAPS_SOURCE_OP");
+       p.set("Value Name", n.field.dynamic_traps_erecomb);
+       p.set("Basis", hgrad_vol_cvfem);
+       p.set("IR", cvfem_vol_ir);
+       p.set("Multiplier", 1.0);
+       p.set("WithInterpolation", false);
+
+       RCP< PHX::Evaluator<panzer::Traits> > op =
+         rcp(new charon::Integrator_SubCVNodeScalar<EvalT,panzer::Traits>(p));
+       fm.template registerEvaluator<EvalT>(op);
+   }
   }
 
   // Use a sum operator to form the overall residual for the equation
@@ -614,6 +747,9 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
     if (haveSource)
       sum_names->push_back(n.res.edensity + n.op.src);
+
+    if (withDynamicTraps && !this->isFreqDom) 
+      sum_names->push_back(n.res.edensity + "_DYN_TRAPS_SOURCE_OP");
 
     p.set("Values Names", sum_names);
     p.set("Data Layout", basis->functional);
@@ -660,6 +796,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set<RCP<const charon::Names> >("Names", m_names);
     p.set("Basis", basis);
     p.set("Scaling Parameters", scaleParams);
+    p.set("Use Electron Quantum Correction", false);
+    p.set("Use Hole Quantum Correction", useHQC);
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::SGCVFEM_EdgeCurrDens<EvalT,panzer::Traits>(p));
@@ -701,7 +839,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
   // Source Residual
   {
-   if(withAvaGen) 
+   // if(withAvaGen || withTrapSRH || withDynamicTraps || withBB2Gen)  
+   // Always instantiate SGCVFEM_CentroidCurrDens
    {
      // interpolate hole CVFEM-SG edge current density to centroids
      // of subcontrol volumes using edge basis functions (vectors)
@@ -717,7 +856,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
      fm.template registerEvaluator<EvalT>(op);
    }
 
-   if(withAvaGen || withTrapSRH)  // need driving force for both ava. gen. and trap srh
+   // if(withAvaGen || withTrapSRH || withDynamicTraps || withBB2Gen)  
+   // Always instantiate SGCVFEM_CentroidDriveForce
    {
      // compute hole driving force at the centroids of the subcontrol volumes
      ParameterList p("Hole Centroid Driving Force");
@@ -749,6 +889,22 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
        rcp(new charon::Integrator_SubCVNodeScalar<EvalT,panzer::Traits>(p));
      fm.template registerEvaluator<EvalT>(op);
    }
+
+   if (withDynamicTraps && !this->isFreqDom)
+     {
+       ParameterList p("Hole Dynamic Traps Source Residual");
+       p.set("Residual Name", n.res.hdensity+"_DYN_TRAPS_SOURCE_OP");
+       p.set("Value Name", n.field.dynamic_traps_hrecomb);
+       p.set("Basis", hgrad_vol_cvfem);
+       p.set("IR", cvfem_vol_ir);
+       p.set("Multiplier", 1.0);
+       p.set("WithInterpolation", false);
+
+       RCP< PHX::Evaluator<panzer::Traits> > op =
+         rcp(new charon::Integrator_SubCVNodeScalar<EvalT,panzer::Traits>(p));
+       fm.template registerEvaluator<EvalT>(op);
+     }
+
   }
 
   // Use a sum operator to form the overall residual for the equation
@@ -767,6 +923,9 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     if (haveSource)
       sum_names->push_back(n.res.hdensity+ n.op.src);
 
+    if (withDynamicTraps && !this->isFreqDom)
+      sum_names->push_back(n.res.hdensity + "_DYN_TRAPS_SOURCE_OP");
+
     p.set("Values Names", sum_names);
     p.set("Data Layout", basis->functional);
 
@@ -778,6 +937,217 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
  }  // end of if (solveHole == "True")
 
+ // Quantum Correction
+ {
+   // Fundamental Constants
+   const double V0 = scaleParams->scale_params.V0;
+   const double X0 = scaleParams->scale_params.X0;
+   // Physical Constants
+   charon::PhysicalConstants const& cpc = charon::PhysicalConstants::Instance();
+   const double eleQ = cpc.q;      // [C]
+   const double m0 = cpc.m0;   // [kg]
+   const double hbar = cpc.hbar; // [J.s]
+
+   // Electron Quantum Correction
+   if(useEQC) {
+     // electron DOS mass temporary for testing
+     const double m  = elecEffMass*m0;
+     // Units of qpConst are m^2, this is the constant from Wettstein et al.
+     const double qpConst = hbar*hbar/eleQ/(12.*m*V0);
+     // Use X0 to convert to cm then use 1e4 to convert to meters
+     const double LaplaceScaling = qpConst * 1e4 / ( X0 * X0 );
+     const double FieldScaling = LaplaceScaling/(2.0*V0);
+     // Calculate Quantum Correction Laplacian Parameter Flux
+     {
+       ParameterList p("Quantum Correction Potential Flux");
+       p.set("Flux Name", n.field.e_qp_flux);
+       p.set("Gradient Phi", n.grad_dof.phi);
+       p.set("Gradient QP", n.grad_dof.elec_qpotential);
+       p.set("Lattice Temperature", n.field.latt_temp);
+       p.set("IR", ir);
+       p.set("Fit Parameter", elecFitParam); 
+
+       RCP< PHX::Evaluator<panzer::Traits> > op =
+         rcp(new charon::QuantumPotentialFlux<EvalT,panzer::Traits>(p));
+
+       fm.template registerEvaluator<EvalT>(op);
+     }
+
+     // Integrate the Laplacian term
+     std::string laplacianName("RESIDUAL_" + n.dof.elec_qpotential + "_LAPLACIAN"); 
+     {
+       ParameterList p("Quantum Correction Potential Residual");
+       p.set("Residual Name", laplacianName);
+       p.set("Flux Name", n.field.e_qp_flux);
+       p.set("Basis", basis);
+       p.set("IR", ir);
+       p.set("Multiplier", LaplaceScaling);
+
+       RCP< PHX::Evaluator<panzer::Traits> > op =
+         rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
+
+       fm.template registerEvaluator<EvalT>(op);
+     }
+     std::vector<std::string> residualOperatorNames;
+     std::string helmholtzName("RESIDUAL_" + n.dof.elec_qpotential + "_HELMHOLTZ");
+     // Optionally use the neglect the field term for the simplified version
+     if(useElecSimplified) {
+         std::vector<std::string> tmp{laplacianName, helmholtzName};
+         residualOperatorNames = tmp;
+     } else {
+         // Create Field Evaluator
+         {
+           ParameterList p("Quantum Correction Potential Field");
+           p.set("Field Name", n.field.e_qp_fieldmag);
+           p.set("Gradient Phi", n.grad_dof.phi);
+           p.set("Gradient QP", n.grad_dof.elec_qpotential);
+           p.set("Lattice Temperature", n.field.latt_temp);
+           p.set("IR", ir);
+           p.set("Fit Parameter", elecFitParam); 
+
+           RCP< PHX::Evaluator<panzer::Traits> > op =
+             rcp(new charon::QuantumPotentialFieldMag<EvalT,panzer::Traits>(p));
+
+           fm.template registerEvaluator<EvalT>(op);
+         }
+         
+         // Integrate the Field term
+         std::string fieldName("RESIDUAL_" + n.dof.elec_qpotential + "_FIELD"); 
+         {
+           ParameterList p("Quantum Correction Potential Field Residual");
+           p.set("Residual Name", fieldName);
+           p.set("Value Name", n.field.e_qp_fieldmag); 
+           p.set("Basis", basis);
+           p.set("IR", ir);
+           p.set("Multiplier", FieldScaling*V0);
+
+           RCP< PHX::Evaluator<panzer::Traits> > op =
+             rcp(new panzer::Integrator_BasisTimesScalar<EvalT, panzer::Traits>(p)); 
+
+           fm.template registerEvaluator<EvalT>(op);
+         }
+         std::vector<std::string> tmp{laplacianName, helmholtzName, fieldName};
+         residualOperatorNames = tmp;
+
+     }
+
+     // Integrate the Lambda term
+     {
+         ParameterList p("Quantum Correction Potential Lambda");
+         p.set("Residual Name", helmholtzName);
+         p.set("Value Name", n.dof.elec_qpotential); 
+         p.set("IR", ir); 
+         p.set("Basis", basis);
+         p.set("Multiplier", 1.0);
+         RCP<PHX::Evaluator<panzer::Traits>> op = 
+           rcp(new panzer::Integrator_BasisTimesScalar<EvalT, panzer::Traits>(p)); 
+
+         fm.template registerEvaluator<EvalT>(op);
+     }
+     // Sum the equation and register it
+     this->buildAndRegisterResidualSummationEvaluator(fm, n.dof.elec_qpotential, residualOperatorNames);
+   } // end Electron Quantum Correction
+
+   // Hole Quantum Correction
+   if(useHQC) {
+     // hole DOS mass temporary for testing
+     const double m  = holeEffMass*m0;
+     // Units of qpConst are m^2, this is the constant from Wettstein et al.
+     const double qpConst = hbar*hbar/eleQ/(12.*m*V0);
+     // Use X0 to convert to cm then use 1e4 to convert to meters
+     const double LaplaceScaling = qpConst * 1e4 / ( X0 * X0 );
+     const double FieldScaling = LaplaceScaling/(2.0*V0);
+     // Calculate Quantum Correction Laplacian Parameter Flux
+     {
+       ParameterList p("Quantum Correction Potential Flux");
+       p.set("Flux Name", n.field.h_qp_flux);
+       p.set("Gradient Phi", n.grad_dof.phi);
+       p.set("Gradient QP", n.grad_dof.hole_qpotential);
+       p.set("Lattice Temperature", n.field.latt_temp);
+       p.set("IR", ir);
+       p.set("Fit Parameter", -holeFitParam); 
+
+       RCP< PHX::Evaluator<panzer::Traits> > op =
+         rcp(new charon::QuantumPotentialFlux<EvalT,panzer::Traits>(p));
+
+       fm.template registerEvaluator<EvalT>(op);
+     }
+
+     // Integrate the Laplacian term
+     std::string laplacianName("RESIDUAL_" + n.dof.hole_qpotential + "_LAPLACIAN"); 
+     {
+       ParameterList p("Quantum Correction Potential Residual");
+       p.set("Residual Name", laplacianName);
+       p.set("Flux Name", n.field.h_qp_flux);
+       p.set("Basis", basis);
+       p.set("IR", ir);
+       p.set("Multiplier", LaplaceScaling);
+
+       RCP< PHX::Evaluator<panzer::Traits> > op =
+         rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
+
+       fm.template registerEvaluator<EvalT>(op);
+     }
+     std::vector<std::string> residualOperatorNames;
+     std::string helmholtzName("RESIDUAL_" + n.dof.hole_qpotential + "_HELMHOLTZ");
+     // Optionally use the neglect the field term for the simplified version
+     if(useHoleSimplified) {
+         std::vector<std::string> tmp{laplacianName, helmholtzName};
+         residualOperatorNames = tmp;
+     } else {
+         // Create Field Evaluator
+         {
+           ParameterList p("Quantum Correction Potential Field");
+           p.set("Field Name", n.field.h_qp_fieldmag);
+           p.set("Gradient Phi", n.grad_dof.phi);
+           p.set("Gradient QP", n.grad_dof.hole_qpotential);
+           p.set("Lattice Temperature", n.field.latt_temp);
+           p.set("IR", ir);
+           p.set("Fit Parameter", -holeFitParam); 
+
+           RCP< PHX::Evaluator<panzer::Traits> > op =
+             rcp(new charon::QuantumPotentialFieldMag<EvalT,panzer::Traits>(p));
+
+           fm.template registerEvaluator<EvalT>(op);
+         }
+         
+         // Integrate the Field term
+         std::string fieldName("RESIDUAL_" + n.dof.hole_qpotential + "_FIELD"); 
+         {
+           ParameterList p("Quantum Correction Potential Field Residual");
+           p.set("Residual Name", fieldName);
+           p.set("Value Name", n.field.h_qp_fieldmag); 
+           p.set("Basis", basis);
+           p.set("IR", ir);
+           p.set("Multiplier", -FieldScaling*V0);
+
+           RCP< PHX::Evaluator<panzer::Traits> > op =
+             rcp(new panzer::Integrator_BasisTimesScalar<EvalT, panzer::Traits>(p)); 
+
+           fm.template registerEvaluator<EvalT>(op);
+         }
+         std::vector<std::string> tmp{laplacianName, helmholtzName, fieldName};
+         residualOperatorNames = tmp;
+
+     }
+
+     // Integrate the Lambda term
+     {
+         ParameterList p("Quantum Correction Potential Lambda");
+         p.set("Residual Name", helmholtzName);
+         p.set("Value Name", n.dof.hole_qpotential); 
+         p.set("IR", ir); 
+         p.set("Basis", basis);
+         p.set("Multiplier", -1.0);
+         RCP<PHX::Evaluator<panzer::Traits>> op = 
+           rcp(new panzer::Integrator_BasisTimesScalar<EvalT, panzer::Traits>(p)); 
+
+         fm.template registerEvaluator<EvalT>(op);
+     }
+     // Sum the equation and register it
+     this->buildAndRegisterResidualSummationEvaluator(fm, n.dof.hole_qpotential, residualOperatorNames);
+   } // end Hole Quantum Correction
+ } // end Quantum Correction
 }
 
 // ***********************************************************************

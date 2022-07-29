@@ -7,7 +7,7 @@ interpreter shortHelp {Output tabulated transient currents to the file {filename
 
 interpreter longHelp {Output tabulated transient currents to the file {filename} <> filename is the name of the file.  It is case sensitive.}
 
-xmlRequired Charon->Solver Factories->Rythmos Observers,Output Responses,string,ON
-xmlRequired Charon->Solver Factories->Rythmos Observers,Write Response File,string,{filename}
+xmlRequired Charon->Solver Factories->Time Integration Observers,Output Responses,string,ON
+xmlRequired Charon->Solver Factories->Time Integration Observers,Write Response File,string,{filename}
 
-
+specialInformation textDataFilename {filename}

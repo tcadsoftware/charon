@@ -42,6 +42,7 @@
 
 // Symmetrized EFFPG stabilization residual
 #include "Charon_SymEFFPG_Stab_Residual.hpp"
+#include "Charon_EFFPG_DDIonLattice_CurrentDensity.hpp"
 
 
 // SUPG-FEM and sym-EFFPG-FEM formulation of the Poisson+DD+Ion+Lattice equations
@@ -144,10 +145,10 @@ EquationSet_DDIonLattice(const Teuchos::RCP<Teuchos::ParameterList>& params,
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
-      "Stabilization Scheme",
-      "SUPG",
-      "Determine if users want to use SUPG or SymEFFPG or no stabilization",
-      Teuchos::tuple<std::string>("SUPG","SymEFFPG","None"),
+      "Discretization Method",
+      "FEM-SUPG",
+      "Determine the discretization method",
+      Teuchos::tuple<std::string>("FEM-SUPG", "FEM-EFFPG", "FEM-SymEFFPG"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
@@ -235,7 +236,7 @@ EquationSet_DDIonLattice(const Teuchos::RCP<Teuchos::ParameterList>& params,
     else
       haveSource = false;  // NO recomb. model
 
-    stab_scheme = params->sublist("Options").get<std::string>("Stabilization Scheme");
+    discMethod = params->sublist("Options").get<std::string>("Discretization Method");
     tau_e_type = params->sublist("Options").get<std::string>("Tau_E");
     tau_h_type = params->sublist("Options").get<std::string>("Tau_H");
     tau_ion_type = params->sublist("Options").get<std::string>("Tau_Ion");
@@ -370,7 +371,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   // ***************************************************************************
   // Construct the Poisson equation (solved with the continuity equations)
   // ***************************************************************************
-
+/*
   // Compute the vacuum potential
   {
     ParameterList p("Vacuum Potential");
@@ -405,12 +406,14 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       rcp(new panzer::DOFGradient<EvalT,panzer::Traits>(p));
     fm.template registerEvaluator<EvalT>(op);
   }
+*/
 
   // Laplacian Operator: \int_{\Omega} \lambda2 \epsilon_r \grad_vacpot \cdot \grad_basis d\Omega
   {
     ParameterList p("Laplacian Residual");
     p.set("Residual Name", n.res.phi);
-    p.set("Flux Name", n.field.grad_vac_pot);
+    // p.set("Flux Name", n.field.grad_vac_pot);
+    p.set("Flux Name", n.grad_dof.phi);
     p.set("Basis", basis);
     p.set("IR", ir);
     p.set("Multiplier", scaleParams->scale_params.Lambda2);
@@ -471,6 +474,44 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     fm.template registerEvaluator<EvalT>(op);
   }
 
+ if (discMethod == "FEM-EFFPG")
+ {
+  // Convection-Diffusion Residual
+  {
+   // compute electron EFFPG DDIonLattice current density
+   {
+    ParameterList p("Electron EFFPG DDIonLattice Current Density");
+    p.set("Carrier Type", "Electron");
+    p.set<RCP<const charon::Names> >("Names", m_names);
+    p.set("Basis", basis);
+    p.set("IR", ir);
+    p.set<bool>("Temperature Gradient", true);
+    p.set("Scaling Parameters", scaleParams);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new charon::EFFPG_DDIonLattice_CurrentDensity<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+
+   // integrate convection(/advection/drift)-diffusion term (current density)
+   {
+    ParameterList p("Electron Convection Diffusion Residual");
+    p.set("Residual Name", n.res.edensity);
+    p.set("Flux Name", n.field.elec_curr_density);
+    p.set("Basis", basis);
+    p.set("IR", ir);
+    p.set("Multiplier", 1.0);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+  }
+ }  // end of if (discMethod == "FEM-EFFPG")
+
+ else if ( (discMethod == "FEM-SUPG") or
+           (discMethod == "FEM-SymEFFPG") )
+ {
   // Construct the residual of current density dot grad_basis
   {
    // Compute the electric field whose expression depends on the model of choice.
@@ -520,6 +561,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
   } // end of the residual of current density dot grad_basis
 
+ } // end of the else if statement
+
   // Source Operator: Integrate the total source term
   if (haveSource)
   {
@@ -530,11 +573,11 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Calculate the SUPG stabilization residual
-  if (stab_scheme == "SUPG")
+  if (discMethod == "FEM-SUPG")
     computeSUPGStabResidual(fm, fl, user_data, m_names, ir, basis, ls_type, tau_e_type, add_source_stab, "Electron", 0, includeSoret);
 
   // Calculate the symmetrized EFFPG stabilization residual
-  else if (stab_scheme == "SymEFFPG")
+  else if (discMethod == "FEM-SymEFFPG")
   {
     ParameterList p("Electron SymEFFPG Stabilization Residual");
     p.set("Residual Name", n.res.edensity + n.op.sym_effpg_stab);
@@ -549,6 +592,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Use a sum operator to form the overall residual for the equation
+  if ( (discMethod == "FEM-SUPG") or
+       (discMethod == "FEM-SymEFFPG") )
   {
     ParameterList p;
     p.set("Sum Name", n.res.edensity);
@@ -559,12 +604,12 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     sum_names->push_back(n.res.edensity + n.op.conv_diff);
 
     // add stabilization residual
-    if (stab_scheme == "SUPG")
+    if (discMethod == "FEM-SUPG")
     {
       sum_names->push_back(n.res.edensity + n.op.supg_conv);
       if (add_source_stab)  sum_names->push_back(n.res.edensity + n.op.supg_src);
     }
-    else if (stab_scheme == "SymEFFPG")
+    else if (discMethod == "FEM-SymEFFPG")
       sum_names->push_back(n.res.edensity + n.op.sym_effpg_stab);
 
     p.set("Values Names", sum_names);
@@ -593,6 +638,44 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     fm.template registerEvaluator<EvalT>(op);
   }
 
+ if (discMethod == "FEM-EFFPG")
+ {
+  // Convection-Diffusion Residual
+  {
+   // compute hole EFFPG DDIonLattice current density
+   {
+    ParameterList p("Hole EFFPG DDIonLattice Current Density");
+    p.set("Carrier Type", "Hole");
+    p.set<RCP<const charon::Names> >("Names", m_names);
+    p.set("Basis", basis);
+    p.set("IR", ir);
+    p.set<bool>("Temperature Gradient", true);
+    p.set("Scaling Parameters", scaleParams);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new charon::EFFPG_DDIonLattice_CurrentDensity<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+
+   // integrate convection(advection/drift)-diffusion term (current density)
+   {
+    ParameterList p("Hole Convection Diffusion Residual");
+    p.set("Residual Name", n.res.hdensity);
+    p.set("Flux Name", n.field.hole_curr_density);
+    p.set("Basis", basis);
+    p.set("IR", ir);
+    p.set("Multiplier", -1.0);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+  }
+ }  // end of if (discMethod == "FEM-EFFPG")
+  
+ else if ( (discMethod == "FEM-SUPG") or
+           (discMethod == "FEM-SymEFFPG") )
+ {
   // Construct the convection-diffusion residual
   {
    // Compute the electric field whose expression depends on the model of choice.
@@ -642,6 +725,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
   }  // end of constructing convection-diffusion residual
 
+ } // end of else if statement
+  
   // Source Operator: Integrate the total source term
   if (haveSource)
   {
@@ -652,11 +737,11 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Calculate the SUPG stabilization residual
-  if (stab_scheme == "SUPG")
+  if (discMethod == "FEM-SUPG")
     computeSUPGStabResidual(fm, fl, user_data, m_names, ir, basis, ls_type, tau_h_type, add_source_stab, "Hole", 0, includeSoret);
 
   // Calculate the symmetrized EFFPG stabilization residual
-  else if (stab_scheme == "SymEFFPG")
+  else if (discMethod == "FEM-SymEFFPG")
   {
     ParameterList p("Hole SymEFFPG Stabilization Residual");
     p.set("Residual Name", n.res.hdensity + n.op.sym_effpg_stab);
@@ -671,6 +756,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Use a sum operator to form the overall residual for the equation
+  if ( (discMethod == "FEM-SUPG") or
+       (discMethod == "FEM-SymEFFPG") )
   {
     ParameterList p;
     p.set("Sum Name", n.res.hdensity);
@@ -680,13 +767,13 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
     sum_names->push_back(n.res.hdensity + n.op.conv_diff);
 
-    if (stab_scheme == "SUPG")
+    if (discMethod == "FEM-SUPG")
     {
       sum_names->push_back(n.res.hdensity + n.op.supg_conv);
       if (add_source_stab)
         sum_names->push_back(n.res.hdensity + n.op.supg_src);
     }
-    else if (stab_scheme == "SymEFFPG")
+    else if (discMethod == "FEM-SymEFFPG")
       sum_names->push_back(n.res.hdensity + n.op.sym_effpg_stab);
 
     p.set("Values Names", sum_names);
@@ -715,6 +802,44 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     fm.template registerEvaluator<EvalT>(op);
   }
 
+ if (discMethod == "FEM-EFFPG")
+ {
+  // Convection-Diffusion Residual
+  {
+   // compute ion EFFPG DDIonLattice current density
+   {
+    ParameterList p("Ion EFFPG DDIonLattice Current Density");
+    p.set("Carrier Type", "Ion");
+    p.set<RCP<const charon::Names> >("Names", m_names);
+    p.set("Basis", basis);
+    p.set("IR", ir);
+    p.set<bool>("Temperature Gradient", true);
+    p.set("Scaling Parameters", scaleParams);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new charon::EFFPG_DDIonLattice_CurrentDensity<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+
+   // integrate convection(/advection/drift)-diffusion term (current density)
+   {
+    ParameterList p("Ion Convection Diffusion Residual");
+    p.set("Residual Name", n.res.iondensity);
+    p.set("Flux Name", n.field.ion_curr_density);
+    p.set("Basis", basis);
+    p.set("IR", ir);
+    p.set("Multiplier", -1.0);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new panzer::Integrator_GradBasisDotVector<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+  }
+ }  // end of if (discMethod == "FEM-EFFPG")
+
+ else if ( (discMethod == "FEM-SUPG") or
+           (discMethod == "FEM-SymEFFPG") )
+ {
   // Construct the convection-diffusion residual
   {
    // Compute the electric field whose expression depends on the model of choice.
@@ -765,15 +890,17 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
   }  // end of constructing convection-diffusion residual
 
+ }  // end of else if statement
+ 
   // Source Operator: Integrate the total source term
   // Neglect the source term for Ion,
 
   // Calculate SUPG stabilization residual
-  if (stab_scheme == "SUPG")
+  if (discMethod == "FEM-SUPG")
     computeSUPGStabResidual(fm, fl, user_data, m_names, ir, basis, ls_type, tau_ion_type, add_source_stab, "Ion", ion_charge, includeSoret);
 
   // Calculate the symmetrized EFFPG stabilization residual
-  else if (stab_scheme == "SymEFFPG")
+  else if (discMethod == "FEM-SymEFFPG")
   {
     ParameterList p("Ion SymEFFPG Stabilization Residual");
     p.set("Residual Name", n.res.iondensity + n.op.sym_effpg_stab);
@@ -788,6 +915,8 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Use a sum operator to form the overall residual for the equation
+  if ( (discMethod == "FEM-SUPG") or
+       (discMethod == "FEM-SymEFFPG") )
   {
     ParameterList p;
     p.set("Sum Name", n.res.iondensity);
@@ -796,9 +925,9 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
     sum_names->push_back(n.res.iondensity + n.op.conv_diff);
 
-    if (stab_scheme == "SUPG")
+    if (discMethod == "FEM-SUPG")
       sum_names->push_back(n.res.iondensity + n.op.supg_conv);
-    else if (stab_scheme == "SymEFFPG")
+    else if (discMethod == "FEM-SymEFFPG")
       sum_names->push_back(n.res.iondensity + n.op.sym_effpg_stab);
 
     p.set("Values Names", sum_names);
@@ -845,7 +974,58 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Source Operator: \int_{\Omega} H * basis d\Omega
+ {
+  if (discMethod == "FEM-EFFPG")
   {
+   // obtain electron electric field at IPs, used in computing the heat generation H
+   {
+    ParameterList p("Electron Electric Field");
+    p.set("Carrier Type", "Electron");
+    p.set("Band Gap Narrowing", haveBGN);
+    p.set("Electric Field Model", field_model);
+    p.set< RCP<const charon::Names> >("Names", m_names);
+    p.set("IR", ir);
+    p.set("Basis", basis);
+    p.set("Scaling Parameters", scaleParams);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new charon::DDLattice_ElectricField<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+
+   // obtain hole electric field at IPs, used in computing the heat generation H
+   {
+    ParameterList p("Hole Electric Field");
+    p.set("Carrier Type", "Hole");
+    p.set("Band Gap Narrowing", haveBGN);
+    p.set("Electric Field Model", field_model);
+    p.set< RCP<const charon::Names> >("Names", m_names);
+    p.set("IR", ir);
+    p.set("Basis", basis);
+    p.set("Scaling Parameters", scaleParams);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new charon::DDLattice_ElectricField<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }
+
+   // obtain ion electric field at IPs, used in computing the heat generation H
+   {
+    ParameterList p("Ion Electric Field");
+    p.set("Carrier Type", "Ion");
+    p.set("Band Gap Narrowing", false);
+    p.set("Electric Field Model", field_model);
+    p.set< RCP<const charon::Names> >("Names", m_names);
+    p.set("IR", ir);
+    p.set("Basis", basis);
+    p.set("Scaling Parameters", scaleParams);
+
+    RCP< PHX::Evaluator<panzer::Traits> > op =
+      rcp(new charon::DDLattice_ElectricField<EvalT,panzer::Traits>(p));
+    fm.template registerEvaluator<EvalT>(op);
+   }  
+  }  // end of if (discMethod == "FEM-EFFPG")
+
    // Obtain the heat generation
    {
     bool enableElectron = false;
@@ -876,7 +1056,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       n.res.latt_temp, n.field.heat_gen, *basis, *ir, -1));
     fm.template registerEvaluator<EvalT>(op);
    }
-  }
+ }
 }
 
 // ***********************************************************************

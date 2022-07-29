@@ -1,0 +1,9 @@
+interpreter name TransientMinStepSize
+
+interpreter shortHelp {Set the smallest value of time step the integrator can take.}
+interpreter longHelp {Set the smallest value of time step the integrator can take.}
+
+interpreter inputLine (time integrator minimum step size) = {minStepSize}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Min Step Size,double,{minStepSize}
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control,Minimum Time Step,double,{minStepSize}

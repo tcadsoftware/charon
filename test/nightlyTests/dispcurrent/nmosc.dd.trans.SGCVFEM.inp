@@ -1,0 +1,79 @@
+import state file "nmosc.dd.SGCVFEM.exo"
+
+start output parameters
+      Output State File nmosc.dd.trans.SGCVFEM.exo
+      output cell average variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
+      output cell average variables in silicon for vector "Electron Current Density,Hole Current Density,Displacement Current Density,GRAD_ELECTRIC_POTENTIAL"
+      output cell average variables in sio2 for vector "Displacement Current Density,GRAD_ELECTRIC_POTENTIAL"
+      output tabulated transient currents to current_time_dd_lin.csv
+
+end output parameters
+
+assembly workset = 50
+tpetra is on
+lattice temperature = 300.0
+concentration scaling=1e15
+
+start physics block semiconductor
+      geometry block is silicon
+      standard discretization type is drift diffusion cvfem 
+      material model is siliconParameter
+      srh recombination is on
+      radiative recombination is off
+      auger recombination is off
+end Physics block semiconductor
+
+start physics block insulator
+      geometry block is sio2
+      standard discretization type is laplace cvfem
+      material model is sio2Parameter
+end Physics Block semiconductor
+
+start material block siliconParameter
+      material name is Silicon
+      relative permittivity = 11.9
+      
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e15
+      	    spatial range is 0.0 to 2.0 in x
+    	    spatial range is 0.0 to 0.5 in y	    
+      end uniform doping named Function1
+
+      fixed mobility for electrons is 1000.0
+      fixed mobility for holes is 500.0
+
+      start carrier lifetime
+      	    electron lifetime is constant = 1e-11
+	    hole lifetime is constant = 1e-11 
+      end carrier lifetime
+end material block siliconParameter
+
+start material block sio2Parameter
+      material name is SiO2
+      relative permittivity = 3.9
+end material block sio2Parameter
+
+initial conditions for ELECTRIC_POTENTIAL in silicon is exodus file
+initial conditions for ELECTRON_DENSITY in silicon is exodus file
+initial conditions for HOLE_DENSITY in silicon is exodus file
+initial conditions for ELECTRIC_POTENTIAL in sio2 is exodus file
+
+BC is ohmic for subs on silicon fixed at 0.0
+BC is contact on insulator for gate on sio2 with work function 4.1 linearly ramped from 0.0 to 1.0 and voltage from 0.0 to 5.0
+
+start solver block
+  start tpetra block
+    problem type is tempus
+    time step size is variable
+    time integrator final time = 1.0
+    time integrator initial step size = 0.1
+    time integrator minimum step size = 0.001
+    time integrator maximum step size = 0.1
+    verbosity level is high
+  end
+end solver block
+
+
+
+

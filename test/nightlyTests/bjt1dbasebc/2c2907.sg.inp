@@ -2,7 +2,7 @@
 Import State File 2c2907.dd.equ.exo at index 1
 
 start output parameters
-      Output State File 2c2907.dd.interp.exo
+      Output State File 2c2907.sg.exo
       Output cell average Variables in silicon for scalar "Doping,Acceptor Concentration,Donor Concentration"
 end output parameters
 
@@ -12,6 +12,8 @@ start Physics Block Semiconductor
       material model is siliconParameter
       band gap narrowing is on
 end Physics Block Semiconductor
+
+tpetra is on
 
 start Material Block siliconParameter
       material name is Silicon
@@ -76,11 +78,12 @@ BC is ohmic for collector on silicon fixed at -4.81
 
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
 initial conditions for ELECTRON_DENSITY in silicon is Exodus File
-initial conditions for HOLE_DENSITY in silicon Exodus File
+initial conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
 

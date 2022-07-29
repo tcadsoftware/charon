@@ -38,6 +38,7 @@ BCStrategy_Dirichlet_OhmicContact(const panzer::BC& bc, const Teuchos::RCP<panze
   isLatTDof = false;
   isIonDof = false;
   isFermiPin = false;
+  ionDens = 0.0; 
 
   Teuchos::RCP<const Teuchos::ParameterList> bc_params = bc.params();
 
@@ -79,7 +80,10 @@ setup(const panzer::PhysicsBlock& side_pb,
   // check if Fermi Level Pinning is turned on
   if ( dataPList->isParameter("Fermi Level Pinning") )
     isFermiPin = dataPList->template get<bool>("Fermi Level Pinning");
-  
+
+  if (isFermiPin) // Ion density is pinned at a given value on a contact
+    ionDens = dataPList->template get<double>("Contact Ion Density");
+
   // fix for lack of prefix, discfields, and discsuffix
   this->m_names = rcp(new charon::Names(1,prefix,discfields,discsuffix,this->m_names->FDsuffix()));
   const charon::Names& n = *m_names;
@@ -175,6 +179,18 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
 
   // get the equation set parameter list
   const ParameterList& eqSetPList = pbParamList->sublist("child0");
+
+  // Use Quantum Correction 
+  bool useEQC = false;
+  bool useHQC = false;
+  if (eqSetPList.isSublist("Quantum Correction")) {
+      const ParameterList& qcParams = eqSetPList.sublist("Quantum Correction");
+      useEQC = qcParams.get<bool>("Electron Quantum Correction");
+      useHQC = qcParams.get<bool>("Hole Quantum Correction");
+      //if (qcParams.get<bool>("Hole Quantum Correction")) 
+      //    useHQC = true;
+  }
+
   const ParameterList& options = eqSetPList.sublist("Options");
 
   // get any prefix or suffix parameters
@@ -240,6 +256,8 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   p.set("Names", names);
   p.set("Frequency Domain", isFreqDom);
   p.set("Scaling Parameters", scaleParams);
+  p.set("Sideset ID",this->m_bc.sidesetID());
+
   if (this->m_bc.params()->isParameter("Voltage"))
   {
     p.setEntry("Voltage", this->m_bc.params()->getEntry("Voltage"));
@@ -248,12 +266,21 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   {
     p.setEntry("Varying Voltage",
       this->m_bc.params()->getEntry("Varying Voltage"));
+
+    if (this->m_bc.params()->isParameter("Initial Voltage"))
+      p.set("Initial Voltage", this->m_bc.params()->template get<double>("Initial Voltage"));
+  }
+  else if (this->m_bc.params()->isParameter("Xyce Coupled Voltage"))
+  {
+    p.setEntry("Xyce Coupled Voltage",
+      this->m_bc.params()->getEntry("Xyce Coupled Voltage"));
   }
   else
   {
     p.set<double>("Voltage", 0);
   }
   p.set<bool>("Fermi Dirac", bUseFD);
+
   p.sublist("Incomplete Ionization") = incmpl_ioniz;
   p.set<RCP<panzer::ParamLib> >("ParamLib", this->getGlobalData()->pl);
   if(this->isFreqDom)
@@ -263,18 +290,16 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   }
 
   // Get the data holder for the empirical damage model
-  auto damage_data =
-    user_data.get<Teuchos::RCP<charon::EmpiricalDamage_Data> >("empirical damage data");
+  auto damage_data = user_data.get<Teuchos::RCP<charon::EmpiricalDamage_Data> >("empirical damage data");
   p.set("empirical damage data", damage_data);
 
-  // build DDLatticeBC_OhmicContact for DD+Lattice, DD+Ion, and DD+Lattice+Ion formulation
-  // if (isLatTDof || isIonDof)
   // build DDLatticeBC_OhmicContact for DDIon and DDIonLattice equation sets
   if (isIonDof)
   {
     p.set<bool>("Solve Ion", isIonDof);
     p.set<int>("Ion Charge", ionCharge);
     p.set<bool>("Fermi Level Pinning", isFermiPin);
+    p.set<double>("Contact Ion Density", ionDens); 
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::DDLatticeBC_OhmicContact<EvalT,panzer::Traits>(p));
@@ -287,6 +312,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set<bool>("Solve Ion", true);  // always true for DDIon
     p.set<int>("Ion Charge", ionCharge);
     p.set<bool>("Fermi Level Pinning", isFermiPin);
+    p.set<double>("Contact Ion Density", ionDens); 
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
       rcp(new charon::DDLatticeBC_OhmicContact<EvalT,panzer::Traits>(p));
@@ -296,6 +322,10 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   // build the BC_OhmicContact evaluator for isothermal DD and DDLattice equation sets
   else
   {
+    // Pass Quantum Correction Parameters
+    p.set<bool>("Electron Quantum Correction", useEQC);
+    p.set<bool>("Hole Quantum Correction", useHQC);
+
     RCP< PHX::EvaluatorWithBaseImpl<panzer::Traits> > op =
       rcp(new charon::BC_OhmicContact<EvalT,panzer::Traits>(p));
 

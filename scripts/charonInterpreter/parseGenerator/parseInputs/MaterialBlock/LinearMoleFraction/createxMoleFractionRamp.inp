@@ -1,0 +1,13 @@
+
+
+interpreter name xMoleFractionRamp
+
+interpreter inputLine (xMole Fraction ramps from) {startMoleFraction} to {stopMoleFraction}
+
+interpreter shortHelp {set the ramp of the xmole fraction over the linear range specified.}
+
+interpreter longHelp {set the ramp of the xmole fraction over the linear range specified. <> startMoleFraction is the fraction at the start range specified <> stopMoleFraction is the concentration at the end of the ramp}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},xMoleFrac Start Value,double,{startMoleFraction}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},xMoleFrac End Value,double,{stopMoleFraction}

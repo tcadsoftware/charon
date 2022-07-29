@@ -1,0 +1,13 @@
+interpreter name Center
+
+interpreter inputLine (peak location) = {peak} [ (in x) [ (in y) [ (in z)]]]
+
+interpreter shortHelp {Set the location where the peak of the mole fraction is for the given coordinate direction.}
+
+interpreter longHelp {Set the location where the peak of the mole fraction is for the given coordinate direction.}
+
+xmlOptional (in x) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},X Peak Location,double,{peak}
+
+xmlOptional (in y) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Y Peak Location,double,{peak}
+
+xmlOptional (in z) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Z Peak Location,double,{peak}

@@ -48,7 +48,7 @@ namespace charon
   class
   CurrentConstraintList
   {
-    private:
+   private:
 
       //-----------------------------------------------------------------------
       /*                                                                     */
@@ -164,6 +164,11 @@ namespace charon
           responseIndex() const;
 
           /**
+           *  \brief Get the response name used in the Model Evalautor and LOCA.
+           */
+          std::string responseName() const;
+
+          /**
            *  \brief Set the index of the "Active Parameter" to which this
            *         constraint corresponds.
            */
@@ -176,6 +181,11 @@ namespace charon
            */
           int
           parameterIndex() const;
+
+          /**
+           *  \brief Get the parameter name used in the Model Evalautor and LOCA.
+           */
+           std::string parameterName() const;
 
           /**
            *  \brief Get the type of constraint.
@@ -212,6 +222,19 @@ namespace charon
           {
             return currentValueImpl();
           } // end of currentValue()
+
+
+          /**
+           *  \brief Update the current value (in A).
+           *
+           *  \throws std::logic_error Because this base class has no current
+           *                           value to update.
+           */
+          virtual void
+          currentValueUpdate(double newCurrentValue) const
+          {
+            currentValueUpdateImpl(newCurrentValue);
+          } // end of currentValueUpdateImpl()
 
           /**
            *  \brief Is this a Resistor Contact constraint?
@@ -334,6 +357,15 @@ namespace charon
            */
           virtual double
           currentValueImpl() const;
+
+          /**
+           *  \brief Update the current value (in A).
+           *
+           *  \throws std::logic_error Because this base class has no current
+           *                           value.
+           */
+          virtual void
+          currentValueUpdateImpl(double newCurrentValue) const;
 
           /**
            *  \brief Is this a Resistor Contact constraint?
@@ -504,10 +536,18 @@ namespace charon
           currentValueImpl() const;
 
           /**
+           *  \brief Update the current value (in A).
+          */
+          void
+          currentValueUpdateImpl(double newCurrentValue) const;
+
+          /**
            *  \brief How much current (in A) is being applied with the constant
            *         current source.
            */
-          double currentValue_;
+          mutable double
+          currentValue_;
+
       }; // end of class ConstantCurrent
 
       /**
@@ -651,7 +691,7 @@ namespace charon
        *
        *  Constructs an empty `CurrentConstraintList`.
        */
-      CurrentConstraintList();
+      CurrentConstraintList(bool mixedMode = false);
 
       /**
        *  \brief Copy Constructor.
@@ -661,8 +701,7 @@ namespace charon
        *  \param[in] original The `CurrentConstraintList` that you'd like to
        *                      copy.
        */
-      CurrentConstraintList(
-        const CurrentConstraintList& original);
+      CurrentConstraintList(const CurrentConstraintList& original);
 
       /**
        *  \brief Destructor.
@@ -953,6 +992,12 @@ namespace charon
        */
       std::vector<Teuchos::RCP<ConstraintBase>>
       constraints_;
+
+      /**
+       *  \brief A flag for whether the Constraints come from a mixed mode simulation.
+       */
+      bool
+      mixedMode_;
 
       /**
        *  \brief The number of Constant Current constraints we have.

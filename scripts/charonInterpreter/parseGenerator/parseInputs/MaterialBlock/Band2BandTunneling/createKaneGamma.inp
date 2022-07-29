@@ -1,0 +1,9 @@
+interpreter name KaneGamma  
+
+interpreter inputLine (Kane gamma) = {value} 
+
+interpreter shortHelp {Set the Kane gamma parameter for the Band2Band tunneling local model}
+
+interpreter longHelp {Set the Kane gamma parameter for the Band2Band tunneling local model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Kane gamma,double,{value}

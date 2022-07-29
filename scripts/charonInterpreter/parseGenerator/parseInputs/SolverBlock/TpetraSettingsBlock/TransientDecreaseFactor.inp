@@ -1,0 +1,10 @@
+interpreter name TransientDecreaseFactor
+
+interpreter shortHelp {Set the step size decrease factor in a transient simulation.}
+interpreter longHelp {Set the step size decrease factor in a transient simulation.}
+
+interpreter inputLine (time integrator decrease factor) = {decrFactor}
+
+xmlRequired Charon->Solution Control->Rythmos->Rythmos Step Control Strategy,Step Size Decrease Factor,double,{decrFactor}
+
+xmlRequired Charon->Solution Control->Tempus->Default Integrator->Time Step Control->Time Step Control Strategy,Reduction Factor,double,{decrFactor} Priority 5

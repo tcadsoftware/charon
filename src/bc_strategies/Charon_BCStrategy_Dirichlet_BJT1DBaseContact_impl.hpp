@@ -208,6 +208,7 @@ buildAndRegisterEvaluators(PHX::FieldManager<panzer::Traits>& fm,
     p.set("Names", names);
     p.set("Frequency Domain", isFreqDom);
     p.set("Scaling Parameters", scaleParams);
+    p.set("Sideset ID",this->m_bc.sidesetID());
     p.set("Base Doping Type", this->m_bc.params()->template get<std::string>("Base Doping Type"));
 
     if (this->m_bc.params()->isParameter("Voltage"))

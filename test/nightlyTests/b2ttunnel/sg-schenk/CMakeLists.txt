@@ -7,8 +7,8 @@ INCLUDE(TribitsAddAdvancedTest)
 SET(testName charon_mp_npn-hbt.sg.trap.schenk)
 TRIBITS_ADD_ADVANCED_TEST(
   ${testName}
+  CATEGORIES NIGHTLY
   OVERALL_WORKING_DIRECTORY TEST_NAME
-  TIMEOUT 1200
   
   TEST_0 COPY_FILES_TO_TEST_DIR
     GaAs_LowField_EMob.txt
@@ -17,7 +17,7 @@ TRIBITS_ADD_ADVANCED_TEST(
     npn-hbt.sg.telt.0.8V.exo.4.1
     npn-hbt.sg.telt.0.8V.exo.4.2    
     npn-hbt.sg.telt.0.8V.exo.4.3
-    npn-hbt.sg.trap.schenk.xml
+    npn-hbt.sg.trap.schenk.inp
     currents-loca.gold.dat
     npn-hbt.sg.trap.schenk.gold.exo
     npn-hbt.exodiff
@@ -26,20 +26,23 @@ TRIBITS_ADD_ADVANCED_TEST(
   TEST_1 CMND rm ARGS -f currents-loca.dat
     PASS_ANY
   
+  TEST_2 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter 
+    ARGS -i npn-hbt.sg.trap.schenk.inp
+  
   # Run the Gummel LOCA sweep (5 voltage points for short time)
-  TEST_2 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
-    ARGS  --i=npn-hbt.sg.trap.schenk.xml --current
+  TEST_3 EXEC charon_mp NOEXEPREFIX DIRECTORY ${PACKAGE_BINARY_DIR}
+    ARGS  --i=npn-hbt.sg.trap.schenk.inp.xml --current
     NUM_MPI_PROCS 4
     PASS_REGULAR_EXPRESSION "Charon run completed."
 
   # Combine the parallel exodus
-  TEST_3  EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX
+  TEST_4  EXEC ${SEACAS_BINARY_DIR}/applications/epu/epu NOEXEPREFIX
     NOEXESUFFIX
-    ARGS  "-auto" "npn-hbt.sg.trap.schenk.exo.${MPI_EXEC_MAX_NUMPROCS}."
+    ARGS  "-auto" "npn-hbt.sg.trap.schenk.exo.4."
     NUM_MPI_PROCS 1
     
   # Compare the exodus
-  TEST_4 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
+  TEST_5 EXEC ${SEACAS_BINARY_DIR}/applications/exodiff/exodiff NOEXEPREFIX
     NOEXESUFFIX
     ARGS -f 
          npn-hbt.exodiff 
@@ -53,31 +56,3 @@ IF (${testName}_CREATED)
   SET_PROPERTY(TEST Charon_charon_mp_npn-hbt.sg.trap.schenk PROPERTY LABELS
      npn-hbt.sg.trap.schenk nightly)
 ENDIF()  
-
-
-####################################################
-# Interpreter test
-SET(testName charon_mp_npn-hbt.sg.trap.schenk_input)
-TRIBITS_ADD_ADVANCED_TEST(
-  ${testName}
-  OVERALL_WORKING_DIRECTORY TEST_NAME
-
-  TEST_0 COPY_FILES_TO_TEST_DIR
-    npn-hbt.sg.trap.schenk.inp
-    npn-hbt.sg.trap.schenk.inp.gold.xml
-
-  TEST_1 CMND ${PACKAGE_BINARY_DIR}/charonInterpreter 
-    ARGS -i npn-hbt.sg.trap.schenk.inp
-
-  TEST_2 CMND ${PACKAGE_BINARY_DIR}/interpreter/charonInterpreter/tools/compareParameterLists.py
-    ARGS npn-hbt.sg.trap.schenk.inp.xml npn-hbt.sg.trap.schenk.inp.gold.xml
-    PASS_REGULAR_EXPRESSION "Files are the same."
-
-
-  ADDED_TEST_NAME_OUT ${testName}_CREATED
-  )
-IF (${testName}_CREATED)
-  SET_PROPERTY(TEST Charon_charon_mp_npn-hbt.sg.trap.schenk_input PROPERTY LABELS
-    npn-hbt.sg.trap.schenk_input inputVerification)
-ENDIF()
-        

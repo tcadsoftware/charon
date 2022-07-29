@@ -11,6 +11,7 @@
 #include "Panzer_Workset_Utilities.hpp"
 #include "Panzer_BasisIRLayout.hpp"
 #include "Panzer_FieldLibrary.hpp"
+#include "Panzer_ParameterLibraryUtilities.hpp"
 
 #include "Charon_Names.hpp"
 #include "Charon_Material_Properties.hpp"
@@ -18,12 +19,21 @@
 #include "Charon_DDLatticeBC_OhmicContact_decl.hpp"
 #include "Charon_Util.hpp"
 
-/*
-The Ohmic BC calculations for electrons and holes are applicable to
-the DD+Lattice, DD+Ion, and DD+Lattice+Ion formulations. The potential
-here is the intrinsic Fermi potential, i.e., -q*\phi = Ei. The voltage source is
-a sinusoidal function in time, with Amplitude and Frequency given in physical units
-o
+
+/**
+ * @brief The Ohmic BC calculations here for electrons and holes are applicable to
+ * the DDIon, and DDIonLattice formulations. The potential used to be 
+ * the intrinsic Fermi potential, i.e., -q*\phi = Ei. However it was changed to 
+ * the shifted vacumm potential in January 2021 such that the solution of the 
+ * Poisson equation is the shifted vacumm potential for all equation sets (not just 
+ * isothermal DD equation sets). The reason for the change is that the potential 
+ * in Charon's framework is always continuous even across a heterojunction, while 
+ * the intrinsic Fermi potential is physically discontinuous in a heterojunction. 
+ * Therefore, it is not correct to set the Poisson equation solution as the intrinsic
+ * Fermi potential in Charon. In some commercial codes such as Silvaco, the potential 
+ * is set to be the intrinsic Fermi potential, because they use double points at a 
+ * heterojunction so that the potential is allowed to be discontinuous. 
+ * The voltage source is a sinusoidal function in time, with input params given in physical units.
 */
 
 
@@ -40,6 +50,7 @@ DDLatticeBC_Sinusoid(
   const Teuchos::ParameterList& p)
 {
   using Teuchos::RCP;
+  using Teuchos::rcp;
   using PHX::DataLayout;
   using PHX::MDField;
 
@@ -57,9 +68,23 @@ DDLatticeBC_Sinusoid(
   RCP<PHX::DataLayout> data_layout = basis->functional;
   num_basis = data_layout->dimension(1);
 
-  // read in user-given values
-  amplitude = p.get<double>("Amplitude");
-  frequency = p.get<double>("Frequency");
+  //Set up to write the contact voltage to the parameter library
+  contactVoltage = rcp(new panzer::ScalarParameterEntry<EvalT>);
+  contactVoltage->setRealValue(0);
+  contactVoltageName = p.get<std::string>("Sideset ID")+"_Voltage";
+  contactVoltage = panzer::createAndRegisterScalarParameter<EvalT>(
+						    std::string(contactVoltageName),
+						    *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+
+  // read in user-specified values
+  dc_offset = p.get<double>("DC Offset");
+  amplitude1 = p.get<double>("Amplitude 1");
+  frequency1 = p.get<double>("Frequency 1");
+  phaseshift1 = p.get<double>("Phase Shift 1");
+  amplitude2 = p.get<double>("Amplitude 2");
+  frequency2 = p.get<double>("Frequency 2");
+  phaseshift2 = p.get<double>("Phase Shift 2");
+
   bUseFD = false;
   if (p.isParameter("Fermi Dirac"))  bUseFD = p.get<bool>("Fermi Dirac");
 
@@ -69,6 +94,10 @@ DDLatticeBC_Sinusoid(
   bSolveIon = p.get<bool>("Solve Ion");
   ion_charge = p.get<int>("Ion Charge");
   bUseFermiPin = p.get<bool>("Fermi Level Pinning");
+  ionDens = p.get<double>("Contact Ion Density"); 
+
+  //Set the parameter library contact voltage to an initial value
+  contactVoltage->setValue(dc_offset);
 
   // evaluated fields
   potential = MDField<ScalarT,Cell,BASIS>(prefix+names.dof.phi, data_layout);
@@ -99,6 +128,8 @@ DDLatticeBC_Sinusoid(
   eff_affinity =  MDField<const ScalarT,Cell,BASIS>(names.field.eff_affinity, data_layout);
   eff_bandgap =  MDField<const ScalarT,Cell,BASIS>(names.field.eff_band_gap, data_layout);
   latt_temp =  MDField<const ScalarT,Cell,BASIS>(names.field.latt_temp, data_layout);
+  ref_energy =  MDField<const ScalarT,Cell,BASIS>(names.field.ref_energy, data_layout);
+  this->addDependentField(ref_energy);
 
   // add dependent fields
   this->addDependentField(doping);
@@ -140,15 +171,18 @@ evaluateFields(
   typename Traits::EvalData workset)
 {
   using panzer::index_t;
+  ScalarT Eref = ref_energy(0,0);
 
   // get the current (present) time in [s]
   double curr_time = workset.time * t0;
 
   // compute the voltage in [V]
   double pi = 4.0*atan(1.0);
-  ScalarT voltage = amplitude * sin(2.0*pi*frequency*curr_time);
+  ScalarT voltage = dc_offset
+                    + amplitude1 * std::sin(2.0*pi*frequency1*curr_time - 2.0*pi*phaseshift1)
+                    + amplitude2 * std::sin(2.0*pi*frequency2*curr_time - 2.0*pi*phaseshift2);
 
-  // std::cout << "time = " << curr_time << " s, voltage = " << voltage << " V" << std::endl;
+  contactVoltage->setValue(voltage);
 
   // obtain kb
   charon::PhysicalConstants const& phyConst = charon::PhysicalConstants::Instance();
@@ -189,7 +223,7 @@ evaluateFields(
       //      "Error: Lattice temperature must be > 0 ! But its value is " << lattT << " ! \n");
 
       ScalarT kbT = kbBoltz * lattT;  // [eV]
-      ScalarT qtheta = effChi + 0.5*effEg + 0.5*kbT*log(Nc/Nv);  // [eV]
+      // ScalarT qtheta = effChi + 0.5*effEg + 0.5*kbT*log(Nc/Nv);  // [eV]
 
       // set Neff
       ScalarT Neff = dop;
@@ -197,7 +231,8 @@ evaluateFields(
       if (bSolveIon)
       {
         if (bUseFermiPin)
-          Nion = 5.e20 / C0;  // hard-code 5.e20 for now ???
+          // Nion = 5.e20 / C0;  // hard-code 5.e20 for now ???
+          Nion = ionDens / C0;   // ionDens is specified in the input
         else
           Nion = ion_density(cell,basis);
         Neff = dop + ion_charge * Nion;
@@ -232,7 +267,8 @@ evaluateFields(
         ScalarT Ef_minus_Ec = kbT * (*inverseFermiIntegral)(n0/Nc);  // [eV]
         ScalarT Ef_minus_Ev = Ef_minus_Ec + effEg;  // [eV]
         ScalarT p0 = Nv * exp(-Ef_minus_Ev/kbT);
-        ScalarT potBC = qtheta - effChi + Ef_minus_Ec + voltage;  // [eV]=[V]
+        // ScalarT potBC = qtheta - effChi + Ef_minus_Ec + voltage;  // [eV]=[V]
+        ScalarT potBC = Eref - effChi + Ef_minus_Ec + voltage;  // [eV]=[V]
 
         edensity(cell,basis) = n0;
         hdensity(cell,basis) = p0;
@@ -266,7 +302,8 @@ evaluateFields(
         ScalarT Ev_minus_Ef = kbT * (*inverseFermiIntegral)(p0/Nv);  // [eV]
         ScalarT Ec_minus_Ef = Ev_minus_Ef + effEg;  // [eV]
         ScalarT n0 = Nc * exp(-Ec_minus_Ef/kbT);
-        ScalarT potBC = qtheta - effChi -effEg - Ev_minus_Ef + voltage;  // [eV]=[V]
+        // ScalarT potBC = qtheta - effChi -effEg - Ev_minus_Ef + voltage;  // [eV]=[V]
+        ScalarT potBC = Eref - effChi -effEg - Ev_minus_Ef + voltage;  // [eV]=[V]
 
         edensity(cell,basis) = n0;
         hdensity(cell,basis) = p0;
@@ -305,7 +342,7 @@ evaluateFields(
       //      "Error: Lattice temperature must be > 0 ! But its value is " << lattT << " ! \n");
 
       ScalarT kbT = kbBoltz * lattT;  // [eV]
-      ScalarT qtheta = effChi + 0.5*effEg + 0.5*kbT*log(Nc/Nv);  // [eV]
+      // ScalarT qtheta = effChi + 0.5*effEg + 0.5*kbT*log(Nc/Nv);  // [eV]
 
       // set Neff
       ScalarT Neff = dop;
@@ -314,7 +351,8 @@ evaluateFields(
       {
         ScalarT Nion;
         if (bUseFermiPin)
-          Nion = 5.e20 / C0;  // hard-code 5.e20 for now ???
+          // Nion = 5.e20 / C0;  // hard-code 5.e20 for now ???
+          Nion = ionDens / C0;   // ionDens is specified in the input
         else
           Nion = ion_density(cell,basis);
         Neff = dop + ion_charge * Nion;
@@ -352,7 +390,8 @@ evaluateFields(
         hdensity(cell,basis) = nie*nie/n0;
 
         y = 0.5*Neff/Nc + sqrt(pow(0.5*Neff/Nc,2.0) + Nv/Nc*exp(-effEg/kbT));
-        potBC = qtheta - effChi + kbT*log(y) + voltage;  // [V]
+        // potBC = qtheta - effChi + kbT*log(y) + voltage;  // [V]
+        potBC = Eref - effChi + kbT*log(y) + voltage;  // [V]
         potential(cell,basis) = potBC / V0;  // scaled
       }
 
@@ -384,7 +423,8 @@ evaluateFields(
         edensity(cell,basis) = pow(nie,2.0)/p0;
 
         y = -0.5*Neff/Nv + sqrt(pow(0.5*Neff/Nv,2.0) + Nc/Nv*exp(-effEg/kbT));
-        potBC = qtheta - effChi - effEg - kbT*log(y) + voltage;  // [V]
+        // potBC = qtheta - effChi - effEg - kbT*log(y) + voltage;  // [V]
+        potBC = Eref - effChi - effEg - kbT*log(y) + voltage;
         potential(cell,basis) = potBC / V0;  // scaled
       }
 
@@ -412,8 +452,14 @@ DDLatticeBC_Sinusoid<EvalT, Traits>::getValidParameters() const
   Teuchos::RCP<const charon::Names> n;
   p->set("Names", n);
 
-  p->set<double>("Amplitude", 0.0);
-  p->set<double>("Frequency", 0.0);
+  p->set<double>("DC Offset", 0.0);
+  p->set<double>("Amplitude 1", 0.0);
+  p->set<double>("Amplitude 2", 0.0);
+  p->set<double>("Frequency 1", 0.0);
+  p->set<double>("Frequency 2", 0.0);
+  p->set<double>("Phase Shift 1", 0.0);
+  p->set<double>("Phase Shift 2", 0.0);
+
   p->set<bool>("Fermi Dirac", false);
   p->sublist("Incomplete Ionization");
   p->sublist("Incomplete Ionization").sublist("Acceptor");
@@ -438,9 +484,16 @@ DDLatticeBC_Sinusoid<EvalT, Traits>::getValidParameters() const
   p->set<bool>("Solve Ion", false);
   p->set<int>("Ion Charge", 1);
   p->set<bool>("Fermi Level Pinning", false);
+  p->set<double>("Contact Ion Density", 0.0);
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);
+
+ //Sideset ID
+  p->set<std::string>("Sideset ID","");
+ 
+  Teuchos::RCP<panzer::ParamLib> pl;
+  p->set("ParamLib", pl);
 
   return p;
 }

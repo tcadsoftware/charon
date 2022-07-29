@@ -1,0 +1,21 @@
+
+tpetra is on
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+
+    start nonlinear solver wrms block 
+      test is off
+      absolute tolerance is 1e-6
+    end 
+
+    start aztec solver block
+      krylov subspace size = 800
+      rcm reordering is on
+      overlap size = 3
+    end
+  end
+end solver block
+

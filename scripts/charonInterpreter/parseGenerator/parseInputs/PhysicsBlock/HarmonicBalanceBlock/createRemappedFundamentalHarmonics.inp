@@ -7,4 +7,4 @@ interpreter shortHelp {Set the remapped fundamental harmonics for the harmonic b
 
 interpreter longHelp {Set the remapped fundamental harmonics for the harmonic balance method. {remappedFundamentalHarmonics} must be a list of frequencies separated by commas.}
 
-xmlRequired (remapped fundamental harmonics) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Remapped Fundamental Harmonics,Array(double),{remappedFundamentalHarmonics}
+xmlRequired (remapped fundamental harmonics) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Frequency Domain Options,Remapped Fundamental Harmonics,Array(double),{{remappedFundamentalHarmonics}}

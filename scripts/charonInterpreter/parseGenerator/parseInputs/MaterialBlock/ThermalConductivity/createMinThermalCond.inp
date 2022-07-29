@@ -1,0 +1,9 @@
+interpreter name MinThermalCond 
+
+interpreter inputLine (min thermal conductivity model) is [(lineartempdep)] 
+
+interpreter shortHelp {Set the minimum thermal conductivity model for the LinearIonDep thermal conductivity model}
+
+interpreter longHelp {Set the minimum thermal conductivity model for the LinearIonDep thermal conductivity model}
+
+xmlOptional (lineartempdep) Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Minimum Thermal Conductivity,string,LinearTempDep

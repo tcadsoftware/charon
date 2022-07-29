@@ -1,0 +1,11 @@
+
+interpreter name EnergyWidth
+
+interpreter inputLine (energy width) = {ensig}
+
+interpreter shortHelp {The trap energy spread in eV measured from the center of the continuous energy distribution}
+
+interpreter longHelp {The trap energy spread in eV measured from the center of the continuous energy distribution. Should be always positive.}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Surface Trap->Trap {trapID},Energy Width,double,{ensig}
+

@@ -1,0 +1,11 @@
+interpreter name SpatialBuffer
+
+interpreter inputLine (spatial buffer) = {value}
+
+interpreter shortHelp {Set the spatial buffer value to expand the spatial domain of the opt. gen. factor read from a 2D space file.}
+
+interpreter longHelp {Set the spatial buffer value to expand the spatial domain of the opt. gen. factor read from a 2D space file by a given value in all directions.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Buffer,double,{value}
+
+

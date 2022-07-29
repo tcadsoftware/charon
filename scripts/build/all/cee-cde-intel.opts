@@ -1,0 +1,22 @@
+# OpenMPI compilers using Intel compilers
+CMAKE_CXX_COMPILER:FILEPATH="mpicxx"
+CMAKE_C_COMPILER:FILEPATH="mpicc"
+CMAKE_Fortran_COMPILER:FILEPATH="mpif90"
+
+# netcdf in cde/v2 was built with HDF5
+TPL_ENABLE_HDF5:BOOL=ON
+
+# Without this you'll often get "internal compiler errors" with
+# associated segmentation violations during the link. Disabling
+# interprocedural optimization with this flag gets rid of that error.
+CMAKE_EXE_LINKER_FLAGS:STRING="-no-ipo"
+CMAKE_SHARED_LINKER_FLAGS:STRING="-no-ipo"
+
+## This flag prevents the code from using the threaded math
+## library. You may want to do that to profile the code without any
+## parallelization, for example
+#CMAKE_EXE_LINKER_FLAGS:STRING="-mkl=sequential"
+
+CMAKE_INSTALL_PREFIX:PATH=""
+
+CMAKE_VERBOSE_MAKEFILE:BOOL=OFF

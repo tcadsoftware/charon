@@ -2,6 +2,7 @@
 #include "isolineFinder.hpp"
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 std::vector<surfaceInfo> isolineFinder::createSurfaces(double levelValue)
 {
@@ -135,7 +136,17 @@ std::vector<surfaceInfo> isolineFinder::twoNodeSolution()
       oneSurf.xc = 0.5*(oneSurf.X[0] + oneSurf.X[1]);
       oneSurf.yc = 0.5*(oneSurf.Y[0] + oneSurf.Y[1]);
       oneSurf.zc = 0;
+      
+      oneSurf.normx =   oneSurf.Y[1] - oneSurf.Y[0];
+      oneSurf.normy = -(oneSurf.X[1] - oneSurf.X[0]);
+      oneSurf.normz = 0.0;
 
+      //Make normal unit
+      double normSize = sqrt(oneSurf.normx*oneSurf.normx + oneSurf.normy*oneSurf.normy + oneSurf.normz*oneSurf.normz);
+      oneSurf.normx = oneSurf.normx/normSize;
+      oneSurf.normy = oneSurf.normy/normSize;-(oneSurf.X[1] - oneSurf.X[0]);
+      oneSurf.normz = oneSurf.normz/normSize;
+      
       localSurfs.push_back(oneSurf);
 
     }    
@@ -208,6 +219,16 @@ std::vector<surfaceInfo> isolineFinder::oneNodeSolution(int sign)
   oneSurf.yc = 0.5*(oneSurf.Y[0] + oneSurf.Y[1]);
   oneSurf.zc = 0;
   
+  oneSurf.normx =   oneSurf.Y[1] - oneSurf.Y[0];
+  oneSurf.normy = -(oneSurf.X[1] - oneSurf.X[0]);
+  oneSurf.normz = 0.0;
+
+  //Make normal unit
+  double normSize = sqrt(oneSurf.normx*oneSurf.normx + oneSurf.normy*oneSurf.normy + oneSurf.normz*oneSurf.normz);
+  oneSurf.normx = oneSurf.normx/normSize;
+  oneSurf.normy = oneSurf.normy/normSize;-(oneSurf.X[1] - oneSurf.X[0]);
+  oneSurf.normz = oneSurf.normz/normSize;
+
   localSurfs.push_back(oneSurf);
 
   return localSurfs;

@@ -1,0 +1,109 @@
+
+#create channel region
+create surface rectangle width 0.0005 height 0.006
+volume 1 move y -0.003
+
+# Gate oxide
+create surface rectangle width 0.0005 height 0.004
+volume 2 move y 0.002
+
+
+imprint all
+merge all
+
+#block out and name the different volumes
+
+block 1 surface 1
+block 1 name "channel"
+block 1 element type TRI3
+block 2 surface 2
+block 2 name "gateoxide"
+block 2 element type TRI3
+
+#Name the contacts and interfaces
+
+#contacts
+
+sideset 1 curve 5
+sideset 1 name "gate"
+
+sideset 2 curve 3
+sideset 2 name "body"
+
+#interfaces
+
+sideset 3 curve 1
+sideset 3 name "gateoxideislandinterface"
+
+
+#Create a base mesh
+
+surface 1 interval size 0.0002
+surface 1 scheme trimesh
+
+surface 2 interval size 0.0006 
+surface 2 scheme trimesh
+
+mesh surface 1 2
+
+
+
+##Set up refinement 
+
+refinementDirective Dimension analytical2D
+refinementDirective setBlocks 1 2
+refinementDirective setMesh tri
+refinementDirective setNumProcs 4
+#refinementDirective writeJunctions
+
+refinementDirective setMaximumSurfaceRecursion 8
+refinementDirective setGuaranteedSurfaceRecursion 5
+
+# set the bounding box of the device
+refinementDirective refinementBoundingBox -0.175 0.00 0.175 0.0025
+
+
+# Bulk region uniform doping
+refinementDirective setDopingFunction function1 uniform acceptor
+refinementDirective setDopingBounds   function1 1e16 1e16
+refinementDirective setDopingXBounds  function1 X -1 1
+refinementDirective setDopingXBounds  function1 Y -1 1
+
+# Source region gaussian doping
+refinementDirective setDopingFunction function2 mgauss donor
+refinementDirective setDopingBounds   function2 1 1e17
+refinementDirective setDopingXBounds  function2 X -0.150 -0.020 
+refinementDirective setDopingXBounds  function2 Y -0.030  0.100
+refinementDirective setDopingWidth    function2    0.001 0.001
+
+
+# drain region gaussian doping
+refinementDirective setDopingFunction function3 mgauss donor
+refinementDirective setDopingBounds   function3 1 1e17
+refinementDirective setDopingXBounds  function3 X  0.020  0.150
+refinementDirective setDopingXBounds  function3 Y -0.030  0.100
+refinementDirective setDopingWidth    function3    0.001 0.001
+
+# Inversion region
+refinementDirective refineToLineSegment -0.0175 -0.0000 0.0175 -0.0000 0.002 
+
+
+# Control parameters
+
+refinementDirective setMaximumRecursion 8
+refinementDirective sizeMeasure averagemax2
+refinementDirective setRefinementMethod 2D
+
+refinementDirective setMinCellSize 0.000005
+
+#refinementDirective setMinCellNSize 0.025
+#refinementDirective setMinCellPSize 0.025
+
+refinementDirective setRefinementDistance 0.00001
+
+#refinementDirective setRefinementDistanceN 0.1
+#refinementDirective setRefinementDistanceP 0.1
+
+refinementDirective executeRefinement
+
+export mesh "mos.exo" dimension 2 block all overwrite

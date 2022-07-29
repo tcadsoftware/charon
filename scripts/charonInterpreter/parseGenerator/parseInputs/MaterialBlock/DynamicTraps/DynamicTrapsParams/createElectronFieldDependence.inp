@@ -1,0 +1,11 @@
+interpreter name ElectronFieldDependence
+
+interpreter inputLine (electron field dependence) is [ (saturation) [(kimpton)]]
+
+interpreter shortHelp {The trap electron field-dependence cross section type}
+interpreter longHelp {The trap electron field-dependence cross section type. It can be saturation or kimpton}
+
+xmlOptional (saturation) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Electron Field Dependence,string,Saturation
+
+xmlOptional (kimpton) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Electron Field Dependence,string,Kimpton
+

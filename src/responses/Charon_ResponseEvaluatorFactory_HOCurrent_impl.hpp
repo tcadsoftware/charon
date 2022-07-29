@@ -47,8 +47,6 @@ buildAndRegisterEvaluators(const std::string & responseName,
   // determine if the electron and/or hole equations are solved
   bool solveElectron = false;
   bool solveHole = false;
-  // if (options.get<string>("Solve Electron") == "True") solveElectron = true;
-  // if (options.get<string>("Solve Hole") == "True") solveHole = true;
 
   // "Solve Electron" and "Solve Hole" do not exist for the "Lattice" equation set.
   // So options.get<string>("Solve Electron") directly will produce an error.
@@ -66,8 +64,6 @@ buildAndRegisterEvaluators(const std::string & responseName,
   // create basis 
   RCP<const panzer::FieldLibrary> fieldLib = physicsBlock.getFieldLibrary();
   Teuchos::RCP<charon::Names> fd_names = Teuchos::rcp(new charon::Names(1, prefix, discfields, discsuffix, "_CosH0.000000_"));
-  //RCP<const panzer::PureBasis> eBasis = fieldLib->lookupBasis(isFreqDom_ ? fd_names->dof.edensity : names->dof.edensity);
-  //RCP<const panzer::PureBasis> hBasis = fieldLib->lookupBasis(isFreqDom_ ? fd_names->dof.hdensity : names->dof.hdensity);
 
   // obtain the dimensionality (1 for 1D, 2 for 2D, 3 for 3D)
   const panzer::CellData & cdata = physicsBlock.cellData();
@@ -83,16 +79,12 @@ buildAndRegisterEvaluators(const std::string & responseName,
   // Limit the following calculation to the case of solveElectron or solveHole = true.
   // If none of them is true, should not compute the terminal current.
   // An example is the "Lattice" equation set, where solveElectron = solveHole = false.
+  
   if (solveElectron || solveHole)
   {
     // create basis
     RCP<const panzer::FieldLibrary> fieldLib = physicsBlock.getFieldLibrary();
-    // RCP<const panzer::PureBasis> eBasis = fieldLib->lookupBasis(names->dof.edensity);
-    // RCP<const panzer::PureBasis> hBasis = fieldLib->lookupBasis(names->dof.hdensity);
-
     RCP<const panzer::PureBasis> basis;
-    //if (solveElectron) basis = fieldLib->lookupBasis(names->dof.edensity);
-    //if (solveHole) basis = fieldLib->lookupBasis(names->dof.hdensity);
     if (solveElectron) basis = fieldLib->lookupBasis(isFreqDom_ ? fd_names->dof.edensity : names->dof.edensity);
     if (solveHole) basis = fieldLib->lookupBasis(isFreqDom_ ? fd_names->dof.hdensity : names->dof.hdensity);
 
@@ -125,6 +117,7 @@ buildAndRegisterEvaluators(const std::string & responseName,
 
     panzer::ResponseEvaluatorFactory_Functional<EvalT,LO,GO>::buildAndRegisterEvaluators(responseName,fm,physicsBlock,user_data);
   }
+  
 }
 
 template <typename EvalT,typename LO,typename GO>

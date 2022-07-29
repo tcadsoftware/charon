@@ -52,6 +52,7 @@ class refinementParameters:
     dopingZBounds = []
     writeJunctions = False
     refinementFactor = 3
+    autoRefine = False
 
 
 
@@ -200,7 +201,10 @@ def parseRefinementDirective(line):
         elif line[1].lower() == "setmincellilsize":
             localParams.minCellILSize = float(line[2])
         elif line[1].lower() == "setrefinementdistance":
-            localParams.refinementDistance = float(line[2])
+            if line[2].lower() == "autorefine":
+                localParams.autoRefine = True
+            else:
+                localParams.refinementDistance = float(line[2])
         elif line[1].lower() == "setrefinementdistancen":
             localParams.refinementDistanceN = float(line[2])
         elif line[1].lower() == "setrefinementdistancep":
@@ -324,6 +328,10 @@ def executeRefinement():
     except Exception as e:
         print(e)
         sys.exit(1)
+
+    # Turn on auto refinement around junctions
+    if localParams.autoRefine == True:
+        refine.setAutoRefine()
 
 # Create refinement bounding box
     refine.setRefinementBoundingBox(localParams.BBxNodes[0],localParams.BByNodes[0],localParams.BBzNodes[0],localParams.BBxNodes[1],localParams.BByNodes[1],localParams.BBzNodes[1])
@@ -504,9 +512,12 @@ import sysconfig
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 import meshRefine
 from time import time, sleep
+from pyMeshPrepro import *
 
 import multiprocessing
 from multiprocessing import Pool
+
+from processInputFile import *
 
 #Get the cubit modules
 #    sys.path.append('/projects/cubit/claro.Lin64.15.5/bin/')
@@ -516,16 +527,21 @@ if 'CUBIT_PATH' in os.environ:
     sys.path.append(cubitPath)
 else:
     print ("Error.  No path to Cubit specied.  Must set the CUBIT_PATH environment variable to the location of Cubit.")
-    os.exit()
+    sys.exit(1)
 
 import cubit as cubitMesh
 
+#for fun in dir(cubitMesh):
+ #   print(fun)
+
 
 #
-# initialize the refinement module
+# initialize the refinement module and input file processor
 #
 
 refine = meshRefine.PyMeshRefine()
+
+pI = processInputFile()
 
 #
 #Initialize cubit
@@ -533,6 +549,8 @@ refine = meshRefine.PyMeshRefine()
 
 cubitMesh.init(['help'])
 cubitMesh.cmd('record "pyMesh.jou"')
+
+pMPrepro = pyMeshPrepro(cubitMesh)
 
 #
 # Initialize the Dimension Variable
@@ -548,13 +566,21 @@ print ("Reading from input file ",sys.argv[1])
 
 meshJournalLines = list(open(sys.argv[1]))  # list of strings
 
+meshJournalLines = pI.processIncludes(meshJournalLines)
+meshJournalLines = pI.apreproInputFile(meshJournalLines)
+logFile = sys.argv[1]+".log"
+pI.writeConsolidatedInputFile(meshJournalLines,logFile)
+
 localParams = refinementParameters
 
 for line in meshJournalLines:
     lineTokens = line.split()
+    apreproList = list(cubitMesh.get_aprepro_vars())
     if len(lineTokens) != 0 and lineTokens[0].lower() == "refinementdirective":
-        print ("refinement directive line = ",line)
-        parseRefinementDirective(lineTokens)
+        lineProcessed = pMPrepro.processLine(line)
+        lineTokensProcessed = lineProcessed.split()
+        print (lineProcessed)
+        parseRefinementDirective(lineTokensProcessed)
     else:
         cubitMesh.cmd(line)
 

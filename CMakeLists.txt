@@ -13,28 +13,18 @@ ENDIF()
 IF(NOT IS_DIRECTORY src/)
        execute_process (COMMAND mkdir src)
 ENDIF()
-IF(NOT IS_DIRECTORY src/interpreter)
-       execute_process (COMMAND mkdir src/interpreter)
-ENDIF()
-IF(IS_DIRECTORY src/interpreter/parsers)
-        execute_process (COMMAND rm -fr src/interpreter/parsers)
-        execute_process (COMMAND rm -fr src/interpreter/modifiers)
-ENDIF()
-execute_process (COMMAND rm -fr src/interpreter )
-execute_process (COMMAND rsync -av  --exclude generateParserDocumentation --exclude parsers --exclude modifiers --progress ${CMAKE_SOURCE_DIR}/scripts/charonInterpreter  src/interpreter --delete)
-execute_process (WORKING_DIRECTORY src/interpreter/charonInterpreter/parseGenerator COMMAND python3 generateInterpreter.py --verbosity=20)
-execute_process (COMMAND find ./src/interpreter \( -name "*pyc" \) -exec rm {} \;)
-execute_process (COMMAND python3 --version)
-execute_process (COMMAND mv src/interpreter/charonInterpreter/parseGenerator parseGenerator)
-execute_process (WORKING_DIRECTORY src/interpreter/charonInterpreter/ COMMAND python3 -m compileall ./)
-execute_process (WORKING_DIRECTORY src/ COMMAND chmod -R g+rX ./)
-execute_process (WORKING_DIRECTORY src/ COMMAND ln -s interpreter/charonInterpreter/charonInterpreter.py charonInterpreter )
-execute_process (WORKING_DIRECTORY src/ COMMAND ln -s interpreter/charonInterpreter/tools/compareParameterLists.py compareParameterLists )
-execute_process (WORKING_DIRECTORY src/ COMMAND ln -s interpreter/charonInterpreter/tools/createInputTest.py createInputTest )
-execute_process (WORKING_DIRECTORY src/ COMMAND ln -s interpreter/charonInterpreter/tools/dagify.py dagify )
-execute_process (WORKING_DIRECTORY src/ COMMAND ln -s interpreter/charonInterpreter/tools/xmlToLCM.py xmlToLCM )
-execute_process (COMMAND mv parseGenerator src/interpreter/charonInterpreter/)
 
+IF (EXISTS ${CMAKE_SOURCE_DIR}/Interpreter.cmake)
+   INCLUDE (${CMAKE_SOURCE_DIR}/Interpreter.cmake)
+ENDIF()
+
+IF (EXISTS ${CMAKE_SOURCE_DIR}/pyMesh.cmake)
+   INCLUDE (${CMAKE_SOURCE_DIR}/pyMesh.cmake)
+ENDIF()
+
+IF (EXISTS ${CMAKE_SOURCE_DIR}/DakotaDrivers.cmake)
+   INCLUDE (${CMAKE_SOURCE_DIR}/DakotaDrivers.cmake)
+ENDIF()
 
 # CMake requires that you declare the CMake project in the top-level file and
 # not in an include file.
@@ -70,3 +60,9 @@ ENDIF()
 # Do all of the processing for this TriBITS project.
 TRIBITS_PROJECT()
 
+# Don't tell make to ignore errors (add "-i" to invocation). Doing so
+# will cause ctest to proceed with running tests even when the build
+# fails. I have NO idea why this isn't set by default. Perhaps
+# something in Tribts/Trilinos is setting it to WARN, which is what it
+# looks like it's being set to when traced via the debugger.
+CMAKE_POLICY(SET CMP0061 NEW)

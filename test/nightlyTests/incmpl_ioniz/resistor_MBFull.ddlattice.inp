@@ -6,9 +6,12 @@ start output parameters
       unscale variables is on
 end output parameters
 
+tpetra is on
+
 start Physics Block Semiconductor
       geometry block is silicon
-      standard discretization type is ddlattice gfem
+      standard discretization type is ddlattice
+      discretization method is fem-supg
       supg stabilization is off
       material model is siliconParameter
 end Physics Block Semiconductor
@@ -54,7 +57,8 @@ Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 Initial conditions for LATTICE_TEMPERATURE in silicon is constant = 1.0
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

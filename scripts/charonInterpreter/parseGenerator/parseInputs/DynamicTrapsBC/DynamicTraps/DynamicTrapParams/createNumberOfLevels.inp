@@ -1,0 +1,8 @@
+interpreter name NumberOfLevels
+
+interpreter inputLine (number of levels) = {NL}
+
+interpreter shortHelp {Number of discretizing trap energy levels for continuous distributions}
+interpreter longHelp {Number of discretizing trap energy levels for continuous distributions}
+
+xmlRequired Charon->Boundary Conditions->{sidesetID}ANONYMOUS->Data->Dynamic Traps->Trap {trapID},Number of Levels,int,{NL}

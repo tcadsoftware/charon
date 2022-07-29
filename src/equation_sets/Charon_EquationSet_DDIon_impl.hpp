@@ -344,7 +344,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
   // ***************************************************************************
   // Construct the Poisson equation (solved with the continuity equations)
   // ***************************************************************************
-
+/*
   // Compute the vacuum potential
   {
     ParameterList p("Vacuum Potential");
@@ -379,20 +379,20 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       rcp(new panzer::DOFGradient<EvalT,panzer::Traits>(p));
     fm.template registerEvaluator<EvalT>(op);
   }
+*/
 
   // Laplacian Operator: \int_{\Omega} \lambda2 \epsilon_r \grad_vacpot \cdot \grad_basis d\Omega
   {
     ParameterList p("Laplacian Residual");
     p.set("Residual Name", n.res.phi);
-    p.set("Flux Name", n.field.grad_vac_pot);
+    // p.set("Flux Name", n.field.grad_vac_pot);
+    p.set("Flux Name", n.grad_dof.phi);
     p.set("Basis", basis);
     p.set("IR", ir);
-    //p.set("Multiplier", 1.0);
     p.set("Multiplier", scaleParams->scale_params.Lambda2);
 
     Teuchos::RCP<std::vector<std::string> > fms = Teuchos::rcp(new std::vector<std::string>);
     fms->push_back(n.field.rel_perm);
-    //fms->push_back(n.field.Lambda2);
     p.set< Teuchos::RCP<const std::vector<std::string> > >("Field Multipliers",fms);
 
     RCP< PHX::Evaluator<panzer::Traits> > op =
@@ -410,7 +410,7 @@ buildAndRegisterEquationSetEvaluators(PHX::FieldManager<panzer::Traits>& fm,
       p.set< RCP<const charon::Names> >("Names", m_names);
       p.set("Solve Electron", solveElectron);
       p.set("Solve Hole", solveHole);
-      p.set<bool>("Solve Ion", true);  // always true for DDIon
+      p.set<bool>("Solve Ion", true); // always set to true, important for I-V simulation with frozen ion profile
       p.set<int>("Ion Charge", ion_charge);
       p.set("Scaling Parameters", scaleParams);
 

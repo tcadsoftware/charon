@@ -2,8 +2,8 @@ interpreter name mumin
 
 interpreter inputLine (mumin) = {muminval}
 
-interpreter shortHelp {model parameter Mu min}
+interpreter shortHelp {Set the mumin value for the Arora mobility model}
 
-interpreter longHelp {Arora model parameter Mu min}
+interpreter longHelp {Set the mumin value for the Arora mobility model}
 
 xmlRequired Charon->Closure Models->{MaterialBlockName}->Electron Mobility,mumin,double,{muminval}

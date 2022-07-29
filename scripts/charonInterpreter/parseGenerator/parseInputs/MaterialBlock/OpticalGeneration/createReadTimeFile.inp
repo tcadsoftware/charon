@@ -1,0 +1,10 @@
+
+interpreter name ReadTimeFile
+
+interpreter inputLine (read temporal file from) {filename} 
+
+interpreter shortHelp {Read the time dependent optical generation from a tabulated file}
+
+interpreter longHelp {Read the time dependent optical generation from a tabulated file that contains time in (s) and opt. gen. in (cm^-3.s^-1) <> {filename} is the name of the file to be read}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Time File,string,{filename}

@@ -7,6 +7,8 @@ end output parameters
 
 concentration scaling = 1e16
 
+tpetra is on
+
 start Physics Block Semiconductor
       geometry block is silicon
       standard discretization type is lattice gfem
@@ -44,7 +46,8 @@ BC is thermal contact for cathode on silicon fixed at 300
 Initial conditions for LATTICE_TEMPERATURE in silicon is constant = 1.0
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

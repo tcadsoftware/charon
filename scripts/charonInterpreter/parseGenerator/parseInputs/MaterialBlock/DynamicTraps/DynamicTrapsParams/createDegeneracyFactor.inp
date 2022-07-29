@@ -1,0 +1,8 @@
+interpreter name DegeneracyFactor
+
+interpreter inputLine (degeneracy factor) = {gcoef}
+
+interpreter shortHelp {The trap degeneracy factor}
+interpreter longHelp {The trap degeneracy factor. Should be always positive.}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Degeneracy Factor,double,{gcoef}

@@ -1,0 +1,9 @@
+interpreter name ReferenceTemp 
+
+interpreter inputLine (reference temp) = {Tref} 
+
+interpreter shortHelp {Set the reference temperature in K for the LinearTempDep thermal conductivity model}
+
+interpreter longHelp {Set the reference temperature in K for the LinearTempDep thermal conductivity model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Thermal Conductivity,Reference Temperature,double,{Tref}

@@ -1,0 +1,7 @@
+COORDINATES relative 1.0e-6 floor 1.0e-10
+TIME STEPS relative 1.0e-5 floor 1.0e-10
+ELEMENT VARIABLES relative 1.0e-5 floor 1.0e-10
+NODAL VARIABLES relative 1.0e-5 floor 1.0e-10
+	HOLE_DENSITY relative 1.0e-5 floor 1.5e-8
+GLOBAL VARIABLES relative 1.0e-3 floor 1.0e-10
+

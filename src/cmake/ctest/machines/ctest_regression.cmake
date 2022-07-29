@@ -14,12 +14,20 @@
 #   -DCOVERAGE:BOOL=<TRUE|FALSE> (default is FALSE)
 #   -DTESTTRACK:STRING=<Name of CDash track> (no default)
 #   -DDONOTUPDATE:BOOL=<TRUE|FALSE> (default is FALSE)
+#   -DDONOTCLONE:BOOL=<TRUE|FALSE> (default is FALSE)
+#   -DCIINVOCATION:BOOL=<TRUE|FALSE> (default is FALSE)
 #
 # This is a ctest script for running Charon nightly tests
-SET(CTEST_DROP_METHOD "https")
-SET(CTEST_DROP_SITE "compsim-dashboard.sandia.gov")
 SET(CTEST_PROJECT_NAME "Charon")
-SET(CTEST_DROP_LOCATION "/cdash/submit.php?project=Charon")
+SET(CTEST_DROP_METHOD "https")
+SET(CTEST_DROP_SITE "charon-cdash.sandia.gov")
+SET(CTEST_DROP_LOCATION "/submit.php?project=Charon")
+
+if(NOT CIINVOCATION)
+  SET(CITEST FALSE)
+else()
+  SET(CITEST TRUE)
+endif()
 
 if(NOT OUOTESTS)
   SET(OUOTESTS TRUE)
@@ -31,6 +39,9 @@ endif()
 
 if(NOT DONOTUPDATE)
   SET(DONOTUPDATE FALSE)
+endif()
+if(NOT DONOTCLONE)
+  SET(DONOTCLONE FALSE)
 endif()
 
 SET(TCAD_CHARON_REPO "git@cee-gitlab.sandia.gov:Charon/tcad-charon")
@@ -76,6 +87,8 @@ SET(CTEST_SOURCE_DIRECTORY "${TCAD_CHARON_SOURCE_DIRECTORY}")
 # with the possible exception of the host-specific settings
 ####################################################################
 ####################################################################
+SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 524288)
+SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1048576)
 if("${TBLDDIR}" STREQUAL "")
   if(${TYPE} MATCHES OPT)
     SET(CTEST_BINARY_DIRECTORY "${BASETESTDIR}/TEST.OPT")
@@ -130,17 +143,27 @@ endif()
 #########################################
 # Any host specific settings go here
 #########################################
-if(${TYPE} MATCHES OPT)
-  SET(CTEST_BUILD_NAME "${osname}-${proc}-${DISTRIB}-${COMPILER}-OPT")
-  SET(BLDARG "-b r")
-elseif(${TYPE} MATCHES COV)
-  SET(CTEST_BUILD_NAME "${osname}-${proc}-${DISTRIB}-${COMPILER}-COV")
-  SET(BLDARG "-b d")
+if(NOT CITEST)
+  if(${TYPE} MATCHES OPT)
+    SET(CTEST_BUILD_NAME "${osname}-${proc}-${DISTRIB}-${COMPILER}-OPT")
+    SET(BLDARG "-b r")
+  elseif(${TYPE} MATCHES COV)
+    SET(CTEST_BUILD_NAME "${osname}-${proc}-${DISTRIB}-${COMPILER}-COV")
+    SET(BLDARG "-b d")
+  else()
+    SET(CTEST_BUILD_NAME "${osname}-${proc}-${DISTRIB}-${COMPILER}-DBG")
+    SET(BLDARG "-b d")
+  endif()
 else()
-  SET(CTEST_BUILD_NAME "${osname}-${proc}-${DISTRIB}-${COMPILER}-DBG")
-  SET(BLDARG "-b d")
+  # In the case of a CI test just use what comes in via the COMPILER
+  # argument
+  SET(CTEST_BUILD_NAME "${COMPILER}")
+  if(${TYPE} MATCHES OPT)
+    SET(BLDARG "-b r")
+  else()
+    SET(BLDARG "-b d")
+  endif()
 endif()
-
 MESSAGE("Build name: ${CTEST_BUILD_NAME}")
 
 FIND_PROGRAM(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
@@ -156,48 +179,57 @@ endif()
 
 SET(CTEST_BUILD_FLAGS "-j${PROCESSORCOUNT}")
 
-# Clone the Charon repositories.
-if(NOT EXISTS "${TCAD_CHARON_SOURCE_DIRECTORY}")
-  MESSAGE("Getting tcad-charon repository...")
-  EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${TCAD_CHARON_REPO}"
-    "${TCAD_CHARON_SOURCE_DIRECTORY}" RESULT_VARIABLE res_tcad_charon_co)
-  MESSAGE("Result of tcad-charon checkout: ${res_tcad_charon_co}")
-endif()
-if(NOT EXISTS "${SRC_SOURCE_DIRECTORY}")
-  MESSAGE("Getting src repository...")
-  EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${SRC_REPO}"
-    "${SRC_SOURCE_DIRECTORY}" RESULT_VARIABLE res_src_co)
-  MESSAGE("Result of src checkout: ${res_src_co}")
-endif()
-if(NOT EXISTS "${NIGHTLY_TESTS_SOURCE_DIRECTORY}")
-  MESSAGE("Getting nightlyTests repository...")
-  EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${NIGHTLY_TESTS_REPO}"
-    "${NIGHTLY_TESTS_SOURCE_DIRECTORY}" RESULT_VARIABLE res_nightly_tests_co)
-  MESSAGE("Result of nightlyTests checkout: ${res_nightly_tests_co}")
-endif()
-if (OUOTESTS)
-  if(NOT EXISTS "${NIGHTLY_TESTS_OUO_SOURCE_DIRECTORY}")
-    MESSAGE("Getting nightlyTestsOUO repository...")
-    EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone
-      "${NIGHTLY_TESTS_OUO_REPO}" "${NIGHTLY_TESTS_OUO_SOURCE_DIRECTORY}"
-      RESULT_VARIABLE res_nightly_tests_ouo_co)
-    MESSAGE("Result of nightlyTestsOUO checkout: ${res_nightly_tests_ouo_co}")
-  endif()
-endif()
-if(NOT EXISTS "${TRILINOS_SOURCE_DIRECTORY}")
-  MESSAGE("Getting initial Trilinos repository...")
-  EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${TRILINOS_REPO}"
-    "${TRILINOS_SOURCE_DIRECTORY}" RESULT_VARIABLE res_trico)
-  MESSAGE("Result of trilinos clone: ${res_trico}")
+# Don't do updates if this is running as the user "jenkins"
+if ("${username}" STREQUAL "jenkins")
+  SET(DONOTUPDATE TRUE)
+  SET(DONOTCLONE TRUE)
 endif()
 
-# Checkout the Trilinos branch, if requested
-if (NOT "${TRIBRANCH}" STREQUAL "")
-  MESSAGE("Checking out Trilinos branch...")
-  EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" checkout "${TRIBRANCH}"
-    WORKING_DIRECTORY "${TRILINOS_SOURCE_DIRECTORY}"
-    RESULT_VARIABLE res_trico)
-  MESSAGE("Result of trilinos checkout: ${res_trico}")
+# if this is specified then don't clone
+if (NOT DONOTCLONE)
+  # Clone the Charon repositories.
+  if(NOT EXISTS "${TCAD_CHARON_SOURCE_DIRECTORY}")
+    MESSAGE("Getting tcad-charon repository...")
+    EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${TCAD_CHARON_REPO}"
+      "${TCAD_CHARON_SOURCE_DIRECTORY}" RESULT_VARIABLE res_tcad_charon_co)
+    MESSAGE("Result of tcad-charon checkout: ${res_tcad_charon_co}")
+  endif()
+  if(NOT EXISTS "${SRC_SOURCE_DIRECTORY}")
+    MESSAGE("Getting src repository...")
+    EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${SRC_REPO}"
+      "${SRC_SOURCE_DIRECTORY}" RESULT_VARIABLE res_src_co)
+    MESSAGE("Result of src checkout: ${res_src_co}")
+  endif()
+  if(NOT EXISTS "${NIGHTLY_TESTS_SOURCE_DIRECTORY}")
+    MESSAGE("Getting nightlyTests repository...")
+    EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${NIGHTLY_TESTS_REPO}"
+      "${NIGHTLY_TESTS_SOURCE_DIRECTORY}" RESULT_VARIABLE res_nightly_tests_co)
+    MESSAGE("Result of nightlyTests checkout: ${res_nightly_tests_co}")
+  endif()
+  if (OUOTESTS)
+    if(NOT EXISTS "${NIGHTLY_TESTS_OUO_SOURCE_DIRECTORY}")
+      MESSAGE("Getting nightlyTestsOUO repository...")
+      EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone
+        "${NIGHTLY_TESTS_OUO_REPO}" "${NIGHTLY_TESTS_OUO_SOURCE_DIRECTORY}"
+        RESULT_VARIABLE res_nightly_tests_ouo_co)
+      MESSAGE("Result of nightlyTestsOUO checkout: ${res_nightly_tests_ouo_co}")
+    endif()
+  endif()
+  if(NOT EXISTS "${TRILINOS_SOURCE_DIRECTORY}")
+    MESSAGE("Getting initial Trilinos repository...")
+    EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" clone "${TRILINOS_REPO}"
+      "${TRILINOS_SOURCE_DIRECTORY}" RESULT_VARIABLE res_trico)
+    MESSAGE("Result of trilinos clone: ${res_trico}")
+  endif()
+
+  # Checkout the Trilinos branch, if requested
+  if (NOT "${TRIBRANCH}" STREQUAL "")
+    MESSAGE("Checking out Trilinos branch...")
+    EXECUTE_PROCESS(COMMAND "${CTEST_GIT_COMMAND}" checkout "${TRIBRANCH}"
+      WORKING_DIRECTORY "${TRILINOS_SOURCE_DIRECTORY}"
+      RESULT_VARIABLE res_trico)
+    MESSAGE("Result of trilinos checkout: ${res_trico}")
+  endif()
 endif()
 
 # This needs to be set because of CTestConfig.cmake in Trilinos
@@ -240,16 +272,6 @@ SET(CTEST_CUSTOM_WARNING_EXCEPTION
   "Trilinos/packages"
   )
 
-# Ignore warnings from compilation for Jenkins on RHEL7
-if ("${CTEST_SITE}" MATCHES "JBF RHEL7" OR
-    "${CTEST_SITE}" MATCHES "JBF RHEL6")
-  SET(CTEST_CUSTOM_WARNING_EXCEPTION
-     ${CTEST_CUSTOM_WARNING_EXCEPTION}
-     "boost/.*\\.hpp.*: warning:"
-     "unique_ptr.h:49:28: note: declared here"
-     )
-endif()
-
 # Some warnings to ignore when coupling to Xyce. This looks for the
 # string "Xyce" in the description to indicate a Xyce coupled build
 string(FIND "${SITEDESC}" "Xyce" XYCEBUILD)
@@ -263,6 +285,8 @@ if (${XYCEBUILD} GREATER_EQUAL 0)
        ${CTEST_CUSTOM_WARNING_EXCEPTION}
        "N_.*\\.h:.*warning:"
        "N_.*\\.h:.*note:"
+       "boost/mpi/config.hpp.*warning:.*OMPI_BUILD_CXX_BINDINGS.*redefined"
+       "mpi.h.*note: this is the location of the previous definition"
       )
 endif()
 
@@ -289,20 +313,18 @@ endif()
 
 # Don't do any updates of repositories if this is jenkins. Jenkins
 # itself does those
-if (NOT "${username}" STREQUAL "jenkins")
-  if (NOT DONOTUPDATE)
-    ctest_update(SOURCE "${TCAD_CHARON_SOURCE_DIRECTORY}" RETURN_VALUE
-                 res_tcad_charon_up)
-    ctest_update(SOURCE "${SRC_SOURCE_DIRECTORY}" RETURN_VALUE res_src_up)
-    ctest_update(SOURCE "${NIGHTLY_TESTS_SOURCE_DIRECTORY}" RETURN_VALUE
-                 res_nightly_tests_up)
-    if (OUOTESTS)
-       ctest_update(SOURCE "${NIGHTLY_TESTS_OUO_SOURCE_DIRECTORY}" RETURN_VALUE
-                    res_nightly_tests_ouo_up)
-    endif()
-    ctest_update(SOURCE "${TRILINOS_SOURCE_DIRECTORY}" RETURN_VALUE
-                 res_trilinos_up)
+if (NOT DONOTUPDATE)
+  ctest_update(SOURCE "${TCAD_CHARON_SOURCE_DIRECTORY}" RETURN_VALUE
+    res_tcad_charon_up)
+  ctest_update(SOURCE "${SRC_SOURCE_DIRECTORY}" RETURN_VALUE res_src_up)
+  ctest_update(SOURCE "${NIGHTLY_TESTS_SOURCE_DIRECTORY}" RETURN_VALUE
+    res_nightly_tests_up)
+  if (OUOTESTS)
+    ctest_update(SOURCE "${NIGHTLY_TESTS_OUO_SOURCE_DIRECTORY}" RETURN_VALUE
+      res_nightly_tests_ouo_up)
   endif()
+  ctest_update(SOURCE "${TRILINOS_SOURCE_DIRECTORY}" RETURN_VALUE
+    res_trilinos_up)
 endif()
 
 if(DEBUGLEVEL GREATER 2)
@@ -317,7 +339,7 @@ if(NOT BUILDONLY)
   if (DEBUGLEVEL GREATER 2)
     MESSAGE("DEBUG: ctest returned exit code ${res_test}")
   endif()
-  
+
   if(COVERAGE)
 
     # Don't want Trilinos code in coverage, only Charon code.
@@ -325,13 +347,13 @@ if(NOT BUILDONLY)
       ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
       "Trilinos/.*"
       )
-    
+
     if(DEBUGLEVEL GREATER 2)
       MESSAGE("DEBUG: CTEST_COVERAGE_COMMAND: ${CTEST_COVERAGE_COMMAND}")
       MESSAGE("DEBUG: CTEST_BINARY_DIRECTORY: ${CTEST_BINARY_DIRECTORY}")
     endif()
-    
-    ctest_coverage()
+
+    ctest_coverage(CAPTURE_CMAKE_ERROR res_var)
   endif()
 
   ctest_submit(RETRY_COUNT 10 RETRY_DELAY 30)

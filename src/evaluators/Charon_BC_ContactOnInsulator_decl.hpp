@@ -49,14 +49,42 @@ class BC_ContactOnInsulator
   // scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double V0; // [V]
+  double t0; // [s]
 
   std::string basis_name;
   std::size_t basis_index;
 
   Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > user_value;
-  double work_func;
+  Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+  std::string contactVoltageName;
+  double small_signal_perturbation; // for freq dom, where a small signal is applied about a steady dc bias
 
-private:
+  double work_func = 0.0;
+  double initial_time = 0.0, final_time = 0.0;
+  double initial_voltage = 0.0, final_voltage = 0.0;   
+  double slope = 0.0, yintercept = 0.0; 
+  bool bLinRamp = false; 
+  
+  // for trapezoid pulse
+  bool bTrapezoid = false;
+  int num_pulses = 1;
+  double dc_offset = 0.0;
+  double amplitude;
+  double period;
+  double rise_time;
+  double fall_time;
+  double delay = 0.0;
+  double duty_cycle = 1.0;
+  double rising_slope;
+  double falling_slope;
+  double y_rise_intercept;
+  double pulse_time;
+  double t1;
+  double peak_time;
+  double t2;
+  double y_fall_intercept;
+  double t3;
+
   Teuchos::RCP<const charon::Names> m_names;
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters(bool stochasticParams) const;
 

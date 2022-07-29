@@ -12,6 +12,7 @@
 #include "Charon_FermiDirac_Integral.hpp"
 #include "Charon_Scaling_Parameters.hpp"
 
+
 using panzer::Cell;
 using panzer::BASIS;
 
@@ -63,6 +64,8 @@ private:
   PHX::MDField<const ScalarT,Cell,BASIS> eff_affinity; // [eV]
   PHX::MDField<const ScalarT,Cell,BASIS> eff_bandgap;  // [eV]
 
+  PHX::MDField<const ScalarT,Cell,BASIS> ref_energy;   // [eV]
+
   // scaling parameters
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double V0; // [V]
@@ -72,8 +75,13 @@ private:
 
   int num_basis;
 
-  double amplitude;
-  double frequency;
+  double dc_offset;
+  double amplitude1;
+  double frequency1;
+  double phaseshift1;
+  double amplitude2;
+  double frequency2;
+  double phaseshift2;
 
   bool bUseFD;
   Teuchos::ParameterList incmpl_ioniz;
@@ -81,10 +89,14 @@ private:
   bool bUseFermiPin;
 
   int ion_charge;
+  double ionDens; 
 
   Teuchos::RCP<Teuchos::ParameterList> getValidParameters() const;
 
   Teuchos::RCP<charon::FermiDiracIntegral<EvalT> > inverseFermiIntegral;
+
+  Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+  std::string contactVoltageName;
 
 }; // end of class DDLatticeBC_Sinusoid
 

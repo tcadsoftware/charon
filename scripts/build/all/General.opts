@@ -1,21 +1,19 @@
 # This is to avoid a warning from cmake
 tcad-charon_ENABLE_PyTrilinos:BOOL=OFF
 
-tcad-charon_ENABLE_CXX11:BOOL=ON
+tcad-charon_TEST_CATEGORIES:STRING="HEAVY"
 
 tcad-charon_VERBOSE_CONFIGURE:BOOL=OFF
-tcad-charon_WARNINGS_AS_ERRORS_FLAGS:STRING=""
 
 tcad-charon_ENABLE_Kokkos:BOOL=ON
 tcad-charon_ENABLE_KokkosAlgorithms:BOOL=ON
 tcad-charon_ENABLE_KokkosCore:BOOL=ON
 
-tcad-charon_ENABLE_INSTALL_CMAKE_CONFIG_FILES:BOOL=OFF
+tcad-charon_ENABLE_INSTALL_CMAKE_CONFIG_FILES:BOOL=ON
 tcad-charon_ENABLE_CHECKED_STL:BOOL=OFF
 tcad-charon_ENABLE_TEUCHOS_TIME_MONITOR:BOOL=ON
-tcad-charon_ENABLE_MueLu:BOOL=OFF
+tcad-charon_ENABLE_MueLu:BOOL=ON
 tcad-charon_ENABLE_Stokhos:BOOL=OFF
-tcad-charon_ENABLE_Zoltan2:BOOL=OFF
 tcad-charon_ENABLE_ROL:BOOL=OFF
 tcad-charon_ENABLE_SECONDARY_TESTED_CODE:BOOL=OFF
 
@@ -26,10 +24,18 @@ tcad-charon_ENABLE_SEACASEx1ex2v2:BOOL=OFF
 tcad-charon_ENABLE_SEACASEx2ex1v2:BOOL=OFF
 tcad-charon_ENABLE_SEACASExomatlab:BOOL=OFF
 
-tcad-charon_ENABLE_Amesos2:BOOL=OFF
-tcad-charon_ENABLE_Ifpack2:BOOL=OFF
-tcad-charon_ENABLE_Tempus:BOOL=OFF
-tcad-charon_ENABLE_Xpetra:BOOL=OFF
+# Options that are required for Xyce builds and useful for the type 1
+# stack.
+tcad-charon_ENABLE_Sacado:BOOL=ON
+tcad-charon_ENABLE_AztecOO:BOOL=ON
+tcad-charon_ENABLE_Ifpack:BOOL=ON
+
+# Options required or useful for tpetra
+tcad-charon_ENABLE_Amesos2:BOOL=ON
+tcad-charon_ENABLE_Ifpack2:BOOL=ON
+tcad-charon_ENABLE_Tempus:BOOL=ON
+tcad-charon_ENABLE_Zoltan2:BOOL=ON
+tcad-charon_ENABLE_Xpetra:BOOL=ON
 
 tcad-charon_ENABLE_EXPLICIT_INSTANTIATION:BOOL=ON
 
@@ -43,6 +49,10 @@ tcad-charon_ENABLE_STKExprEval:BOOL=OFF
 tcad-charon_ENABLE_TESTS:BOOL=OFF
 tcad-charon_ENABLE_EXAMPLES:BOOL=OFF
 
+tcad-charon_ENABLE_DAKOTA_DRIVERS:BOOL=ON
+
+tcad-charon_ENABLE_Epetra:BOOL=ON
+
 AztecOO_ENABLE_TEUCHOS_TIME_MONITOR:BOOL=ON
 
 Intrepid2_ENABLE_DEBUG_INF_CHECK:BOOL=OFF
@@ -55,23 +65,18 @@ TPL_ENABLE_X11:BOOL=OFF
 
 tcad-charon_ENABLE_Charon:BOOL=ON
 
-Phalanx_KOKKOS_DEVICE_TYPE:STRING="SERIAL"
-Phalanx_INDEX_SIZE_TYPE:STRING="INT"
-Phalanx_SHOW_DEPRECATED_WARNINGS:BOOL=OFF
-
-Kokkos_ENABLE_Serial:BOOL=ON
-Kokkos_ENABLE_OpenMP:BOOL=OFF
-Kokkos_ENABLE_Pthread:BOOL=OFF
-Kokkos_ENABLE_Cuda:BOOL=OFF
+Kokkos_ENABLE_SERIAL:BOOL=ON
+Kokkos_ENABLE_OPENMP:BOOL=OFF
+Kokkos_ENABLE_PTHREAD:BOOL=OFF
+Kokkos_ENABLE_CUDA:BOOL=OFF
 
 Charon_ENABLE_TESTS:BOOL=ON
 Charon_ENABLE_EXAMPLES:BOOL=ON
 Charon_ENABLE_DEBUG:BOOL=ON
-Charon_ENABLE_OUO_TESTS:BOOL=ON
-ENABLE_HEAVY_TESTS:BOOL=FALSE
 
 CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 CMAKE_SKIP_RULE_DEPENDENCY:BOOL=ON
+CMAKE_CXX_STANDARD:STRING=14
 
 TPL_ENABLE_HDF5:BOOL=OFF
 
@@ -81,5 +86,11 @@ TPL_ENABLE_BoostLib:BOOL=ON
 TPL_ENABLE_Netcdf:BOOL=ON
 
 Panzer_ENABLE_TESTS:BOOL=OFF
+
+EpetraExt_ENABLE_HDF5:BOOL=OFF
+
+# Don't generally want to search install path for libraries as that
+# will find possibly outdated files.
+CMAKE_FIND_NO_INSTALL_PREFIX:BOOL=ON
 
 GIT_EXECUTABLE:FILEPATH="$(which git)"

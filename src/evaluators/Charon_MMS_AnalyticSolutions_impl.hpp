@@ -190,6 +190,7 @@ MMS_DD_RDH_1_AnalyticSolution(std::string const& prefix,
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams = options.get<Teuchos::RCP<charon::Scaling_Parameters> >("Scaling Parameters");
   V0 = scaleParams->scale_params.V0;
   C0 = scaleParams->scale_params.C0;
+  std::cout << std::scientific << std::showpoint << std::setprecision(12) << std::left;
 
   // Name for this evaluator
   this->setName("MMS_DD_RDH_1_AnalyticSolution");

@@ -1,0 +1,62 @@
+Import State File ganalgan.gen
+
+start output parameters
+      Output State File ganalgan.nlp.exo
+      Output cell average Variables in gan for scalar "Doping,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level, Reference Energy, Relative Permittivity, Electron Effective DOS, Hole Effective DOS"
+      Output cell average Variables in algan for scalar "Doping,Intrinsic Concentration,Band Gap,Effective Band Gap,Electron Affinity,Effective Electron Affinity,Conduction Band,Valence Band,Intrinsic Fermi Level,Mole Fraction, Reference Energy, Relative Permittivity, Electron Effective DOS, Hole Effective DOS"
+end output parameters
+
+tpetra is on
+
+start Physics Block GaN
+      geometry block is gan
+      standard discretization type is nlp
+      material model is ganParameter
+end Physics Block GaN
+
+start Physics Block AlGaN
+      geometry block is algan
+      standard discretization type is nlp
+      material model is alganParameter
+end Physics Block AlGaN
+
+start Material Block ganParameter
+      material name is GaN
+      nitride bandgap
+
+      start uniform doping named Function1
+        concentration = 1e14
+        type is acceptor
+      end uniform doping
+end Material Block ganParameter
+
+start Material Block alganParameter
+      material name is AlGaN
+      reference material is GaN
+      nitride bandgap
+      nitride Permittivity
+      nitride effective DOS
+
+      start linear mole fraction named Function1
+        mole fraction ramps from 0.2 to 0.4
+        spatial range is 0.25 to 0.5 in y
+      end
+
+      start uniform doping named Function1
+        concentration = 1e14
+        type is donor
+      end uniform doping
+end Material Block alganParameter
+
+BC is ohmic for gate on algan fixed at 0
+BC is ohmic for substrate on gan fixed at 0
+
+initial conditions for ELECTRIC_POTENTIAL in algan is Equilibrium Potential
+initial conditions for ELECTRIC_POTENTIAL in gan is Equilibrium Potential
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block

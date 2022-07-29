@@ -46,10 +46,14 @@ EffectiveDOS_Simple(
   num_points = scalar->dimension(1);
 
   // Material name
-  const string& materialName = p.get<string>("Material Name");
+  materialName = p.get<string>("Material Name");
 
   // Obtain the instance of charon::Material_Properties.
   charon::Material_Properties& matProperty = charon::Material_Properties::getInstance();
+
+  withMoleFrac = matProperty.hasMoleFracDependence(materialName);
+  if (withMoleFrac)
+    comp_mat = matProperty.getMoleFracMaterial(materialName);
 
   // Retrieve material parameters
   Nc300 = matProperty.getPropertyValue(materialName, "Electron Effective DOS at 300 K");
@@ -81,6 +85,14 @@ EffectiveDOS_Simple(
 
   // Dependent fields
   latt_temp = MDField<const ScalarT,Cell,Point>(n.field.latt_temp,scalar);
+  if (withMoleFrac) {
+    xMoleFrac = MDField<const ScalarT,Cell,Point>(n.field.xMoleFrac,scalar);
+    this->addDependentField(xMoleFrac);
+    if (matProperty.getArityType(materialName) == "Quaternary") {
+      yMoleFrac = MDField<const ScalarT,Cell,Point>(n.field.yMoleFrac,scalar);
+      this->addDependentField(yMoleFrac);
+    }
+  }
 
   this->addDependentField(latt_temp);
 
@@ -105,6 +117,7 @@ EffectiveDOS_Simple<EvalT, Traits>::
 evaluateFields(
   typename Traits::EvalData workset)
 {
+  charon::Material_Properties& matProperty = charon::Material_Properties::getInstance();
   using panzer::index_t;
 
   // loop over the cells
@@ -119,12 +132,31 @@ evaluateFields(
       // when the temperature eqn is solved, so reset it to 300 K to avoid unphysical parameters
       if (Sacado::ScalarValue<ScalarT>::eval(lattT) <= 0.0)  lattT = 300.0;
 
-      // calculate the effective density of states
-      ScalarT Nc = Nc300 * pow(lattT/300.0, Nc_F);
-      ScalarT Nv = Nv300 * pow(lattT/300.0, Nv_F);
-
-      elec_effdos(cell,point) = Nc / C0;  // scaled
-      hole_effdos(cell,point) = Nv / C0;
+      if (withMoleFrac) { 
+        const std::string& arity = matProperty.getArityType(materialName); 
+	if (arity == "Binary" or arity == "Ternary") {
+	  ScalarT xFrac = xMoleFrac(cell,point);
+	  elec_effdos(cell,point) = comp_mat->compute_eDOS<EvalT>(
+		  Sacado::ScalarValue<ScalarT>::eval(xFrac),0.0,lattT)/C0;
+	  hole_effdos(cell,point) = comp_mat->compute_hDOS<EvalT>(
+		  Sacado::ScalarValue<ScalarT>::eval(xFrac),0.0,lattT)/C0;
+	} else { // "Quaternary"
+	  ScalarT xFrac = xMoleFrac(cell,point);
+	  ScalarT yFrac = yMoleFrac(cell,point);
+	  elec_effdos(cell,point) = comp_mat->compute_eDOS<EvalT>(
+		  Sacado::ScalarValue<ScalarT>::eval(xFrac),
+		  Sacado::ScalarValue<ScalarT>::eval(yFrac),lattT)/C0;
+	  hole_effdos(cell,point) = comp_mat->compute_hDOS<EvalT>(
+		  Sacado::ScalarValue<ScalarT>::eval(xFrac),
+		  Sacado::ScalarValue<ScalarT>::eval(yFrac),lattT)/C0;
+	}
+      } else {
+	// calculate the effective density of states
+	ScalarT Nc = Nc300 * pow(lattT/300.0, Nc_F);
+	ScalarT Nv = Nv300 * pow(lattT/300.0, Nv_F);
+	elec_effdos(cell,point) = Nc / C0;  // scaled
+	hole_effdos(cell,point) = Nv / C0;
+      }
     }
   }
 
@@ -155,6 +187,29 @@ EffectiveDOS_Simple<EvalT, Traits>::getValidParameters() const
   p->sublist("Effective DOS ParameterList").set<double>("Nv300", 0., "[cm^-3]");
   p->sublist("Effective DOS ParameterList").set<double>("Nc_F", 0., "[1]");
   p->sublist("Effective DOS ParameterList").set<double>("Nv_F", 0., "[1]");
+
+  Teuchos::ParameterList& moleFracParams = 
+    p->sublist("Effective DOS ParameterList").sublist("Mole Fraction Parameters", false, "");
+  Teuchos::ParameterList& Nc300 = moleFracParams.sublist("Nc300", false, "");
+  Nc300.set<double>("b", 0., "Nc300 mole fraction 'b' interpolation coefficient");
+  Nc300.set<double>("c", 0., "Nc300 mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Nv300 = moleFracParams.sublist("Nv300", false, "");
+  Nv300.set<double>("b", 0., "Nv300 mole fraction 'b' interpolation coefficient");
+  Nv300.set<double>("c", 0., "Nv300 mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Nc_F = moleFracParams.sublist("Nc_F", false, "");
+  Nc_F.set<double>("b", 0., "Nc_F mole fraction 'b' interpolation coefficient");
+  Nc_F.set<double>("c", 0., "Nc_F mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Nv_F = moleFracParams.sublist("Nv_F", false, "");
+  Nv_F.set<double>("b", 0., "Nv_F mole fraction 'b' interpolation coefficient");
+  Nv_F.set<double>("c", 0., "Nv_F mole fraction 'c' interpolation coefficient");
+  moleFracParams.set<double>("Nc300(x=0)", 0., "Nc300 for x=0");
+  moleFracParams.set<double>("Nc300(x=1)", 0., "Nc300 for x=1");
+  moleFracParams.set<double>("Nv300(x=0)", 0., "Nv300 for x=0");
+  moleFracParams.set<double>("Nv300(x=1)", 0., "Nv300 for x=1");
+  moleFracParams.set<double>("Nc_F(x=0)", 0., "Nc_F for x=0");
+  moleFracParams.set<double>("Nc_F(x=1)", 0., "Nc_F for x=1");
+  moleFracParams.set<double>("Nv_F(x=0)", 0., "Nv_F for x=0");
+  moleFracParams.set<double>("Nv_F(x=1)", 0., "Nv_F for x=1");
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);

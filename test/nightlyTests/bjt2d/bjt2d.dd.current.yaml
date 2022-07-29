@@ -10,6 +10,7 @@ ANONYMOUS:
     silicon: Semiconductor
   Assembly: 
     Workset Size: 50
+    Use Tpetra: true
   Physics Blocks: 
     Semiconductor: 
       child0: 
@@ -151,9 +152,9 @@ ANONYMOUS:
         Newton: 
           Forcing Term Method: Constant
           Rescue Bad Newton Solve: true
-          Linear Solver: 
-            Tolerance: 1.00000000000000002e-08
-          Stratimikos Linear Solver: 
+          Linear Solver:
+            Tolerance: 1.0e-08
+          Stratimikos Linear Solver:
             NOX Stratimikos Options: { }
             Stratimikos: 
               Linear Solver Type: AztecOO
@@ -166,57 +167,14 @@ ANONYMOUS:
                       Size of Krylov Subspace: 200
                       Output Frequency: 20
                     Max Iterations: 200
-                Belos: 
-                  Solver Type: Block GMRES
-                  Solver Types: 
-                    Block GMRES: 
-                      Convergence Tolerance: 1.00000000000000008e-05
-                      Output Frequency: 10
-                      Output Style: 1
-                      Verbosity: 33
-                      Maximum Iterations: 100
-                      Block Size: 1
-                      Num Blocks: 20
-                      Flexible Gmres: false
-              Preconditioner Type: Ifpack
-              Preconditioner Types: 
-                Ifpack: 
-                  Overlap: 1
-                  Prec Type: ILU
-                  Ifpack Settings: 
-                    'fact: drop tolerance': 0.00000000000000000e+00
-                    'fact: ilut level-of-fill': 1.00000000000000000e+00
-                    'fact: level-of-fill': 1
-                Teko: 
-                  Inverse Type: ML-DD
-                  Write Block Operator: false
-                  Test Block Operator: false
-                  Inverse Factory Library: 
-                    ML-DD: 
-                      Type: ML
-                      Base Method Defaults: SA
-                      ML Settings: 
-                        ML output: 10
-                        ML label: Velocity
-                        prec type: MGV
-                        print unused: 0
-                        PDE equations: 3
-                        max levels: 10
-                        cycle applications: 2
-                        'aggregation: threshold': 0.00000000000000000e+00
-                        'aggregation: type': Uncoupled
-                        'smoother: type': IFPACK
-                        'smoother: ifpack type': Amesos
-                        'smoother: ifpack overlap': 1
-                        'smoother: ifpack list': 
-                          'fact: level-of-fill': 1
-                          'schwarz: reordering type': rcm
-                          reuse numeric factorization: 1
-                        'smoother: pre or post': both
-                        'smoother: sweeps': 2
-                        'coarse: max size': 500
-                        'coarse: type': Amesos-KLU
-      Line Search: 
+              Preconditioner Type: Ifpack2
+              Preconditioner Types:
+                Ifpack2:
+                  Prec Type: RILUK
+                  Ifpack2 Settings:
+                    'fact: iluk level-of-fill': 1
+		  
+      Line Search:
         Method: Full Step
         Polynomial: 
           Maximum Iterations: 10
@@ -250,7 +208,7 @@ ANONYMOUS:
         Number of Tests: 3
         Test 0: 
           Test Type: Combo
-          Combo Type: AND
+          Combo Type: OR
           Number of Tests: 2
           Test 0: 
             Test Type: NormF

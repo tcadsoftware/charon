@@ -17,8 +17,7 @@
 
 
 // Concrete rythmos observers
-#include "Charon_RythmosObserver_WriteToExodus.hpp"
-#include "Charon_RythmosObserver_WriteResponses.hpp"
+#include "Charon_RythmosObserver_OutputData.hpp"
 #include "Charon_RythmosObserver_ClipSolution.hpp"
 #include "Charon_Scaling_Parameters.hpp"
 
@@ -39,8 +38,12 @@ namespace charon {
     //! Store Response names for pretty printing of currents, etc...
     std::vector<std::string> responseNames_;
 
+    Teuchos::RCP<Thyra::ModelEvaluator<double> > full_model_evaluator_;
+
     //! Store parameter names for pretty printing of voltages, etc...
     std::vector<std::string> parameterNames_;
+
+    Teuchos::RCP<panzer::ParamLib> parameterLibrary_;
 
     Teuchos::RCP<charon::Scaling_Parameters> scaleParams_;
 
@@ -50,13 +53,16 @@ namespace charon {
     RythmosObserverFactory() {}
 
     RythmosObserverFactory(const Teuchos::RCP<panzer::ResponseLibrary<panzer::Traits> > & stkIOResponseLibrary,
-                           const std::vector<std::string> & responseNames,
+                           const std::vector<std::string> & responseNames, 
+			   Teuchos::RCP<panzer::ParamLib> const& parameterLibrary,
                            const Teuchos::RCP<charon::Scaling_Parameters> & scaleParams)
-       : stkIOResponseLibrary_(stkIOResponseLibrary), responseNames_(responseNames), scaleParams_(scaleParams) {}
+       : stkIOResponseLibrary_(stkIOResponseLibrary), responseNames_(responseNames),	
+	 parameterLibrary_(parameterLibrary), scaleParams_(scaleParams) {}
 
     RythmosObserverFactory(const Teuchos::RCP<panzer::ResponseLibrary<panzer::Traits> > & stkIOResponseLibrary,
+			   Teuchos::RCP<panzer::ParamLib> const& parameterLibrary,
                            const Teuchos::RCP<charon::Scaling_Parameters> & scaleParams)
-       : stkIOResponseLibrary_(stkIOResponseLibrary), scaleParams_(scaleParams) {}
+       : stkIOResponseLibrary_(stkIOResponseLibrary), parameterLibrary_(parameterLibrary), scaleParams_(scaleParams) {}
 
 
     void setResponseNames(const std::vector<std::string> & responseNames)
@@ -105,34 +111,56 @@ namespace charon {
         composite_observer->addObserver(clip_solution_observer);
       }
 
-      // write solution last
-      if (p.get<std::string>("Write Solution to Exodus File") == "ON") {
-        int write_after_this_many_steps = p.get<int>("Time Step Interval for Writing Solution");
-        bool write_initial_condition = false;
-
+      // Set some variables for output of responses
+      bool output_responses = (p.get<std::string>("Output Responses") == "ON");
+      bool output_exodus = (p.get<std::string>("Write Solution to Exodus File") == "ON");
+      bool output_txt_response_file = (p.get<std::string>("Write Response File") != "");
+      std::string txt_response_filename = p.get<std::string>("Write Response File");
+      bool output_exo_responses = false;
+      bool write_initial_condition = false;
+      int write_after_this_many_steps = 1;
+      if (output_exodus) {
+        
+        write_after_this_many_steps = p.get<int>("Time Step Interval for Writing Solution");
+        
         if (p.get<std::string>("Write Initial Condition") == "TRUE")
           write_initial_condition = true;
 
-        RCP<charon::RythmosObserver_WriteToExodus> exodus_observer =
-          rcp(new charon::RythmosObserver_WriteToExodus(mesh,dof_manager,lof,write_after_this_many_steps,write_initial_condition,stkIOResponseLibrary_,scaleParams_));
-
-        composite_observer->addObserver(exodus_observer);
+        // If the user chose to output responses always output them to
+        // exodus
+        if (output_responses)
+          output_exo_responses = true;
       }
 
-      //----------------------------------------------------------------------------------------------
-      // write out responses (only if you have a response names vector and the user requests responses
-      //----------------------------------------------------------------------------------------------
-      if(   (parameterNames_.size()>0 || responseNames_.size()>0)
-         && (p.get<std::string>("Output Responses") == "ON"
-         || p.get<std::string>("Write Response File")!="")) {
-        RCP<charon::RythmosObserver_WriteResponses> response_observer =
-          rcp(new charon::RythmosObserver_WriteResponses(responseNames_,parameterNames_,scaleParams_,
-                                                         p.get<std::string>("Output Responses")=="ON",
-                                                         p.get<std::string>("Write Response File")));
-
-        composite_observer->addObserver(response_observer);
+      // Last sanity check, if there are no responses turn their output off
+      if (!(parameterNames_.size()>0 || responseNames_.size()>0)) {
+        output_responses = false;
+        output_txt_response_file = false;
+        output_exo_responses = false;
       }
 
+      //-----------------------------------------------------------------------
+      // Output data to various entities
+      // ----------------------------------------------------------------------
+      RCP<charon::RythmosObserver_OutputData> response_observer =
+        rcp(new charon::RythmosObserver_OutputData(mesh,
+                                                   dof_manager,
+                                                   lof,
+                                                   stkIOResponseLibrary_,
+                                                   full_model_evaluator_,
+                                                   responseNames_,
+                                                   parameterNames_,
+						   parameterLibrary_,
+						   scaleParams_,
+                                                   output_exodus,
+                                                   output_responses,
+                                                   output_txt_response_file,
+                                                   output_exo_responses,
+                                                   write_after_this_many_steps,
+                                                   txt_response_filename,
+                                                   write_initial_condition));
+
+      composite_observer->addObserver(response_observer);
 
       //----------------------------------------------------------------------------------------------
       // Cluster observer
@@ -177,13 +205,15 @@ namespace charon {
           valid_params_.get()
           );
 
+       // output responses. if ON then responses will be written to the
+       // screen and optionally to a response file
        Teuchos::setStringToIntegralParameter<int>(
-          "Output Responses",
-          "ON",
-          "Enables or disables writing of responses (like the current) to the screen.",
-          Teuchos::tuple<std::string>("ON","OFF"),
-          valid_params_.get()
-          );
+         "Output Responses",
+         "OFF",
+         "Should responses be output, always to the screen and possibly to an output file",
+         Teuchos::tuple<std::string>("ON", "OFF"),
+         valid_params_.get()
+         );
 
        valid_params_->set<std::string>("Write Response File", "", "Writes table of responses to a file.");
 
@@ -227,6 +257,11 @@ namespace charon {
 
       }
       return valid_params_;
+    }
+
+    void setModelEvaluator(Teuchos::RCP<Thyra::ModelEvaluator<double> > const full_me)
+    {
+      full_model_evaluator_ = full_me;
     }
 
     //@}

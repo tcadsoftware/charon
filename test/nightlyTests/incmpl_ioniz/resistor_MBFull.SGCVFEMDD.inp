@@ -6,6 +6,8 @@ start output parameters
       unscale variables is on
 end output parameters
 
+tpetra is on
+
 start Physics Block Semiconductor
       geometry block is silicon
       standard discretization type is drift diffusion cvfem
@@ -49,7 +51,8 @@ Initial Conditions for ELECTRON_DENSITY in silicon is Equilibrium Density
 Initial Conditions for HOLE_DENSITY in silicon is Equilibrium Density
 
 start solver block
-      use solver pack 1
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block

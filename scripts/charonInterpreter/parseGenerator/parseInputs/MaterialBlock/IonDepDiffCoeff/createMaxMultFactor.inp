@@ -1,0 +1,9 @@
+interpreter name MaxMultiFactor 
+
+interpreter inputLine (max multiply factor) = {factor}
+
+interpreter shortHelp {The maximum multiply factor for the IonDep diffusion coefficient model}
+
+interpreter longHelp {The maximum multiply factor for the IonDep diffusion coefficient model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Diffusion Coefficient,Maximum Multiply Factor,double,{factor}

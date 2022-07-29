@@ -1,0 +1,8 @@
+
+interpreterBlock name LinearMoleFraction
+
+interpreterBlock (start linear mole fraction named) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction,Value,string,Function
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Function Type,string,Linear

@@ -1,0 +1,12 @@
+Resistor Circuit Netlist - lower level.
+********************************************************************************
+R1          1 2 3000
+vconnectL   2 0 1.0
+vconnectR   3 0 3.0
+R2          3 0 5000
+VR          1 0 5.0
+.DC VR 5 5 0
+.options nonlin nox=1 
+.options device debuglevel=-100
+.END
+

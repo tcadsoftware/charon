@@ -80,6 +80,9 @@ private:
   std::string hcurl_basis_name;
   std::size_t hcurl_basis_index;
 
+  // reference edge length
+  double refEdgeLen;
+
   // carrier type
   std::string carrType;
 

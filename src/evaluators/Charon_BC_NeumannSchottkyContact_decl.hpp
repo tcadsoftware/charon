@@ -40,15 +40,15 @@ private:
   PHX::MDField<ScalarT,Cell,Point> hSurfCurrent;  // scaled
   
   // input
-  PHX::MDField<ScalarT,Cell,Point> edensity;    // scaled
-  PHX::MDField<ScalarT,Cell,Point> hdensity;    // scaled
-  PHX::MDField<ScalarT,Cell,Point> eff_bandgap; // eV
-  PHX::MDField<ScalarT,Cell,Point> elec_effdos; // scaled
-  PHX::MDField<ScalarT,Cell,Point> hole_effdos; // scaled
-  PHX::MDField<ScalarT,Cell,Point> latt_temp;   // scaled
-  PHX::MDField<ScalarT,Cell,Point> effChi;         // eV
-  PHX::MDField<ScalarT,Cell,Point> rel_perm;
-  PHX::MDField<ScalarT,Cell,Point> EdotNorm; 
+  PHX::MDField<const ScalarT,Cell,Point> edensity;    // scaled
+  PHX::MDField<const ScalarT,Cell,Point> hdensity;    // scaled
+  PHX::MDField<const ScalarT,Cell,Point> eff_bandgap; // eV
+  PHX::MDField<const ScalarT,Cell,Point> elec_effdos; // scaled
+  PHX::MDField<const ScalarT,Cell,Point> hole_effdos; // scaled
+  PHX::MDField<const ScalarT,Cell,Point> latt_temp;   // scaled
+  PHX::MDField<const ScalarT,Cell,Point> effChi;         // eV
+  PHX::MDField<const ScalarT,Cell,Point> rel_perm;
+  PHX::MDField<const ScalarT,Cell,Point> EdotNorm; 
 
   double C0, T0, J0, E0;  // scaling parameters
 

@@ -1,0 +1,14 @@
+interpreter name EnergyDistribution
+
+interpreter inputLine (energy distribution) is [ (level) [ (uniform) [(exponential) [(gaussian)]]]]
+
+interpreter shortHelp {The enery distribution of this trap}
+interpreter longHelp {The energy distribution of this trap. It can be level, uniform, exponential or gaussian}
+
+xmlOptional (level) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Energy Distribution,string,Level
+
+xmlOptional (uniform) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Energy Distribution,string,Uniform
+
+xmlOptional (exponential) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Energy Distribution,string,Exponential
+
+xmlOptional (gaussian) Charon->Closure Models->{MaterialBlockName}->Dynamic Traps Recombination->Trap {trapID},Energy Distribution,string,Gaussian

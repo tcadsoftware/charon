@@ -1,0 +1,9 @@
+interpreter name LinearSolver
+
+interpreter shortHelp {Set which Trilinos linear solver package to use}
+interpreter longHelp {Set which Trilinos linear solver package to use}
+
+interpreter inputLine (linear solver is) [ (aztecOO) [ (belos) ]]
+
+xmlOptional (aztecoo) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,AztecOO
+xmlOptional (belos) Charon->Solution Control->NOX->Direction->Newton->Stratimikos Linear Solver->Stratimikos,Linear Solver Type,string,Belos

@@ -276,36 +276,41 @@ for(int i =0 ; i < this->freqDomParamsRCP->getNumTotalHarmonics() ; i++)
 
   // Always solve the Poisson equation (no transients required)
   for(int j = 0 ; j < 2 ; j++){  // j=0 for cosine, j=1 for sine
-    this->addDOF(m_fd_names[2*i+j]->dof.phi,basis_type,basis_order,integration_order,m_fd_names[2*i+j]->res.phi);
-    this->addDOFGrad(m_fd_names[2*i+j]->dof.phi,m_fd_names[2*i+j]->grad_dof.phi);
-    this->freqdom_dof_names_phi->emplace_back(m_fd_names[2*i+j]->dof.phi);
-    this->freqdom_grad_dof_names_phi->emplace_back(m_fd_names[2*i+j]->grad_dof.phi);
+    if(i > 0 || j == 0){
+      this->addDOF(m_fd_names[2*i+j]->dof.phi,basis_type,basis_order,integration_order,m_fd_names[2*i+j]->res.phi);
+      this->addDOFGrad(m_fd_names[2*i+j]->dof.phi,m_fd_names[2*i+j]->grad_dof.phi);
+      this->freqdom_dof_names_phi->emplace_back(m_fd_names[2*i+j]->dof.phi);
+      this->freqdom_grad_dof_names_phi->emplace_back(m_fd_names[2*i+j]->grad_dof.phi);
+    }
   }
 
   // Solve the Electron equation by default and users can disable it 
   if (solveElectron == "True"){
     for(int j = 0 ; j < 2 ; j++){  // j=0 for cosine, j=1 for sine
-      this->addDOF(m_fd_names[2*i+j]->dof.edensity,basis_type,basis_order,integration_order,m_fd_names[2*i+j]->res.edensity);
-      this->addDOFGrad(m_fd_names[2*i+j]->dof.edensity,m_fd_names[2*i+j]->grad_dof.edensity);
-      this->freqdom_dof_names_elec->emplace_back(m_fd_names[2*i+j]->dof.edensity);
-      this->freqdom_grad_dof_names_elec->emplace_back(m_fd_names[2*i+j]->grad_dof.edensity);
+      if(i > 0 || j == 0){
+        this->addDOF(m_fd_names[2*i+j]->dof.edensity,basis_type,basis_order,integration_order,m_fd_names[2*i+j]->res.edensity);
+        this->addDOFGrad(m_fd_names[2*i+j]->dof.edensity,m_fd_names[2*i+j]->grad_dof.edensity);
+        this->freqdom_dof_names_elec->emplace_back(m_fd_names[2*i+j]->dof.edensity);
+        this->freqdom_grad_dof_names_elec->emplace_back(m_fd_names[2*i+j]->grad_dof.edensity);
+      }
     }
   }
   
   // Solve the Hole equation by default and users can disable it 
   if (solveHole == "True"){
     for(int j = 0 ; j < 2 ; j++){  // j=0 for cosine, j=1 for sine
-      this->addDOF(m_fd_names[2*i+j]->dof.hdensity,basis_type,basis_order,integration_order,m_fd_names[2*i+j]->res.hdensity);
-      this->addDOFGrad(m_fd_names[2*i+j]->dof.hdensity,m_fd_names[2*i+j]->grad_dof.hdensity);
-      this->freqdom_dof_names_hole->emplace_back(m_fd_names[2*i+j]->dof.hdensity);
-      this->freqdom_grad_dof_names_hole->emplace_back(m_fd_names[2*i+j]->grad_dof.hdensity);
+      if(i > 0 || j == 0){
+        this->addDOF(m_fd_names[2*i+j]->dof.hdensity,basis_type,basis_order,integration_order,m_fd_names[2*i+j]->res.hdensity);
+        this->addDOFGrad(m_fd_names[2*i+j]->dof.hdensity,m_fd_names[2*i+j]->grad_dof.hdensity);
+        this->freqdom_dof_names_hole->emplace_back(m_fd_names[2*i+j]->dof.hdensity);
+        this->freqdom_grad_dof_names_hole->emplace_back(m_fd_names[2*i+j]->grad_dof.hdensity);
+      }
     }
   }
 
  } // end registering fd DOFs
 
   this->addClosureModel(model_id);
-
   this->setupDOFs();
 
   // create the vector of names used to create the TD DOFs
@@ -373,20 +378,6 @@ initializeEquationSet_Laplace(const Teuchos::RCP<Teuchos::ParameterList>& params
 
 // these are replicated from the drift diffusion equation set, and are essentially unused
     // validate time domain equation set parameters
-    Teuchos::setStringToIntegralParameter<int>(
-      "Solve Electron",
-      "True",
-      "Determine if users want to solve the Electron Continuity equation",
-      Teuchos::tuple<std::string>("True","False"),
-      &opt
-      );
-    Teuchos::setStringToIntegralParameter<int>(
-      "Solve Hole",
-      "True",
-      "Determine if users want to solve the Hole Continuity equation",
-      Teuchos::tuple<std::string>("True","False"),
-      &opt
-      );
     Teuchos::setStringToIntegralParameter<int>(
       "Fermi Dirac",
       "False",
@@ -680,13 +671,6 @@ initializeEquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>&
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
-      "Trap SRH",
-      "Off",
-      "Determine if users want to include Trap SRH recombination in the continuity equation(s)",
-      Teuchos::tuple<std::string>("On","Off"),
-      &opt
-      );
-    Teuchos::setStringToIntegralParameter<int>(
       "Radiative",
       "Off",
       "Determine if users want to include Radiative recombination in the continuity equation(s)",
@@ -705,6 +689,20 @@ initializeEquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>&
       "Off",
       "Determine if users want to include Avalanche generation in the continuity equation(s)",
       Teuchos::tuple<std::string>("On","Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
+      "Band2Band Tunneling",
+      "Off",
+      "Determines if users want to include Band2Band tunneling generation in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On", "Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
+      "Driving Force",
+      "EffectiveField",
+      "Determines driving force for different models in the continuity equation(s)",
+      Teuchos::tuple<std::string>("EffectiveField","GradQuasiFermi","GradPotential"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
@@ -730,21 +728,21 @@ initializeEquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>&
       );
     Teuchos::setStringToIntegralParameter<int>(
       "SUPG Stabilization",
-      "Off",
+      "On",
       "Enable or disable SUPG stabilization in the continuity equation(s)",
       Teuchos::tuple<std::string>("On","Off"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
       "Tau_E",
-      "None",
+      "Tanh",
       "Determine the Tau_E model in the Electron equation",
       Teuchos::tuple<std::string>("None","Linear","Tanh"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
       "Tau_H",
-      "None",
+      "Tanh",
       "Determines the Tau_H model in the Hole equation",
       Teuchos::tuple<std::string>("None","Linear","Tanh"),
       &opt
@@ -799,12 +797,20 @@ initializeEquationSet_DriftDiffusion(const Teuchos::RCP<Teuchos::ParameterList>&
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
+      "Dynamic Traps",
+      "Off",
+      "Determine if users want to include Trap SRH recombination in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On","Off"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
       "Add Trap Charge",
       "False",
       "Determine if users want to include the srh trap charge in the Poisson equation",
       Teuchos::tuple<std::string>("True","False"),
       &opt
       );
+
     Teuchos::setStringToIntegralParameter<int>(
       "Fixed Charge",
       "False",
@@ -997,6 +1003,13 @@ initializeEquationSet_SGCVFEM_DriftDiffusion(const Teuchos::RCP<Teuchos::Paramet
       "EffectiveField",
       "Determines driving force for different models in the continuity equation(s)",
       Teuchos::tuple<std::string>("EffectiveField","GradQuasiFermi","GradPotential"),
+      &opt
+      );
+    Teuchos::setStringToIntegralParameter<int>(
+      "Band2Band Tunneling",
+      "Off",
+      "Determines if users want to include Band2Band tunneling generation in the continuity equation(s)",
+      Teuchos::tuple<std::string>("On", "Off"),
       &opt
       );
     Teuchos::setStringToIntegralParameter<int>(
@@ -1479,33 +1492,41 @@ for(int time_coll_pt = 0 ; time_coll_pt < this->freqDomParamsRCP->getNumTimeColl
 //    j *= huge_frequency_scaling;// /double(i);
 
 // phi cos(h) and sin(h) HB residual equations
-  for(int h = 0 ; h < (this->freqDomParamsRCP)->getNumTotalHarmonics() ; h++){
+  // phi cosine(h0)
+  this->buildAndRegisterResidualSummationEvaluator(fm, 
+    (*(this->freqdom_dof_names_phi))[0] /* residual equation's name, phi cos(h) */,
+  	td_phi_residual_contributions,
+    cos_quad_weights[0]);
+
+  for(int h = 1 ; h < (this->freqDomParamsRCP)->getNumTotalHarmonics() ; h++){
 
       // phi cosine(harmonic h)
       this->buildAndRegisterResidualSummationEvaluator(fm, 
-        (*(this->freqdom_dof_names_phi))[2*h+0] /* residual equation's name, phi cos(h) */,
+        (*(this->freqdom_dof_names_phi))[2*h-1] /* residual equation's name, phi cos(h) */,
 	td_phi_residual_contributions,
         cos_quad_weights[h]);
-
       // phi sin(harmonic h)
       this->buildAndRegisterResidualSummationEvaluator(fm, 
-        (*(this->freqdom_dof_names_phi))[2*h+1] /* residual equation's name, phi sin(h) */,
-	td_phi_residual_contributions,
-	sin_quad_weights[h]);
-
+        (*(this->freqdom_dof_names_phi))[2*h] /* residual equation's name, phi sin(h) */,
+        td_phi_residual_contributions,
+        sin_quad_weights[h]);
   } // end the harmonic loop
 // end building the phi HB equations
 
 // elec cos(h) and sin(h) HB residual equations
 if(solveElectron == "True"){
-  for(int h = 0 ; h < (this->freqDomParamsRCP)->getNumTotalHarmonics() ; h++){
-
+  // elec cos(h0)
+  this->buildAndRegisterResidualSummationEvaluator(fm, 
+    (*(this->freqdom_dof_names_elec))[0] /* residual equation's name, elec cos(h) */,
+    td_elec_residual_contributions,
+    cos_quad_weights[0]);
+  // elec cos(h>0) and sin(h>0)
+  for(int h = 1 ; h < (this->freqDomParamsRCP)->getNumTotalHarmonics() ; h++){
       // elec cos(harmonic h)
       this->buildAndRegisterResidualSummationEvaluator(fm, 
-        (*(this->freqdom_dof_names_elec))[2*h+0] /* residual equation's name, elec cos(h) */,
+        (*(this->freqdom_dof_names_elec))[2*h-1] /* residual equation's name, elec cos(h) */,
 	td_elec_residual_contributions,
         cos_quad_weights[h]);
-
       // add the d/dt term for the h^th cosine harmonic
       if(h>0)
       {
@@ -1523,16 +1544,17 @@ if(solveElectron == "True"){
           Teuchos::rcp(new panzer::Integrator_BasisTimesScalar<EvalT,panzer::Traits>(
 	    panzer::EvaluatorStyle::CONTRIBUTES, 
             (this->m_fd_names[2*h+1])->res.edensity,
-            (this->m_fd_names[2*h+0])->dof.edensity,
+            (this->m_fd_names[2*h])->dof.edensity,
             *basis, *ir, multiplier));
         this->template registerEvaluator<EvalT>(fm, op);
       }
 
       // elec sin(harmonic h)
-      this->buildAndRegisterResidualSummationEvaluator(fm, 
-        (*(this->freqdom_dof_names_elec))[2*h+1] /* residual equation's name, elec sin(h) */,
-	td_elec_residual_contributions,
-        sin_quad_weights[h]);
+      if(h > 0)
+        this->buildAndRegisterResidualSummationEvaluator(fm, 
+          (*(this->freqdom_dof_names_elec))[2*h] /* residual equation's name, elec sin(h) */,
+  	  td_elec_residual_contributions,
+          sin_quad_weights[h]);
 
       // add the d/dt term for the h^th sine harmonic
       if(h>0)
@@ -1550,7 +1572,7 @@ if(solveElectron == "True"){
         Teuchos::RCP< PHX::EvaluatorWithBaseImpl<panzer::Traits> > op =
           Teuchos::rcp(new panzer::Integrator_BasisTimesScalar<EvalT,panzer::Traits>(
 	    panzer::EvaluatorStyle::CONTRIBUTES, 
-	    (this->m_fd_names[2*h+0])->res.edensity,
+	    (this->m_fd_names[2*h])->res.edensity,
             (this->m_fd_names[2*h+1])->dof.edensity,
             *basis, *ir, multiplier));
         this->template registerEvaluator<EvalT>(fm, op);
@@ -1562,11 +1584,15 @@ if(solveElectron == "True"){
 
 // hole cos(h) and sin(h) HB residual equations
 if(solveHole == "True"){
-  for(int h = 0 ; h < (this->freqDomParamsRCP)->getNumTotalHarmonics() ; h++){
+  this->buildAndRegisterResidualSummationEvaluator(fm, 
+    (*(this->freqdom_dof_names_hole))[0] /* residual equation's name, hole cos(h) */,
+    td_hole_residual_contributions,
+    cos_quad_weights[0]);
+  for(int h = 1 ; h < (this->freqDomParamsRCP)->getNumTotalHarmonics() ; h++){
 
       // hole cos(harmonic h)
       this->buildAndRegisterResidualSummationEvaluator(fm, 
-        (*(this->freqdom_dof_names_hole))[2*h+0] /* residual equation's name, hole cos(h) */,
+        (*(this->freqdom_dof_names_hole))[2*h-1] /* residual equation's name, hole cos(h) */,
 	td_hole_residual_contributions,
 	cos_quad_weights[h]);
 
@@ -1587,16 +1613,17 @@ if(solveHole == "True"){
           Teuchos::rcp(new panzer::Integrator_BasisTimesScalar<EvalT,panzer::Traits>(
 	    panzer::EvaluatorStyle::CONTRIBUTES, 
             (this->m_fd_names[2*h+1])->res.hdensity,
-            (this->m_fd_names[2*h+0])->dof.hdensity,
+            (this->m_fd_names[2*h])->dof.hdensity,
             *basis, *ir, multiplier));
         this->template registerEvaluator<EvalT>(fm, op);
       }
 
       // hole sin(harmonic h)
-      this->buildAndRegisterResidualSummationEvaluator(fm, 
-        (*(this->freqdom_dof_names_hole))[2*h+1] /* residual equation's name, phi sin(h) */,
-	td_hole_residual_contributions,
-	sin_quad_weights[h]);
+      if(h > 0)
+        this->buildAndRegisterResidualSummationEvaluator(fm, 
+          (*(this->freqdom_dof_names_hole))[2*h] /* residual equation's name, phi sin(h) */,
+  	  td_hole_residual_contributions,
+	  sin_quad_weights[h]);
 
       // add the d/dt term for the h^th sine harmonic
       if(h>0)
@@ -1614,8 +1641,8 @@ if(solveHole == "True"){
         Teuchos::RCP< PHX::EvaluatorWithBaseImpl<panzer::Traits> > op =
           Teuchos::rcp(new panzer::Integrator_BasisTimesScalar<EvalT,panzer::Traits>(
 	    panzer::EvaluatorStyle::CONTRIBUTES, 
-	    (this->m_fd_names[2*h+0])->res.hdensity, // "RESIDUAL_" + (*(this->freqdom_dof_names_hole))[2*h+0],
-            (this->m_fd_names[2*h+1])->dof.hdensity, // (*(this->freqdom_dof_names_hole))[2*h+1],
+	    (this->m_fd_names[2*h])->res.hdensity,
+            (this->m_fd_names[2*h+1])->dof.hdensity,
             *basis, *ir, multiplier));
         this->template registerEvaluator<EvalT>(fm, op);
       }

@@ -18,6 +18,7 @@
 
 // Panzer
 #include "Panzer_FieldLibrary.hpp"
+#include "Panzer_ParameterLibraryUtilities.hpp"
 
 namespace charon
 {
@@ -43,6 +44,7 @@ BC_CurrentConstraint(
   using Teuchos::null;
   using Teuchos::ParameterList;
   using Teuchos::RCP;
+  using Teuchos::rcp;
 
   // Validate the input ParameterList.
   RCP<ParameterList> validParams = this->getValidParameters();
@@ -53,6 +55,15 @@ BC_CurrentConstraint(
     p.get<RCP<ScalarParameterEntry<EvalT>>>("Voltage Control");
   TEUCHOS_TEST_FOR_EXCEPTION(voltageParameter_ == null, runtime_error,
     "Error:  \"Voltage Control\" is null in BC_CurrentConstraint.");
+
+  // Set the contactvoltage in the parameter library
+  //Set up to write the contact voltage to the parameter library
+  contactVoltageName = p.get<std::string>("Sideset ID")+"_Voltage";
+  contactVoltage = 
+  panzer::createAndRegisterScalarParameter<EvalT>(
+  						    std::string(contactVoltageName),
+  						    *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+  contactVoltage->setValue(voltageParameter_->getValue());
 
   // Determine whether or not we're using Fermi-Dirac.
   bUseFD_ = false;
@@ -158,6 +169,7 @@ evaluateFields(
 {
   // Get the voltage value that is inversely computed.
   ScalarT voltage     = voltageParameter_->getValue();
+  contactVoltage->setValue(voltage);
   ScalarT vScaling    = V0_;
   ScalarT densScaling = C0_;
   ScalarT tempScaling = T0_;
@@ -204,6 +216,9 @@ getValidParameters() const
   p->set<bool>("Use Reference Energy", true);
   RCP<Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);
+  p->set("Sideset ID","");
+  p->set<Teuchos::RCP<panzer::ParamLib> >("ParamLib",
+       Teuchos::rcp(new panzer::ParamLib));
   RCP<charon::EmpiricalDamage_Data> dmgdata;
   p->set("empirical damage data", dmgdata);
 

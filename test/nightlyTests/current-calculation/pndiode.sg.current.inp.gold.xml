@@ -118,7 +118,7 @@
     </ParameterList>
   </ParameterList>
   <ParameterList name="Output" >
-    <Parameter name="File Name" type="string" value="result_pndiode_sg_current.exo" />
+    <Parameter name="File Name" type="string" value="result_pndiode_sg_hocurr.exo" />
   </ParameterList>
   <ParameterList name="Block ID to Physics ID Mapping" >
     <Parameter name="silicon" type="string" value="Semiconductor" />
@@ -149,7 +149,7 @@
       <Parameter name="Equation Set Name" type="string" value="ALL_DOFS" />
       <Parameter name="Strategy" type="string" value="Ohmic Contact" />
       <ParameterList name="Data" >
-        <Parameter name="Voltage" type="double" value="0.6" />
+        <Parameter name="Voltage" type="double" value="0.7" />
       </ParameterList>
     </ParameterList>
     <ParameterList>

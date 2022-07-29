@@ -2,6 +2,7 @@
 Import State File "oxide.lapl.exo"
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
       Output State File oxide.sg.lapl.bq.loca.exo
@@ -21,14 +22,14 @@ start Material Block SiO2Parameter
       material name is SiO2
       relative permittivity = 3.9
 
-      start bulk fixed charge parameters 
-          distribution is uniform 
+      start bulk fixed charge parameters
+          distribution is uniform
           charge density is swept from 1e16 to 1e17
-      end bulk fixed charge parameters 
+      end bulk fixed charge parameters
 end Material Block
 
-start Sweep Options 
-     Initial Step Size = 1e16 
+start Sweep Options
+     Initial Step Size = 1e16
      Minimum Step Size = 1e13
      Maximum Step Size = 5e16
      continuation method is Arc Length
@@ -36,7 +37,7 @@ start Sweep Options
      successful step increase factor = 2
      failed step reduction factor = 0.5
      Step Size Aggressiveness = 0.5
-end Sweep Options 
+end Sweep Options
 
 initial conditions for ELECTRIC_POTENTIAL in sio2 is uninitialized
 
@@ -44,9 +45,16 @@ BC is contact on insulator for top on sio2 with work function 4.8780 fixed at 1.
 BC is contact on insulator for bottom on sio2 with work function 4.8780 fixed at 0.0
 
 start solver block
-      use solver pack 2
-      line search method is backtrack
-      nonlinear solver tolerance = 1e-10
-      max nonlinear iterations = 15
+  start tpetra block
+    problem type is parameter sweep
+    linear solver tolerance = 1.0e-10
+    nonlinear solver residual tolerance = 1.0e-10
+
+    start nonlinear solver wrms block
+      test is off
+    end
+
+    verbosity level is high
+  end
 end solver block
 

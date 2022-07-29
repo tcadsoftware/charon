@@ -1,0 +1,15 @@
+
+interpreter name HoleQuantumPotentialCorrection
+
+interpreter inputline (hole density correction) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Turn on Hole Quantum Correction}
+interpreter longHelp  {Turn on Hole Quantum Correction <> {State} is On/Off}
+
+#
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Quantum Correction,bool,True
+
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Quantum Correction,bool,True
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Hole Quantum Correction,bool,False
+

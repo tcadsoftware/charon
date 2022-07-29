@@ -1,0 +1,7 @@
+COORDINATES absolute 1.0e-14
+TIME STEPS absolute 1.0e-14
+GLOBAL VARIABLES 
+	 ContinuationParameter relative 1.0e-3
+	 cathode_n-ingap_Current relative 1.0e-3 floor 5.0e-06
+	 anode_p-gaas_Current relative 1.0e-3 floor 5.0e-06
+

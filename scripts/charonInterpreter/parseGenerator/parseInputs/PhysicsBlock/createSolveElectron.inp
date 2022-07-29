@@ -1,0 +1,13 @@
+interpreter name SolveElectron
+
+interpreter inputLine (solve electron equation) [ (is true) [ (is false)]]
+
+interpreter shortHelp {Solve the electron continuity equation}
+
+interpreter longHelp {Solve the electron continuity equation <> {State} is True/False}
+
+xmlOptional (is true) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Electron,string,True
+
+xmlOptional (is false) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Options,Solve Electron,string,False
+
+

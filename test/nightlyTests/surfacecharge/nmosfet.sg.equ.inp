@@ -2,9 +2,12 @@
 Import State File "nmosfet.nlp.exo" at index 1
 
 Assembly workset = 50
+tpetra is on
 
 start output parameters
       Output State File nmosfet.sg.equ.exo
+      Output nodal variables in silicon for "Conduction Band,Valence Band"
+      Output nodal variables in sio2 for "Conduction Band,Valence Band"
 end output parameters
 
 concentration scaling=1e17
@@ -64,11 +67,8 @@ BC is ohmic for substrate on silicon fixed at 0
 BC is contact on insulator for gate on sio2 with work function 4.8780 fixed at 0
 
 start solver block
-      use solver pack 5
-      nonlinear solver tolerance = 1e-8
-      max nonlinear iterations = 15
-      ifpack level of fill = 3 
-      aztec tolerance = 1e-6
-      aztec krylov subspace size = 500 
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
-

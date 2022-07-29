@@ -1,0 +1,5 @@
+interpreterBlock name IonParameters
+
+interpreterBlock (start ion parameters)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Value,string,RigidPointIon

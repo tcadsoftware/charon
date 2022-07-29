@@ -8,6 +8,8 @@ end output parameters
 lattice temperature = 300
 concentration scaling = 1e16
 
+tpetra is on
+
 start Physics Block Semiconductor
       geometry block is silicon
       standard discretization type is nlp gfem
@@ -37,10 +39,9 @@ start surface charge bc for sheet
       geometry block is silicon
 end surface charge bc for sheet
 
-
 start solver block
-      use solver pack 2
-      nonlinear solver tolerance = 1.0e-8
-      max nonlinear iterations = 30
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
 end solver block
-

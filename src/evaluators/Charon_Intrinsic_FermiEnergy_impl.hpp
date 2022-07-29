@@ -37,9 +37,6 @@ Intrinsic_FermiEnergy(
   RCP<DataLayout> scalar = p.get< RCP<DataLayout> >("Data Layout");
   num_points = scalar->dimension(1);
 
-  // Get equation set type
-  eqnSetType = p.get<string>("Equation Set Type");
-
   // Evaluated fields
   intrin_fermi = MDField<ScalarT,Cell,Point>(n.field.intrin_fermi,scalar);
   this->addEvaluatedField(intrin_fermi);
@@ -52,17 +49,6 @@ Intrinsic_FermiEnergy(
   scaleParams = p.get< RCP<charon::Scaling_Parameters> >("Scaling Parameters");
   V0 = scaleParams->scale_params.V0;
 
-  // Additional dependent fields for the following equation sets
-  if ((eqnSetType == "Laplace") ||
-      (eqnSetType == "SGCVFEM Laplace") ||
-      (eqnSetType == "NLPoisson") ||
-      (eqnSetType == "SGCVFEM NLPoisson") ||
-      (eqnSetType == "Drift Diffusion") ||
-      (eqnSetType == "EFFPG Drift Diffusion") ||
-      (eqnSetType == "SGCVFEM Drift Diffusion") ||
-      (eqnSetType == "SGCharon1 Drift Diffusion") ||
-      (eqnSetType == "DDLattice"))
-  {
     T0 = scaleParams->scale_params.T0;
     eff_affinity = MDField<const ScalarT,Cell,Point>(n.field.eff_affinity,scalar);
     eff_bandgap = MDField<const ScalarT,Cell,Point>(n.field.eff_band_gap,scalar);
@@ -81,7 +67,6 @@ Intrinsic_FermiEnergy(
     this->addDependentField(ref_energy);
     this->addDependentField(elec_degfactor);
     this->addDependentField(hole_degfactor);
-  }
 
   std::string name = "Intrinsic_FermiEnergy";
   this->setName(name);
@@ -105,17 +90,6 @@ evaluateFields(
   charon::PhysicalConstants const& cpc = charon::PhysicalConstants::Instance();
   double kbBoltz = cpc.kb;      // Boltzmann constant in [eV/K]
 
- // The following equation sets use the same expression to compute the intrinsic Fermi energy
- if ((eqnSetType == "Laplace") ||
-     (eqnSetType == "SGCVFEM Laplace") ||
-     (eqnSetType == "NLPoisson") ||
-     (eqnSetType == "SGCVFEM NLPoisson") ||
-     (eqnSetType == "Drift Diffusion") ||
-     (eqnSetType == "EFFPG Drift Diffusion") ||
-     (eqnSetType == "SGCVFEM Drift Diffusion") ||
-     (eqnSetType == "SGCharon1 Drift Diffusion") ||
-     (eqnSetType == "DDLattice"))
- {
   // Reference Energy
   ScalarT Eref = ref_energy(0,0);
 
@@ -147,27 +121,6 @@ evaluateFields(
             - 0.5*kbT*std::log(Nc/Nv) - 0.5*kbT*std::log(gamma_n/gamma_p);
     }
   }
- }  // end of the if block
-
-
- //  DDIon and DDIonLattice formulations
- else if ( (eqnSetType == "DDIon") ||
-           (eqnSetType == "DDIonLattice") ||
-           (eqnSetType == "EFFPG DDIonLattice") )
- {
-  // Loop over cells
-  for (index_t cell = 0; cell < workset.num_cells; ++cell)
-  {
-    for (int point = 0; point < num_points; ++point)
-    {
-      // Obtain phi in [V]
-      ScalarT phi = potential(cell,point) * V0;  // unscaled in [V]
-
-      // Intrinsic fermi energy in [eV]
-      intrin_fermi(cell,point) = -1.0*phi;
-    }
-  }
- }  // end of the else if block
 
 }
 
@@ -188,8 +141,6 @@ Intrinsic_FermiEnergy<EvalT, Traits>::getValidParameters() const
 
   Teuchos::RCP<PHX::DataLayout> dl;
   p->set("Data Layout", dl);
-
-  p->set("Equation Set Type", "?");
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);

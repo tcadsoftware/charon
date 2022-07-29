@@ -155,6 +155,7 @@ namespace charon
        *  Contact boundary condition.
        */
       Teuchos::RCP<panzer::ScalarParameterEntry<EvalT>> voltageParameter_;
+      Teuchos::RCP<panzer::ParamLib> parameterLibrary_;
 
       /**
        *  \brief A flag indicating whether or not this current constraint will

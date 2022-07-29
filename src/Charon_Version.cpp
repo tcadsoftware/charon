@@ -5,7 +5,7 @@
 namespace charon {
 
   std::string version() {
-    return("Charon: 2.1 (release)");
+    return("Charon: 2.2");
   }
 
 }

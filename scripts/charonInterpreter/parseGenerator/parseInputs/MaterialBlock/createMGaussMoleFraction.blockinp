@@ -1,0 +1,14 @@
+
+interpreterBlock name MGaussMoleFraction
+
+interpreterBlock (start mgauss mole fraction named) {functionName}
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction,Value,string,Function
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Function Type,string,MGauss
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},X ERFC_ON,bool,false
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Y ERFC_ON,bool,false
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Z ERFC_ON,bool,false
+
+
+

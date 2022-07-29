@@ -60,6 +60,12 @@ private:
   PHX::MDField<const ScalarT,Cell,BASIS> hole_degfac;  // hole degeneracy factor
   PHX::MDField<const ScalarT,Cell,BASIS> latt_temp;    // lattice temperature
 
+  // Quantum Correction
+  PHX::MDField<const ScalarT,Cell,BASIS> eqp; // electron quantum potential correction in [unitless]
+  PHX::MDField<const ScalarT,Cell,BASIS> hqp; // hole quantum potential correction in [unitless]
+  bool useEQC;
+  bool useHQC;
+
   // scaling parameter
   Teuchos::RCP<charon::Scaling_Parameters> scaleParams;
   double V0; // voltage scaling in [V]

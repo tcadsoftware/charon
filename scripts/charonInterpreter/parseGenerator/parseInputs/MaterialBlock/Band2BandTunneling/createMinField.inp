@@ -1,0 +1,9 @@
+interpreter name MinField  
+
+interpreter inputLine (min field) = {Fmin} 
+
+interpreter shortHelp {Set the minimum field in V/cm for the Band2Band tunneling local  model}
+
+interpreter longHelp {Set the minimum field in V/cm for the Band2Band tunneling local  model}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Band2Band Tunneling,Minimum Field,double,{Fmin}

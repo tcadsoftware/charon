@@ -90,8 +90,9 @@ namespace charon
     fieldValue(0,2) = 9.24813e-08; 
     fieldValue(0,3) = 9.24813e-08;
     // cell 1
-    fieldValue(1,0) = 8.23785e-06; 
-    fieldValue(1,1) = 8.23785e-06;
+    //fieldValue(1,0) = 8.23785e-06; 
+    fieldValue(1,0) = 1.88583e-06; 
+    fieldValue(1,1) = 1.88583e-06;
     fieldValue(1,2) = 0.0; 
     fieldValue(1,3) = 0.0;
   }  
@@ -544,7 +545,7 @@ namespace charon
     TEST_EQUALITY(ref_ava_rate.size(), ava_rate.size());
 
     // check evaluator values
-    double tol = 1e-6;
+    double tol = 3e-6;
     for(int cell=0;cell<ava_rate.extent_int(0);cell++) {
       for(int pt=0;pt<ava_rate.extent_int(1);pt++) {
 	std::cout << SV::eval(ava_rate(cell,pt)) << std::endl;

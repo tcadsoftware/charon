@@ -1,4 +1,4 @@
-import state file 2n2222.dd.ERBC.exo at index 1
+import state file 2n2222.dd.exo at index 1
 
 start output parameters
   output state file result.2n2222.dd.ERBC.exo
@@ -14,6 +14,7 @@ start physics block Semiconductor
 end physics block
 
 assembly workset = 50
+tpetra is on
 
 lattice temperature = 300.15
 
@@ -56,8 +57,8 @@ start material block siliconParameter
   
 end material block siliconParameter
 
-BC is resistor for emitter on silicon with resistor 1e3 fixed at -6.86854554 with initial voltage -0.6
-BC is current for base on silicon fixed at -3.90689884e-7 with initial voltage 0.1 with base doping type Acceptor
+BC is resistor for emitter on silicon with resistor 1e3 fixed at -6.86854554 and initial voltage -0.6
+BC is current for base on silicon fixed at -3.90689884e-7 and initial voltage 0.1 with base doping type Acceptor
 BC is ohmic for collector on silicon fixed at 0
 
 initial conditions for ELECTRIC_POTENTIAL in silicon is Exodus File
@@ -65,11 +66,10 @@ initial conditions for ELECTRON_DENSITY in silicon is Exodus File
 initial conditions for HOLE_DENSITY in silicon is Exodus File
 
 start solver block
-  use solver pack 3
-  nonlinear solver tolerance = 1.0e-8
-  max nonlinear iterations = 30
-  line search method is backtrack
-  thyra function scaling is row sum
+  start tpetra block
+    problem type is constrained steady state
+    verbosity level is high
+  end
 end solver block
 
 start output parameters

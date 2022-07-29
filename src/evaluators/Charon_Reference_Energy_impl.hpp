@@ -44,6 +44,10 @@ Reference_Energy(
 
   // Obtain the instance of charon::Material_Properties.
   charon::Material_Properties& matProperty = charon::Material_Properties::getInstance();
+  auto arity = matProperty.getArityType(refMaterial);
+  TEUCHOS_TEST_FOR_EXCEPTION((arity =="Ternary"),
+      std::logic_error, "Cannot use ternary material: "<< refMaterial << 
+      " for reference energy" << std::endl);
 
   // Retrieve bandgap temp-dep model parameters
   Eg300 = matProperty.getPropertyValue(refMaterial, "Band Gap at 300 K");
@@ -82,9 +86,10 @@ Reference_Energy(
   {
     const ParameterList& bgParamList = p.sublist("Bandgap ParameterList");
 
-    // TempDep band gap is specified ?
+    // TempDep or Nitride band gap is specified ?
     if ( (bgParamList.isType<string>("Value")) &&
-         (bgParamList.get<string>("Value") == "TempDep") )
+         ((bgParamList.get<string>("Value") == "TempDep") or
+         (bgParamList.get<string>("Value") == "Nitride")))
     {
       // Overwrite the parameters when given by users
       if (bgParamList.isParameter("Eg300"))
@@ -175,7 +180,8 @@ evaluateFields(
   // calculate the band gap
   ScalarT bandgap = constBg;
   if (!isBgConst)
-    bandgap = Eg300 + alpha*300.*300./(300.+beta) - alpha*lattT*lattT/(lattT+beta);
+    bandgap = Eg300 + alpha*300.*300./(300.+beta) 
+                             - alpha*lattT*lattT/(lattT+beta);
 
   // compute the reference energy in [eV], which is the intrinsic Fermi energy
   // level of the Reference Material from the vacuum level
@@ -214,6 +220,29 @@ Reference_Energy<EvalT, Traits>::getValidParameters() const
   p->sublist("Bandgap ParameterList").set<double>("Chi300", 0., "Electron Affinity at 300 K in [eV]");
   p->sublist("Bandgap ParameterList").set<double>("alpha", 0., "alpha coeff [eV/K] in calculating Eg");
   p->sublist("Bandgap ParameterList").set<double>("beta", 0., "beta coeff [K] in calculating Eg");
+  
+  Teuchos::ParameterList& moleFracParams = 
+    p->sublist("Bandgap ParameterList").sublist("Mole Fraction Parameters", false, "");
+  Teuchos::ParameterList& Eg300 = moleFracParams.sublist("Eg300", false, "");
+  Eg300.set<double>("b", 0., "Eg300 mole fraction 'b' interpolation coefficient");
+  Eg300.set<double>("c", 0., "Eg300 mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Chi300 = moleFracParams.sublist("Chi300", false, "");
+  Chi300.set<double>("b", 0., "Chi300 mole fraction 'b' interpolation coefficient");
+  Chi300.set<double>("c", 0., "Chi300 mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& alpha = moleFracParams.sublist("alpha", false, "");
+  alpha.set<double>("b", 0., "alpha mole fraction 'b' interpolation coefficient");
+  alpha.set<double>("c", 0., "alpha mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& beta = moleFracParams.sublist("beta", false, "");
+  beta.set<double>("b", 0., "beta mole fraction 'b' interpolation coefficient");
+  beta.set<double>("c", 0., "beta mole fraction 'c' interpolation coefficient");
+  moleFracParams.set<double>("Eg300(x=0)", 0., "Eg300 for x=0");
+  moleFracParams.set<double>("Eg300(x=1)", 0., "Eg300 for x=1");
+  moleFracParams.set<double>("Chi300(x=0)", 0., "Chi300 for x=0");
+  moleFracParams.set<double>("Chi300(x=1)", 0., "Chi300 for x=1");
+  moleFracParams.set<double>("alpha(x=0)", 0., "alpha for x=0");
+  moleFracParams.set<double>("alpha(x=1)", 0., "alpha for x=1");
+  moleFracParams.set<double>("beta(x=0)", 0., "beta for x=0");
+  moleFracParams.set<double>("beta(x=1)", 0., "beta for x=1");
 
   p->sublist("Effective DOS ParameterList", false, "");
   p->sublist("Effective DOS ParameterList").set<std::string>("Value", "Simple", "");
@@ -221,6 +250,31 @@ Reference_Energy<EvalT, Traits>::getValidParameters() const
   p->sublist("Effective DOS ParameterList").set<double>("Nv300", 0., "[cm^-3]");
   p->sublist("Effective DOS ParameterList").set<double>("Nc_F", 0., "[1]");
   p->sublist("Effective DOS ParameterList").set<double>("Nv_F", 0., "[1]");
+
+  Teuchos::ParameterList& moleFracParams1 = 
+    p->sublist("Effective DOS ParameterList").sublist("Mole Fraction Parameters", false, "");
+  Teuchos::ParameterList& Nc300 = moleFracParams1.sublist("Nc300", false, "");
+  Nc300.set<double>("b", 0., "Nc300 mole fraction 'b' interpolation coefficient");
+  Nc300.set<double>("c", 0., "Nc300 mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Nv300 = moleFracParams1.sublist("Nv300", false, "");
+  Nv300.set<double>("b", 0., "Nv300 mole fraction 'b' interpolation coefficient");
+  Nv300.set<double>("c", 0., "Nv300 mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Nc_F = moleFracParams1.sublist("Nc_F", false, "");
+  Nc_F.set<double>("b", 0., "Nc_F mole fraction 'b' interpolation coefficient");
+  Nc_F.set<double>("c", 0., "Nc_F mole fraction 'c' interpolation coefficient");
+  Teuchos::ParameterList& Nv_F = moleFracParams1.sublist("Nv_F", false, "");
+  Nv_F.set<double>("b", 0., "Nv_F mole fraction 'b' interpolation coefficient");
+  Nv_F.set<double>("c", 0., "Nv_F mole fraction 'c' interpolation coefficient");
+  moleFracParams1.set<double>("Nc300(x=0)", 0., "Nc300 for x=0");
+  moleFracParams1.set<double>("Nc300(x=1)", 0., "Nc300 for x=1");
+  moleFracParams1.set<double>("Nv300(x=0)", 0., "Nv300 for x=0");
+  moleFracParams1.set<double>("Nv300(x=1)", 0., "Nv300 for x=1");
+  moleFracParams1.set<double>("Nc_F(x=0)", 0., "Nc_F for x=0");
+  moleFracParams1.set<double>("Nc_F(x=1)", 0., "Nc_F for x=1");
+  moleFracParams1.set<double>("Nv_F(x=0)", 0., "Nv_F for x=0");
+  moleFracParams1.set<double>("Nv_F(x=1)", 0., "Nv_F for x=1");
+
+  
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);

@@ -77,10 +77,8 @@ Mobility_MOSFET(
   mobilityScaling = rcp(new panzer::ScalarParameterEntry<EvalT>);
   mobilityScaling->setRealValue(1.0);
   if(mobParamList.isParameter("Mobility Scaling"))
-    if(mobParamList.isType<double>("Mobility Scaling"))
-      {
-	mobilityScaling->setRealValue(mobParamList.get<double>("Mobility Scaling"));
-      }
+    if(mobParamList.isType<double>("Mobility Scaling"))	
+      mobilityScaling->setRealValue(mobParamList.get<double>("Mobility Scaling"));
 
   // Set data layouts for the fields
   RCP<DataLayout> output_scalar = ip_scalar;  // default for SUPG-FEM
@@ -112,7 +110,6 @@ Mobility_MOSFET(
     mobility = MDField<ScalarT,Cell,Point>(n.field.hole_mobility, output_scalar);
   this->addEvaluatedField(mobility);
 
-
   // Scaling parameters
   scaleParams = p.get< RCP<charon::Scaling_Parameters> >("Scaling Parameters");
   Mu0 = scaleParams->scale_params.Mu0;
@@ -133,56 +130,59 @@ Mobility_MOSFET(
   //Dependent mobility models
   std::string bulkName;
   if(carrType == "Electron")
-    {
-      if(bulkMobilityModel == "Klaassen")
-	bulkName = n.field.elec_philips_thomas_mobility;
-      else
-	std::cout<<" FAIL THIS ELECTRON "<<std::endl;
-    }
+  {
+    if(bulkMobilityModel == "Klaassen")
+      bulkName = n.field.elec_philips_thomas_mobility;
+    else if (bulkMobilityModel == "Arora")
+      bulkName = n.field.elec_arora_mobility; 
+    else
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+           "Error! Invalid bulk mobility model: "<< bulkName << " for electrons.");
+  }
   else if(carrType == "Hole")
-    {
-      if(bulkMobilityModel == "Klaassen")
-	bulkName = n.field.hole_philips_thomas_mobility;
-      else
-	std::cout<<" FAIL THIS HOLE"<<std::endl;
-    }
+  {
+    if(bulkMobilityModel == "Klaassen")
+      bulkName = n.field.hole_philips_thomas_mobility;
+    else if (bulkMobilityModel == "Arora")
+      bulkName = n.field.hole_arora_mobility; 
+    else
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
+           "Error! Invalid bulk mobility model: "<< bulkName << " for holes.");
+  }
+ 
   //There must always be a bulk mobility model specified.
   if(isEdgedl)
-    bulk_mobility = MDField<ScalarT,Cell,Edge>(bulkName, edge_scalar);
+    bulk_mobility = MDField<const ScalarT,Cell,Edge>(bulkName, edge_scalar);
   else
-    bulk_mobility = MDField<ScalarT,Cell,Point>(bulkName, input_scalar);
+    bulk_mobility = MDField<const ScalarT,Cell,Point>(bulkName, input_scalar);
   this->addDependentField(bulk_mobility);
 
   //Dependent mobility models
   std::string perpName = "";
   if(carrType == "Electron")
-    {
-      if(perpMobilityModel == "Shirahata")
-	perpName = n.field.elec_shirahata_mobility;
-      else
-	{
-	  perpMobilityModel = "";  //Sanity step
-	}
-    }
+  {
+    if(perpMobilityModel == "Shirahata")
+      perpName = n.field.elec_shirahata_mobility;
+    else
+      perpMobilityModel = "";  //Sanity step
+  }
   else if(carrType == "Hole")
-    {
-      if(perpMobilityModel == "Shirahata")
-	perpName = n.field.hole_shirahata_mobility;
-      else
-	{
-	  perpMobilityModel = "";  //Sanity step
-	}
-    }
+  {
+    if(perpMobilityModel == "Shirahata")
+      perpName = n.field.hole_shirahata_mobility;
+    else
+      perpMobilityModel = "";  //Sanity step
+  }
   //There doesn't need to be a perpendicular field model specified.
 
   if(perpMobilityModel != "")
-    {
-      if(isEdgedl)
-	perp_mobility = MDField<ScalarT,Cell,Edge>(perpName, edge_scalar);
-      else
-	perp_mobility = MDField<ScalarT,Cell,Point>(perpName, input_scalar);
-      this->addDependentField(perp_mobility);
-    }
+  {
+    if(isEdgedl)
+      perp_mobility = MDField<const ScalarT,Cell,Edge>(perpName, edge_scalar);
+    else
+      perp_mobility = MDField<const ScalarT,Cell,Point>(perpName, input_scalar);
+    this->addDependentField(perp_mobility);
+  }
 
 
   if (hiFieldOn and !isEdgedl) //This adds an electric field dependence if supg--if SG or EEFPG, field has to be calculated on edge.
@@ -255,12 +255,13 @@ evaluateFields(
        if(perpMobilityModel != "")
 	 edgeperpMob = perp_mobility(cell,edge) * Mu0;
 
-       ScalarT tempMob = 1/edgelhfMob;
-       if(perpMobilityModel != "" and edgeperpMob > fabs(1e-9))
+       ScalarT tempMob = 1.0/edgelhfMob;
+       if(perpMobilityModel != "" and edgeperpMob > std::fabs(1e-9))
 	 tempMob += 1.0/edgeperpMob;
-
+       
        // primary edge mobility (scaled);
        mobility(cell,edge) = mobilityScaleFactor / (tempMob) / Mu0;
+
      }
    }
 
@@ -282,12 +283,12 @@ evaluateFields(
        // flag from the bulk mobility used
        ScalarT lhfMob =  bulk_mobility(cell,point) * Mu0;
        
-       ScalarT tempipMob = 1/lhfMob;
+       ScalarT tempipMob = 1.0/lhfMob;
        ScalarT edgeperpMob = 0.0;
        if(perpMobilityModel != "")
 	 edgeperpMob = perp_mobility(cell,point) * Mu0;
 
-       if(perpMobilityModel != "" and edgeperpMob > 0.0)
+       if(perpMobilityModel != "" and edgeperpMob > std::fabs(1e-9))
 	 tempipMob += 1.0/(edgeperpMob);
 
        // mobility at IP (scaled)

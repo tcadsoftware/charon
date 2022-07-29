@@ -11,6 +11,7 @@
 #include "Panzer_Workset_Utilities.hpp"
 #include "Panzer_BasisIRLayout.hpp"
 #include "Panzer_FieldLibrary.hpp"
+#include "Panzer_ParameterLibraryUtilities.hpp"
 
 #include "Charon_Names.hpp"
 #include "Charon_Material_Properties.hpp"
@@ -30,6 +31,7 @@ BC_LinearRamp<EvalT, Traits>::
 BC_LinearRamp(
   const Teuchos::ParameterList& p)
 {
+  using Teuchos::rcp;
   using Teuchos::RCP;
   using PHX::DataLayout;
   using PHX::MDField;
@@ -50,6 +52,15 @@ BC_LinearRamp(
   RCP<PHX::DataLayout> data_layout = basis->functional;
   num_basis = data_layout->dimension(1);
 
+  //Set up to write the contact voltage to the parameter library
+  contactVoltage = rcp(new panzer::ScalarParameterEntry<EvalT>);
+  contactVoltage->setRealValue(0);
+  contactVoltageName = p.get<std::string>("Sideset ID")+"_Voltage";
+  contactVoltage = 
+    panzer::createAndRegisterScalarParameter<EvalT>(
+						    std::string(contactVoltageName),
+						    *p.get<RCP<panzer::ParamLib> >("ParamLib"));
+
   // read in user-specified values
   initial_time = p.get<double>("Initial Time");
   initial_voltage = p.get<double>("Initial Voltage");
@@ -60,6 +71,9 @@ BC_LinearRamp(
 
   incmpl_ioniz = p.sublist("Incomplete Ionization");
   expandIonizEnParams(incmpl_ioniz);
+
+  //Set the parameter library contact voltage to an initial value
+  contactVoltage->setValue(initial_voltage);
 
   // compute slope [V/s] and intercept [V] of the linear ramp
   slope = (initial_voltage - final_voltage) / (initial_time - final_time);
@@ -146,6 +160,8 @@ evaluateFields(
   bool bBJT1DBase = false;
   bool bUseRefE = true;
 
+  contactVoltage->setValue(voltage);
+
   OhmicContact<EvalT, Traits>::evaluateOhmicContactBC(
        bBJT1DBase, bUseFD, bUseRefE, incmpl_ioniz, voltage, Eref, vScaling, densScaling,
        tempScaling, workset, doping, acceptor, donor,
@@ -204,6 +220,12 @@ BC_LinearRamp<EvalT, Traits>::getValidParameters() const
 
   Teuchos::RCP<charon::Scaling_Parameters> sp;
   p->set("Scaling Parameters", sp);
+
+ //Sideset ID
+  p->set<std::string>("Sideset ID","");
+ 
+  Teuchos::RCP<panzer::ParamLib> pl;
+  p->set("ParamLib", pl);
 
   return p;
 }

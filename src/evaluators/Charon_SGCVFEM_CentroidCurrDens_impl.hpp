@@ -11,7 +11,7 @@
 #include "Panzer_CellTopologyInfo.hpp"
 
 #include "Shards_CellTopology.hpp"
-#include "Intrepid2_FunctionSpaceTools.hpp"
+#include "Intrepid2_HGRAD_LINE_C1_FEM.hpp"
 
 #include "Charon_Names.hpp"
 
@@ -55,6 +55,12 @@ SGCVFEM_CentroidCurrDens(
   RCP<const panzer::CellTopologyInfo> cellTopoInfo = hcurl_basis->getCellTopologyInfo();
   RCP<DataLayout> edge_scalar = cellTopoInfo->edge_scalar;
   num_edges = edge_scalar->dimension(1);
+
+  // Get reference edge length
+  Intrepid2::Basis_HGRAD_LINE_C1_FEM<PHX::Device> lineBasis;
+  Kokkos::DynRankView<double,PHX::Device> dofCoords("dofCoords",2,1);
+  lineBasis.getDofCoords(dofCoords);
+  refEdgeLen = dofCoords(1,0)-dofCoords(0,0);
 
   // Obtain carrier type
   carrType = p.get<string>("Carrier Type");
@@ -129,13 +135,18 @@ evaluateFields(
       // evaluate curr.dens. at the subcv centroids
       // note: number of subcv centroids is equal to the number of primary
       // nodes for quad, tri, hex, and tet mesh elements.
-
+      //
+      // In this stabilized formulation edge values are mapped to the interior
+      // of the element using HCurl basis functions. In order for the values
+      // to scale properly with the definitions of the HCurl and HGrad basis
+      // functions in Intrepid2 as of 11/2020 we must divide by the reference
+      // edge length. 
       for (int ip = 0; ip < num_ips; ++ip)
       {
         for (int dim = 0; dim < num_dims; ++dim)
         {
           centroid_currdens(cell,ip,dim) += edge_currdens(cell,iedge)
-                  * (workset.bases[hcurl_basis_index])->basis_vector(cell,iedge,ip,dim);
+                  * (workset.bases[hcurl_basis_index])->basis_vector(cell,iedge,ip,dim)/refEdgeLen;
 
         }
       }

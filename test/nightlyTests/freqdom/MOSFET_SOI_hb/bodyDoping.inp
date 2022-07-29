@@ -1,0 +1,148 @@
+
+#############################
+#body doping
+#############################
+
+#background
+   start uniform doping named Function1
+          Concentration = 1e15
+          spatial range is -1 to 1 in x
+          spatial range is -1 to 0.01 in y
+          Type is acceptor
+   end uniform doping named Function1
+
+   start mgauss doping named Function2
+          Concentration range is 1.0e15 to {bodyPDoping}
+          spatial range is -1 to 1 in x
+#          spatial range is -0.040 to 0.01 in y
+          spatial range is {bodyDopingDepth} to 1 in y
+          Type is acceptor
+	  gradient width = 0.100 in x
+	  gradient width = 0.020 in y
+#	  erfc in y
+      end uniform doping named Function2
+
+
+#############################
+#source well doping
+#############################
+    start mgauss doping named Function10
+          Type is donor
+	  spatial range is -0.105 to {sourceJunction} in x
+	  spatial range is {sourceDepth} to  0.005 in y
+          Concentration range is 1.0e10 to {sourceWellDoping}
+          gradient width = 0.0034 in x
+          gradient width = 0.004 in y
+     end mgauss doping named Function10
+
+#############################
+#source externsion
+#############################
+    start mgauss doping named Function11
+          Type is donor
+	  spatial range is -0.105 to {sourceExtensionImpingement} in x
+	  spatial range is {sourceExtensionDepth} to  0.05 in y
+          Concentration range is 1.0e0 to {sourceExtensionDoping}
+          gradient width = 0.002 in x
+          gradient width = 0.0017 in y
+     end mgauss doping named Function11
+
+#############################
+#drain well doping
+#############################
+     start mgauss doping named Function20
+          Type is donor
+	  spatial range is  {drainJunction} to  0.105 in x
+	  spatial range is {drainDepth} to  0.05 in y
+          Concentration range is 1.0e0 to {drainWellDoping}
+          gradient width = 0.0034 in x
+          gradient width = 0.004 in y
+     end mgauss doping named Function20  
+
+#############################
+#drain externsion
+#############################
+    start mgauss doping named Function21 
+          Type is donor
+	  spatial range is  {drainExtensionImpingement}  to 0.105 in x
+	  spatial range is  {drainExtensionDepth} to  0.005 in y
+          Concentration range is 1.0e0 to {drainExtensionDoping} 
+          gradient width = 0.002 in x
+          gradient width = 0.0017 in y
+     end mgauss doping named Function21
+
+
+#############################
+#source well halo
+#############################
+#    start mgauss doping named Function12 
+#         Type is acceptor
+#	  spatial range is {sourceHaloLeft} to {sourceHaloRight} in x
+#	  spatial range is {sourceHaloBottom} to {sourceHaloTop} in y
+#        Concentration range is 1.0e10 to {sourceHaloDoping}
+#          gradient width = 0.0034 in x
+#          gradient width = 0.004 in y
+#     end mgauss doping named Function12
+
+#############################
+#source well sub halo
+#############################
+    start mgauss doping named Function13 
+          Type is acceptor
+	  spatial range is {sourceSubHaloLeft} to {sourceSubHaloRight} in x
+	  spatial range is {sourceSubHaloBottom} to {sourceSubHaloTop} in y
+          Concentration range is 1.0e10 to {sourceHaloDoping}
+          gradient width = 0.0034 in x
+          gradient width = 0.004 in y
+     end mgauss doping named Function13
+
+#############################
+#source well base halo
+#############################
+     start mgauss doping named Function14
+          Type is acceptor
+	  spatial range is  {sourceBaseHaloLeft} to {sourceBaseHaloRight} in x
+	  spatial range is  {sourceBaseHaloBottom} to {sourceBaseHaloTop} in y
+          Concentration range is 1.0e10 to {sourceHaloDoping}
+          gradient width = 0.0034 in x
+          gradient width = 0.004 in y
+     end mgauss doping named Function14
+
+
+#############################
+#drain well halo
+#############################
+#     start mgauss doping named Function22
+ #         Type is acceptor
+#	  spatial range is  {drainHaloLeft} to {drainHaloRight} in x
+#	  spatial range is  {drainHaloBottom} to {drainHaloTop} in y
+#          Concentration range is 1.0e10 to {drainHaloDoping}
+#          gradient width = 0.0034 in x
+#          gradient width = 0.004 in y
+#     end mgauss doping named Function22
+
+#############################
+#drain well sub halo
+#############################
+     start mgauss doping named Function23
+          Type is acceptor
+	  spatial range is  {drainSubHaloLeft} to {drainSubHaloRight} in x
+	  spatial range is  {drainSubHaloBottom} to {drainSubHaloTop} in y
+          Concentration range is 1.0e10 to {drainHaloDoping}
+          gradient width = 0.0034 in x
+          gradient width = 0.004 in y
+     end mgauss doping named Function23
+
+
+#############################
+#drain well base halo
+#############################
+     start mgauss doping named Function24
+          Type is acceptor
+	  spatial range is  {drainBaseHaloLeft} to {drainBaseHaloRight} in x
+	  spatial range is  {drainBaseHaloBottom} to {drainBaseHaloTop} in y
+          Concentration range is 1.0e10 to {drainHaloDoping}
+          gradient width = 0.0034 in x
+          gradient width = 0.004 in y
+     end mgauss doping named Function24
+

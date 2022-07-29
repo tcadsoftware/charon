@@ -1,0 +1,9 @@
+interpreter name EnforceMaxIonDens 
+
+interpreter inputLine (enforce max ion density) = {bValue}
+
+interpreter shortHelp {Specify if the maximum ion density is used in the RigidPointIon mobility model}
+
+interpreter longHelp {Specify if The maximum ion density is used in the RigidPointIon mobility model or not.} 
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Ion Mobility,Enforce Maximum Ion Density,bool,{bValue}

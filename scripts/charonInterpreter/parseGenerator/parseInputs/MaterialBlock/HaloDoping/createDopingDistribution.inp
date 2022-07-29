@@ -1,0 +1,11 @@
+interpreter name DopingDistribution
+
+interpreter inputLine (distribution) is [(uniform) [ (gaussian)]]
+
+interpreter shortHelp {set the doping dsitribution in the halo.}
+
+interpreter longHelp {set the doping dsitribution in the halo. <>  Options are uniform or Gaussian}
+
+xmlOptional (uniform) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Distribution,string,Uniform
+
+xmlOptional (gaussian) Charon->Closure Models->{MaterialBlockName}->Doping->{functionName},Doping Distribution,string,Gaussian

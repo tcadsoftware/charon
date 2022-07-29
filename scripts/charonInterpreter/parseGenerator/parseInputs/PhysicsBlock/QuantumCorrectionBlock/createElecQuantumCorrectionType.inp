@@ -1,0 +1,16 @@
+
+interpreter name ElectronQuantumCorrectionType
+
+#interpreter inputLine (quantum potential correction type is) {qpType}
+interpreter inputline (electron simplified formulation) [ (is on) [ (is off)]]
+
+interpreter shortHelp {Change quantum potential correction type from the default full formulation to the simplified formaultion for electron}
+interpreter longHelp  {Change quantum potential correction type from the default full formulation to the simplified formaultion for electron <> {State} is On/Off}
+
+#
+xmlRequired Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Model Type,string,Simplified
+#
+xmlOptional (is on) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Model Type,string,Simplified
+
+xmlOptional (is off) Charon->Physics Blocks->{physicsBlockName}->ANONYMOUS->Quantum Correction,Electron Model Type,string,Full
+

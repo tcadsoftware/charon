@@ -1,0 +1,6 @@
+interpreterBlock name TempDepIonSoretCoeff
+
+interpreterBlock (start tempdep ion soret coeff)
+
+xmlDefault Charon->Closure Models->{MaterialBlockName}->Ion Soret Coefficient,Value,string,TempDep
+

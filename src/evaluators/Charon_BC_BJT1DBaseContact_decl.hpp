@@ -65,6 +65,8 @@ class BC_BJT1DBaseContact
   Teuchos::ParameterList incmpl_ioniz;
 
   Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > user_value;
+  Teuchos::RCP<panzer::ScalarParameterEntry<EvalT> > contactVoltage;
+  std::string contactVoltageName;
   std::string base_doptype;
 
 private:

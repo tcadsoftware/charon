@@ -1,0 +1,98 @@
+import state file hetero_diode.dd.exo at index -1
+
+assembly workset = 50
+tpetra is on
+
+start output parameters
+      output state file hetero_diode.dd.1.exo
+      output cell average variables in n-ingap for scalar "Relative Permittivity,Negative Potential Gradient X"
+      output cell average variables in p-gaas for scalar "Relative Permittivity,Negative Potential Gradient X"
+end output parameters
+
+concentration scaling=4e19
+lattice temperature=300
+
+start physics block InGaP
+      geometry block is n-ingap
+      standard discretization type is drift diffusion gfem
+      material model is ingapParameter 
+      discontinuity for hbt with suffix 1
+      srh recombination is on
+end physics block InGaP
+
+start physics block GaAs
+      geometry block is p-gaas
+      standard discretization type is drift diffusion gfem
+      material model is gaasParameter 
+      discontinuity for hbt with suffix 2
+end physics block GaAs
+
+
+start material block ingapParameter
+      reference material is GaAs
+      material name is InGaP
+      relative permittivity = 11.8
+      constant intrinsic concentration = 1.2e3
+      constant bandgap = 1.86
+      start uniform doping named Function1
+      	    type is donor
+            concentration = 1e16
+      	    spatial range is 0.0 to 1.0 in x   
+      end uniform doping named Function1
+end material block ingapParameter
+
+
+start material block gaasParameter
+      reference material is GaAs
+      material name is GaAs
+      relative permittivity = 13.1
+      constant intrinsic concentration = 1.8e6
+      constant bandgap = 1.42
+      start uniform doping named Function1
+      	    type is acceptor
+            concentration = 1e16
+      	    spatial range is 1.0 to 2.0 in x   
+      end uniform doping named Function1
+end material block gaasParameter
+
+BC is ohmic for cathode on n-ingap fixed at 0
+BC is ohmic for anode on p-gaas fixed at 0
+
+start potential heterojunction on ebjunction
+      junction is between blocks n-ingap and p-gaas
+      start potential
+         fixed charge = 1.0e11
+         discretization method is fem
+      end potential
+end potential heterojunction
+
+start heterojunction on ebjunction
+  junction is between blocks n-ingap and p-gaas
+  start hole
+    effective mass = 0.58
+    band offset = 0.442
+    fermi dirac density = 1e21
+    discretization method is fem
+  end hole
+  
+  start electron
+    effective mass = 0.088
+    band offset = 0.063
+    fermi dirac density = 1e21
+    discretization method is fem
+  end electron
+end heterojunction
+
+initial conditions for ELECTRIC_POTENTIAL in n-ingap is exodus file
+initial conditions for ELECTRIC_POTENTIAL in p-gaas is exodus file
+initial conditions for ELECTRON_DENSITY1 in n-ingap is exodus file
+initial conditions for HOLE_DENSITY1 in n-ingap is exodus file
+initial conditions for ELECTRON_DENSITY2 in p-gaas is exodus file
+initial conditions for HOLE_DENSITY2 in p-gaas is exodus file
+
+start solver block
+  start tpetra block
+    problem type is steady state
+    verbosity level is high
+  end
+end solver block

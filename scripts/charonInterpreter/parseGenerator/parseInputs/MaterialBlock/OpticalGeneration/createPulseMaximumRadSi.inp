@@ -1,0 +1,10 @@
+interpreter name PulseMaximumRadSi
+
+interpreter inputLine (Maximum pulse rate RadSi =) {pulseRate}
+
+interpreter shortHelp {set the maximum RadSi rate of the pulse}
+
+interpreter longHelp {set the maximum RadSi rate of the pulse}
+
+xmlRequired Charon->Closure Models->{MaterialBlockName}->Optical Generation->{functionName},Max RadSi,double,{pulseRate}
+

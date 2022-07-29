@@ -35,6 +35,9 @@ Note that the paper by Sungho Kim, ShinHyun Choi, and Wei Lu, ACSNano. 8, 2369-2
      <Parameter name="Escape Frequency" type="double" value="1e12" />
      <Parameter name="Hopping Distance" type="double" value="0.1e-7" />
      <Parameter name="Activation Energy" type="double" value="0.8" />
+     <Parameter name="Maximum Ion Density" type="double" value="7.5e20" />
+     <Parameter name="Enforce Maximum Ion Density" type="bool" value="false" />
+     <Parameter name="Velocity Multiplier" type="double" value="1.0" />
 </ParameterList>
 
 When Escape Frequency, Hopping Distance, or Activation Energy is not specified,
@@ -325,9 +328,15 @@ void Mobility_RigidPointIon<EvalT, Traits>::initMobilityParams
   else
     actE = matProperty.getPropertyValue(matName, "Ion Activation Energy");
 
-  maxIonDens = mobParamList.get<double>("Maximum Ion Density");
-
-  bSetMaxDens = mobParamList.get<bool>("Enforce Maximum Ion Density");
+  maxIonDens = 0.0;
+  if (mobParamList.isParameter("Enforce Maximum Ion Density"))
+  {
+    bSetMaxDens = mobParamList.get<bool>("Enforce Maximum Ion Density");
+    if (bSetMaxDens)  // if true, Maximum Ion Density must be specified
+      maxIonDens = mobParamList.get<double>("Maximum Ion Density");
+  }
+  else
+    bSetMaxDens = false; 
 
   velMultiplier = 1.0;
   if (mobParamList.isParameter("Velocity Multiplier"))
@@ -346,13 +355,13 @@ Mobility_RigidPointIon<EvalT, Traits>::computeIonMobility(const ScalarT& kbT, co
   // compute temperature-dependent ion mobility in [cm^2/(V.s)]
   ScalarT tempIonMob = (1.0*escFreq*hopDist*hopDist/kbT)*std::exp(-actE/kbT);  // where 1.0 represents 1[e]
 
-  // compute ion density ratio
-  ScalarT iratio = ionDens / maxIonDens;
-
   ScalarT ionMob = 0.0;
 
   if (bSetMaxDens)   // apply the (1-iratio) factor
   {
+    // compute ion density ratio
+    ScalarT iratio = ionDens / maxIonDens;
+
     // note that ratio could be negative since iondens can be negative during solving
     if (Sacado::ScalarValue<ScalarT>::eval(iratio) <= 0.0)
       ionMob = tempIonMob;

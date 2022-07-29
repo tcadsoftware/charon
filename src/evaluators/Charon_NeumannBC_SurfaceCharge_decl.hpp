@@ -109,10 +109,10 @@ class NeumannBC_SurfaceCharge
     PHX::MDField<ScalarT,Cell,Point> surface_recomb;   // scaled, no unit
 
     // input fields
-    PHX::MDField<ScalarT,Cell,Point> edensity;      // scaled, no unit
-    PHX::MDField<ScalarT,Cell,Point> hdensity;      // scaled, no unit
-    PHX::MDField<ScalarT,Cell,Point> intrin_conc;   // scaled, no unit
-    PHX::MDField<ScalarT,Cell,Point> latt_temp;     // scaled, no unit
+    PHX::MDField<const ScalarT,Cell,Point> edensity;      // scaled, no unit
+    PHX::MDField<const ScalarT,Cell,Point> hdensity;      // scaled, no unit
+    PHX::MDField<const ScalarT,Cell,Point> intrin_conc;   // scaled, no unit
+    PHX::MDField<const ScalarT,Cell,Point> latt_temp;     // scaled, no unit
 
     double C0, X0, R0, T0;  // scaling parameters
     double varyingCharge;     // in unit of cm^{-2}
@@ -126,8 +126,13 @@ class NeumannBC_SurfaceCharge
 
     std::string fluxSurfCharge, fluxSurfRecomb; 
  
-    std::vector<double> trapEnergy, trapDensity, eTrapVelocity, hTrapVelocity; 
-    std::vector<std::string> trapType; 
+    std::vector<double> trapEnergy, trapDensity, eTrapVelocity, hTrapVelocity, trapEnWidth; 
+    std::vector<std::string> trapType, trapEnDistr;
+    std::vector<int> trapNL;
+    void discretizeContDistribution(std::vector<ScalarT>* enLevels, 
+				 std::vector<ScalarT>* norm_densities,
+				 const std::string& enDistr, double Et, 
+				 double enSigma, int NL);
     
     double eSurfRecombVel, hSurfRecombVel, surfRecombEnergy; 
   

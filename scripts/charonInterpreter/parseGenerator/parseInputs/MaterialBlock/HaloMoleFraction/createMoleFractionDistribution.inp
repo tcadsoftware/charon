@@ -1,0 +1,11 @@
+interpreter name MoleFractionDistribution
+
+interpreter inputLine (distribution) is [(uniform) [ (gaussian)]]
+
+interpreter shortHelp {set the mole fraction distribution in the halo.}
+
+interpreter longHelp {set the mole fraction distribution in the halo. <>  Options are uniform or Gaussian}
+
+xmlOptional (uniform) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Mole Distribution,string,Uniform
+
+xmlOptional (gaussian) Charon->Closure Models->{MaterialBlockName}->Mole Fraction->{functionName},Mole Distribution,string,Gaussian

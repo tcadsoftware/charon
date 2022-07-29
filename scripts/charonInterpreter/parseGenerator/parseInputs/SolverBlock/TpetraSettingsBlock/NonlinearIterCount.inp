@@ -1,0 +1,12 @@
+interpreter name NonLinearIterCount
+
+interpreter shortHelp {Number of nonlinear solver steps to attempt before failing.}
+interpreter longHelp {Number of nonlinear solver steps to attempt before failing.}
+
+interpreter inputLine (maximum number nonlinear iterations) = {maxNLSteps}
+
+# rythmos
+xmlRequired Charon->Solution Control->NOX->Status Tests->Test 1,Maximum Iterations,int,{maxNLSteps}
+
+# tempus
+xmlRequired Charon->Solution Control->Tempus->Default Stepper->Default Solver->NOX->Status Tests->Test 1,Maximum Iterations,int,{maxNLSteps}
